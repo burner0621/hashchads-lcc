@@ -1,11 +1,11 @@
 import React from 'react';
-
+import { BrowserRouter } from "react-router-dom";
 //import Scss
 import './assets/scss/themes.scss';
 
 //imoprt Route
 import Route from './Routes';
-
+import { useGlobalData } from './contexts/GlobalData'
 // Import Firebase Configuration file
 // import { initFirebaseBackend } from "./helpers/firebase_helper";
 
@@ -30,9 +30,14 @@ fakeBackend();
 // initFirebaseBackend(firebaseConfig);
 
 function App() {
+  const globalData = useGlobalData()
   return (
     <React.Fragment>
-      <Route />
+      {/* {globalData &&
+        Object.keys(globalData).length > 0 && */}
+        <BrowserRouter basename={process.env.PUBLIC_URL}>
+          <Route />
+        </BrowserRouter>
     </React.Fragment>
   );
 }

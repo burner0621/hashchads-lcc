@@ -8,15 +8,19 @@ import { Provider } from "react-redux";
 
 import { configureStore } from "./store";
 
+import GlobalDataContextProvider from './contexts/GlobalData'
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
+  <GlobalDataContextProvider>
     <Provider store={configureStore({})}>
       <React.Fragment>
-        <BrowserRouter basename={process.env.PUBLIC_URL}>
+        {/* <BrowserRouter basename={process.env.PUBLIC_URL}> */}
           <App />
-        </BrowserRouter>
+        {/* </BrowserRouter> */}
       </React.Fragment>
     </Provider>
+  </GlobalDataContextProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

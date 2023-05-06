@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 const Navdata = () => {
   const history = useNavigate();
   //state data
-  const [isDashboard, setIsDashboard] = useState(false);
+  const [isOverview, setIsOverview] = useState(false);
   const [isApps, setIsApps] = useState(false);
   const [isAuth, setIsAuth] = useState(false);
   const [isPages, setIsPages] = useState(false);
@@ -72,8 +72,8 @@ const Navdata = () => {
 
   useEffect(() => {
     document.body.classList.remove("twocolumn-panel");
-    if (iscurrentState !== "Dashboard") {
-      setIsDashboard(false);
+    if (iscurrentState !== "Overview") {
+      setIsOverview(false);
     }
     if (iscurrentState !== "Apps") {
       setIsApps(false);
@@ -118,7 +118,7 @@ const Navdata = () => {
   }, [
     history,
     iscurrentState,
-    isDashboard,
+    isOverview,
     isApps,
     isAuth,
     isPages,
@@ -138,63 +138,14 @@ const Navdata = () => {
       isHeader: true,
     },
     {
-      id: "dashboard",
-      label: "Dashboards",
-      icon: "bx bxs-dashboard",
-      link: "/#",
-      stateVariables: isDashboard,
+      id: "overview",
+      label: "Overview",
+      icon: "bx bx-aperture",
+      link: "/overview",
       click: function (e) {
         e.preventDefault();
-        setIsDashboard(!isDashboard);
-        setIscurrentState("Dashboard");
-        updateIconSidebar(e);
+        setIscurrentState("Overview");
       },
-      subItems: [
-        {
-          id: "analytics",
-          label: "Analytics",
-          link: "/dashboard-analytics",
-          parentId: "dashboard",
-        },
-        {
-          id: "crm",
-          label: "CRM",
-          link: "/dashboard-crm",
-          parentId: "dashboard",
-        },
-        {
-          id: "ecommerce",
-          label: "Ecommerce",
-          link: "/dashboard",
-          parentId: "dashboard",
-        },
-        {
-          id: "crypto",
-          label: "Crypto",
-          link: "/dashboard-crypto",
-          parentId: "dashboard",
-        },
-        {
-          id: "projects",
-          label: "Projects",
-          link: "/dashboard-projects",
-          parentId: "dashboard",
-        },
-        {
-          id: "nft",
-          label: "NFT",
-          link: "/dashboard-nft",
-          parentId: "dashboard",
-        },
-        {
-          id: "job",
-          label: "Job",
-          badgeName: "New",
-          badgeColor: "success",
-          link: "/dashboard-job",
-          parentId: "dashboard",
-        },
-      ],
     },
     {
       id: "apps",
