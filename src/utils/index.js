@@ -4,7 +4,7 @@ import { timeframeOptions } from '../constants'
 import dayjs from 'dayjs'
 
 export const toK = (num) => {
-  return Numeral(num).format('0,0.[00]')
+  return Numeral(num).format('0,0.0000')
 }
 
 export const formatDollarAmount = (num, digits) => {
@@ -23,8 +23,8 @@ export const formattedNum = (number, usd = false, acceptNegatives = false) => {
   }
   let num = parseFloat(number)
 
-  if (num > 500000000) {
-    return (usd ? '$' : '') + toK(num.toFixed(0), true)
+  if (num > 500000000000) {
+    return (usd ? '$' : '') + toK(num.toFixed(4), true)
   }
 
   if (num === 0) {
@@ -39,7 +39,7 @@ export const formattedNum = (number, usd = false, acceptNegatives = false) => {
   }
 
   if (num > 1000) {
-    return usd ? formatDollarAmount(num, 0) : Number(parseFloat(num).toFixed(0)).toLocaleString()
+    return usd ? formatDollarAmount(num, 4) : Number(parseFloat(num).toFixed(0)).toLocaleString()
   }
 
   if (usd) {

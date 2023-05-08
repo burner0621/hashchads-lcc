@@ -6,7 +6,6 @@ import { formattedNum } from '../../utils'
 import styled from 'styled-components'
 import { usePrevious } from 'react-use'
 import { Play } from 'react-feather'
-import { useDarkModeManager } from '../../contexts/LocalStorage'
 
 export const IconWrapper = styled.div`
   position: absolute;
@@ -192,7 +191,6 @@ const TradingViewChart = ({
 
             // update the title when hovering on the chart
             chart.subscribeCrosshairMove(function (param) {
-                console.log("hover", param);
                 if (
                     param === undefined ||
                     param.time === undefined ||
