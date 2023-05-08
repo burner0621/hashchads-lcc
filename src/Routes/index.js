@@ -4,10 +4,10 @@ import { Routes, Route } from "react-router-dom";
 //Layouts
 import NonAuthLayout from "../Layouts/NonAuthLayout";
 import VerticalLayout from "../Layouts/index";
+import HorizontalLayout from "../Layouts/index";
 
 //routes
 import { authProtectedRoutes, publicRoutes } from "./allRoutes";
-import { AuthProtected } from './AuthProtected';
 
 const Index = () => {
     return (
@@ -33,9 +33,10 @@ const Index = () => {
                         <Route
                             path={route.path}
                             element={
-                                <AuthProtected>
-                                    <VerticalLayout>{route.component}</VerticalLayout>
-                                </AuthProtected>}
+                                // <AuthProtected>
+                                    <HorizontalLayout>{route.component}</HorizontalLayout>
+                                // {/* </AuthProtected> */}
+                            }
                             key={idx}
                             exact={true}
                         />

@@ -121,15 +121,15 @@ const RightSidebar = (props) => {
     const pathName = props.router.location.pathname;
 
     useEffect(() => {
-        const preloader = document.getElementById("preloader");
-        if (preloader) {
-            document.getElementById("preloader").style.opacity = "1";
-            document.getElementById("preloader").style.visibility = "visible";
-            setTimeout(function () {
-                document.getElementById("preloader").style.opacity = "0";
-                document.getElementById("preloader").style.visibility = "hidden";
-            }, 1000);
-        }
+        // const preloader = document.getElementById("preloader");
+        // if (preloader) {
+        //     document.getElementById("preloader").style.opacity = "1";
+        //     document.getElementById("preloader").style.visibility = "visible";
+        //     setTimeout(function () {
+        //         document.getElementById("preloader").style.opacity = "0";
+        //         document.getElementById("preloader").style.visibility = "hidden";
+        //     }, 1000);
+        // }
     }, [preloader, pathName]);
 
     return (

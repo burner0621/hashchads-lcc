@@ -10,7 +10,6 @@ import navdata from "../LayoutMenuData";
 import { withTranslation } from "react-i18next";
 
 const HorizontalLayout = (props) => {
-  const [isMoreMenu, setIsMoreMenu] = useState(false);
   const navData = navdata().props.children;
   let menuItems = [];
   let splitMenuItems = [];
@@ -28,18 +27,6 @@ const HorizontalLayout = (props) => {
     } else {
       menuItems.push(value);
     }
-  });
-  menuItems.push({
-    id: "more",
-    label: "More",
-    icon: "ri-briefcase-2-line",
-    link: "/#",
-    stateVariables: isMoreMenu,
-    subItems: splitMenuItems,
-    click: function (e) {
-      e.preventDefault();
-      setIsMoreMenu(!isMoreMenu);
-    },
   });
 
   useEffect(() => {

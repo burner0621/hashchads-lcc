@@ -126,24 +126,6 @@ export default function Provider({ children }) {
     })
   }, [])
 
-  const updateLatestBlock = useCallback((block) => {
-    dispatch({
-      type: UPDATE_LATEST_BLOCK,
-      payload: {
-        block,
-      },
-    })
-  }, [])
-
-  const updateHeadBlock = useCallback((block) => {
-    dispatch({
-      type: UPDATE_HEAD_BLOCK,
-      payload: {
-        block,
-      },
-    })
-  }, [])
-
   return (
     <ApplicationContext.Provider
       value={useMemo(
@@ -154,48 +136,14 @@ export default function Provider({ children }) {
             updateSessionStart,
             updateTimeframe,
             updateSupportedTokens,
-            updateLatestBlock,
-            updateHeadBlock,
           },
         ],
-        [state, update, updateTimeframe, updateSessionStart, updateSupportedTokens, updateLatestBlock, updateHeadBlock]
+        [state, update, updateTimeframe, updateSessionStart, updateSupportedTokens]
       )}
     >
       {children}
     </ApplicationContext.Provider>
   )
-}
-
-export function useLatestBlocks() {
-  const [state, { updateLatestBlock, updateHeadBlock }] = useApplicationContext()
-
-  const latestBlock = state?.[LATEST_BLOCK]
-  const headBlock = state?.[HEAD_BLOCK]
-
-  useEffect(() => {
-    async function fetch() {
-      healthClient
-        .query({
-          query: SUBGRAPH_HEALTH,
-        })
-        .then((res) => {
-          const syncedBlock = res.data.indexingStatusForCurrentVersion.chains[0].latestBlock.number
-          const headBlock = res.data.indexingStatusForCurrentVersion.chains[0].chainHeadBlock.number
-          if (syncedBlock && headBlock) {
-            updateLatestBlock(syncedBlock)
-            updateHeadBlock(headBlock)
-          }
-        })
-        .catch((e) => {
-          console.log(e)
-        })
-    }
-    if (!latestBlock) {
-      fetch()
-    }
-  }, [latestBlock, updateHeadBlock, updateLatestBlock])
-
-  return [latestBlock, headBlock]
 }
 
 export function useCurrentCurrency() {
@@ -263,31 +211,3 @@ export function useSessionStart() {
   return parseInt(seconds / 1000)
 }
 
-export function useListedTokens() {
-  const [state, { updateSupportedTokens }] = useApplicationContext()
-  const supportedTokens = state?.[SUPPORTED_TOKENS]
-
-  useEffect(() => {
-    async function fetchList() {
-      const allFetched = await SUPPORTED_LIST_URLS__NO_ENS.reduce(async (fetchedTokens, url) => {
-        const tokensSoFar = await fetchedTokens
-        const newTokens = []
-        // const newTokens = await getTokenList(url)
-        if (newTokens?.tokens) {
-          return Promise.resolve([...tokensSoFar, ...newTokens.tokens])
-        }
-      }, Promise.resolve([]))
-      let formatted = allFetched?.map((t) => t.address.toLowerCase())
-      updateSupportedTokens(formatted)
-    }
-    if (!supportedTokens) {
-      try {
-        fetchList()
-      } catch {
-        console.log('Error fetching')
-      }
-    }
-  }, [updateSupportedTokens, supportedTokens])
-
-  return supportedTokens
-}

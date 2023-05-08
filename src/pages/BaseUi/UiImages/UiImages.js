@@ -334,7 +334,7 @@ const UiImages = () => {
                                                                 </div>
                                                             </div>
                                                         </Link>
-                                                        <UncontrolledTooltip placement="top" target="img4" > More </UncontrolledTooltip>
+                                                        {/* <UncontrolledTooltip placement="top" target="img4" > More </UncontrolledTooltip> */}
                                                     </div>
                                                 </div>
                                             </Col>

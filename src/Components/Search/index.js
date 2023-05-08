@@ -339,12 +339,11 @@ export const Search = ({ small = false }) => {
         return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // $& means the whole matched string
     }
 
-    console.log(uniqueTokens, ">>>>>>>>>>>>>>>>>")
-
     function onDismiss() {
         setPairsShown(3)
         setTokensShown(3)
         toggleMenu(false)
+        document.getElementById("globalStats").style.display = "block"
         setValue('')
     }
 
@@ -360,6 +359,7 @@ export const Search = ({ small = false }) => {
             setPairsShown(3)
             setTokensShown(3)
             toggleMenu(false)
+            document.getElementById("globalStats").style.display = "block"
         }
     }
 
@@ -369,10 +369,10 @@ export const Search = ({ small = false }) => {
             document.removeEventListener('click', handleClick)
         }
     })
-
+    
     return (
         <Container small={small}>
-            <Wrapper open={showMenu} shadow={true} small={small}>
+            <Wrapper open={showMenu} shadow={true} small={small} style={{border: "solid 1px #ff007a"}}>
                 <Input
                     large={!small}
                     type={'text'}
@@ -389,6 +389,7 @@ export const Search = ({ small = false }) => {
                                         : 'Search Saucerswap pairs and tokens...'
                     }
                     value={value}
+                    style={{color: "white"}}
                     onChange={(e) => {
                         setValue(e.target.value)
                     }}
@@ -398,9 +399,9 @@ export const Search = ({ small = false }) => {
                         }
                     }}
                 />
-                {!showMenu ? <SearchIconLarge /> : <CloseIcon onClick={() => toggleMenu(false)} />}
+                {!showMenu ? <SearchIconLarge /> : <CloseIcon onClick={() => {toggleMenu(false);}} />}
             </Wrapper>
-            <Menu hide={!showMenu} ref={menuRef}>
+            <Menu hide={!showMenu} ref={menuRef} style={{zIndex: "300", background: "white"}}>
                 <Heading>
                     <Gray>Pairs</Gray>
                 </Heading>
