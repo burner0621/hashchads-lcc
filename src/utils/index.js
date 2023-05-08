@@ -3,8 +3,10 @@ import { Text } from 'rebass'
 import { timeframeOptions } from '../constants'
 import dayjs from 'dayjs'
 
-export const toK = (num) => {
-  return Numeral(num).format('0,0.0000')
+export const toK = (num, digit=4) => {
+  if (digit === 4) return Numeral(num).format('0,0.[0000]')
+  if (digit === 2) return Numeral(num).format('0,0.[00]')
+  if (digit === 0) return Numeral(num).format('0,0')
 }
 
 export const formatDollarAmount = (num, digits) => {
@@ -23,8 +25,8 @@ export const formattedNum = (number, usd = false, acceptNegatives = false) => {
   }
   let num = parseFloat(number)
 
-  if (num > 500000000000) {
-    return (usd ? '$' : '') + toK(num.toFixed(4), true)
+  if (num > 5000000000) {
+    return (usd ? '$' : '') + toK(num.toFixed(2), 0)
   }
 
   if (num === 0) {
@@ -39,18 +41,18 @@ export const formattedNum = (number, usd = false, acceptNegatives = false) => {
   }
 
   if (num > 1000) {
-    return usd ? formatDollarAmount(num, 4) : Number(parseFloat(num).toFixed(0)).toLocaleString()
+    return usd ? formatDollarAmount(num, 2) : Number(parseFloat(num).toFixed(0)).toLocaleString()
   }
 
   if (usd) {
     if (num < 0.1) {
       return formatDollarAmount(num, 4)
     } else {
-      return formatDollarAmount(num, 2)
+      return formatDollarAmount(num, 0)
     }
   }
 
-  return Number(parseFloat(num).toFixed(4)).toString()
+  return Number(parseFloat(num).toFixed(0)).toString()
 }
 
 export function formattedPercent(percent, useBrackets = false) {

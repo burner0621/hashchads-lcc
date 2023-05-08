@@ -173,6 +173,7 @@ const TradingViewChart = ({
             toolTip.style.left = -4 + 'px'
             toolTip.style.top = '-' + 8 + 'px'
             toolTip.style.backgroundColor = 'transparent'
+            toolTip.style.position = 'absolute'
 
             // format numbers
             let percentChange = baseChange?.toFixed(2)
@@ -191,6 +192,7 @@ const TradingViewChart = ({
 
             // update the title when hovering on the chart
             chart.subscribeCrosshairMove(function (param) {
+                console.log("hover", param);
                 if (
                     param === undefined ||
                     param.time === undefined ||
