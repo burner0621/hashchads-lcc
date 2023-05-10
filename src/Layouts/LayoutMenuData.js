@@ -147,6 +147,16 @@ const Navdata = () => {
         setIscurrentState("Overview");
       },
     },
+    {
+      id: "tokens",
+      label: "Tokens",
+      icon: "bx bxs-bone",
+      link: "/tokens",
+      click: function (e) {
+        e.preventDefault();
+        setIscurrentState("Tokens");
+      },
+    },
     // {
     //   id: "apps",
     //   label: "Apps",

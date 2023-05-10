@@ -28,9 +28,22 @@ const GlobalChart = ({ display }) => {
 
   // global historical data
   const [dailyData, weeklyData] = useGlobalChartData()
-  const { totalLiquidityUSD, oneDayVolumeUSD, volumeChangeUSD, liquidityChangeUSD, oneWeekVolume, weeklyVolumeChange } =
-    useGlobalData()
+  const { totalLiquidityUSD, oneDayVolumeUSD, volumeChangeUSD, liquidityChangeUSD, oneWeekVolume, weeklyVolumeChange } = useGlobalData()
+  const [stateLiquidityChangeUSD, setStateLiquidityChangeUSD] = useState (0)
+  const [stateTotalLiquidityUSD, setStateTotalLiquidityUSD] = useState (0)
+  const [stateVolumeChangeUSD, setStateVolumeChangeUSD] = useState (0)
+  const [stateOneDayVolumeUSD, setStateOneDayVolumeUSD] = useState ()
+  const [stateOneWeekVolume, setStateOneWeekVolume] = useState ()
+  const [stateWeeklyVolumeChange, setStateWeeklyVolumeChange] = useState ()
 
+  useEffect(() => {
+    setStateLiquidityChangeUSD (liquidityChangeUSD)
+    setStateTotalLiquidityUSD (totalLiquidityUSD)
+    setStateVolumeChangeUSD (volumeChangeUSD)
+    setStateOneDayVolumeUSD (oneDayVolumeUSD)
+    setStateOneWeekVolume (oneWeekVolume)
+    setStateWeeklyVolumeChange (weeklyVolumeChange)
+  }, [totalLiquidityUSD, volumeChangeUSD, liquidityChangeUSD, oneDayVolumeUSD, oneWeekVolume, weeklyVolumeChange])
   // based on window, get starttim
   let utcStartTime = getTimeframe(timeWindow)
 
@@ -78,8 +91,8 @@ const GlobalChart = ({ display }) => {
         <ResponsiveContainer aspect={60 / 28} ref={ref}>
           <TradingViewChart
             data={dailyData}
-            base={totalLiquidityUSD}
-            baseChange={liquidityChangeUSD}
+            base={stateTotalLiquidityUSD}
+            baseChange={stateLiquidityChangeUSD}
             title="Liquidity"
             field="liquidity"
             width={width}
@@ -91,8 +104,8 @@ const GlobalChart = ({ display }) => {
         <ResponsiveContainer aspect={60 / 28}>
           <TradingViewChart
             data={chartDataFiltered}
-            base={volumeWindow === VOLUME_WINDOW.WEEKLY ? oneWeekVolume : oneDayVolumeUSD}
-            baseChange={volumeWindow === VOLUME_WINDOW.WEEKLY ? weeklyVolumeChange : volumeChangeUSD}
+            base={volumeWindow === VOLUME_WINDOW.WEEKLY ? stateOneWeekVolume : stateOneDayVolumeUSD}
+            baseChange={volumeWindow === VOLUME_WINDOW.WEEKLY ? stateWeeklyVolumeChange : stateVolumeChangeUSD}
             title={volumeWindow === VOLUME_WINDOW.WEEKLY ? 'Volume (7d)' : 'Volume'}
             field={volumeWindow === VOLUME_WINDOW.WEEKLY ? 'weeklyVolumeUSD' : 'dailyVolumeUSD'}
             width={width}

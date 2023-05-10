@@ -5,7 +5,8 @@ import utc from 'dayjs/plugin/utc'
 import fetch from 'cross-fetch'
 import { useTimeframe } from './Application'
 import weekOfYear from 'dayjs/plugin/weekOfYear'
-
+import socketIO from 'socket.io-client';
+import * as env from "../env";
 import {
   getTimeframe,
   get2DayPercentChange,
@@ -21,7 +22,8 @@ const UPDATE_ALL_PAIRS_IN_SAUCERSWAP = 'UPDAUPDATE_ALL_PAIRS_IN_SAUCERSWAPTE_TOP
 const UPDATE_ALL_TOKENS_IN_SAUCERSWAP = 'UPDATE_ALL_TOKENS_IN_SAUCERSWAP'
 const UPDATE_TOP_LPS = 'UPDATE_TOP_LPS'
 const UPDATE_HBAR_AND_SAUCE_PRICE = 'UPDATE_HBAR_AND_SAUCE_PRICE'
-
+const UPDATE_PRICES = 'UPDATE_PRICES'
+const socket = socketIO.connect(env.BASE_URL);
 // format dayjs with the libraries that we need
 dayjs.extend(utc)
 dayjs.extend(weekOfYear)
@@ -39,6 +41,14 @@ function reducer(state, { type, payload }) {
       return {
         ...state,
         globalData: data,
+      }
+    }
+
+    case UPDATE_PRICES: {
+      const { data } = payload
+      return {
+        ...state,
+        prices: data,
       }
     }
 
@@ -83,14 +93,24 @@ function reducer(state, { type, payload }) {
 }
 
 export function useGlobalData() {
-  const [state, { update, updateAllPairsInSaucerswap, updateAllTokensInSaucerswap, updateHbarAndSaucePrice }] = useGlobalDataContext()
-  const [hbarPrice] = useHbarAndSaucePrice()
+  const [state, { update, updateAllPairsInSaucerswap, updateAllTokensInSaucerswap, updateHbarAndSaucePrice, updatePrices }] = useGlobalDataContext()
+  const [tmpPrices, setTmpPrices] = useState ([])
+  const [hbarPrice, saucePrice] = useHbarAndSaucePrice ()
 
   const data = state?.globalData
 
   useEffect(() => {
-    async function fetchData() {
-      let globalData = await getGlobalData()
+    socket.on('getPricesResponse', (p) => {
+      
+      setTmpPrices (p)
+      updatePrices(p);
+    });
+  }, [updatePrices]);
+
+  useEffect(() => {
+    async function fetchData() {console.log (">>>>>>>>>>>>>>")
+
+      let globalData = await getGlobalData(tmpPrices, hbarPrice)
 
       globalData && update(globalData)
 
@@ -100,15 +120,33 @@ export function useGlobalData() {
       let allTokens = await getAllTokensOnSaucerswap()
       updateAllTokensInSaucerswap(allTokens)
 
-      let [hbarPrice, saucePrice] = await getHbarAndSaucePrice()
-      updateHbarAndSaucePrice(hbarPrice, saucePrice)
+      let [hbarP, sauceP] = await getHbarAndSaucePrice()
+      updateHbarAndSaucePrice(hbarP, sauceP)
     }
-    if (!data && hbarPrice) {
+    if (data === undefined && hbarPrice && tmpPrices && tmpPrices.length > 0) {
       fetchData()
     }
-  }, [data, update, hbarPrice, updateAllPairsInSaucerswap, updateAllTokensInSaucerswap, updateHbarAndSaucePrice])
+  }, [data, hbarPrice, update, updateAllPairsInSaucerswap, updateAllTokensInSaucerswap, updateHbarAndSaucePrice, tmpPrices])
 
   return data || {}
+}
+
+async function getPrices(oldestDateFetch) {
+  // const now_date = Date.now()
+  // var myHeaders = new Headers();
+  // myHeaders.append("Cookie", "__cf_bm=YNlckYdSka0TdMLFUjID5IkJdOChqO0nbvnwTWxEXSA-1683711491-0-AdwF1R49qpBFsd6fPsCEEDIpzBD6W4LqBfwjwCfrRd+BUYaj/k9+38xZrodAK6IIa1UTWP23gyXbYm+QJIiE2dw=");
+
+  // var requestOptions = {
+  //   method: 'GET',
+  //   headers: myHeaders,
+  //   redirect: 'follow'
+  // };
+  // let response = await fetch(`https://api.coingecko.com/api/v3/coins/hedera-hashgraph/market_chart/range?vs_currency=USD&from=${oldestDateFetch}&to=${now_date}`, requestOptions)
+  // if (response.status === 200) {
+  //   let jsonData = await response.json();
+  //   return jsonData['prices'];
+  // }
+  // return []
 }
 
 async function getHbarAndSaucePrice() {
@@ -164,6 +202,15 @@ export default function Provider({ children }) {
     })
   }, [])
 
+  const updatePrices = useCallback((data) => {
+    dispatch({
+      type: UPDATE_PRICES,
+      payload: {
+        prices: data,
+      },
+    })
+  }, [])
+
   const updateAllPairsInSaucerswap = useCallback((allPairs) => {
     dispatch({
       type: UPDATE_ALL_PAIRS_IN_SAUCERSWAP,
@@ -204,26 +251,17 @@ export default function Provider({ children }) {
 
   return (
     <GlobalDataContext.Provider
-      value={useMemo(
-        () => [
-          state,
-          {
-            update,
-            updateAllPairsInSaucerswap,
-            updateAllTokensInSaucerswap,
-            updateHbarAndSaucePrice,
-            updateChart
-          },
-        ],
-        [
-          state,
+      value={[
+        state,
+        {
           update,
+          updatePrices,
           updateAllPairsInSaucerswap,
           updateAllTokensInSaucerswap,
           updateHbarAndSaucePrice,
           updateChart
-        ]
-      )}
+        }
+      ]}
     >
       {children}
     </GlobalDataContext.Provider>
@@ -245,6 +283,12 @@ export function useHbarAndSaucePrice() {
   }, [hBarPrice, saucePrice, updateHbarAndSaucePrice])
 
   return [hBarPrice, saucePrice]
+}
+
+export function usePrices() {
+  const [state] = useGlobalDataContext()
+  let prices = state?.prices
+  return prices
 }
 
 export function useAllPairsInSaucerswap() {
@@ -269,12 +313,20 @@ export function useHbarPriceInSaucerswap() {
 }
 
 export function useGlobalChartData() {
-  const [state, { updateChart }] = useGlobalDataContext()
+  const [state, { updateChart, updatePrices }] = useGlobalDataContext()
   const [oldestDateFetch, setOldestDateFetched] = useState()
   const [activeWindow] = useTimeframe()
+  const [tmpPrices, setTmpPrices] = useState ([])
 
   const chartDataDaily = state?.chartData?.daily
   const chartDataWeekly = state?.chartData?.weekly
+  
+  useEffect(() => {
+    socket.on('getPricesResponse', (p) => {
+      setTmpPrices (p)
+      updatePrices(p);
+    });
+  }, [updatePrices]);
 
   /**
    * Keep track of oldest date fetched. Used to
@@ -298,20 +350,19 @@ export function useGlobalChartData() {
   useEffect(() => {
     async function fetchData() {
       // historical stuff for chart
-      let [newChartData, newWeeklyData] = await getChartData(oldestDateFetch)
+      let [newChartData, newWeeklyData] = await getChartData(oldestDateFetch, tmpPrices)
       updateChart(newChartData, newWeeklyData)
     }
-    if (oldestDateFetch && !(chartDataDaily && chartDataWeekly)) {
+    if (oldestDateFetch && !(chartDataDaily && chartDataWeekly) && tmpPrices && tmpPrices.length > 0) {
       fetchData()
     }
-  }, [chartDataDaily, chartDataWeekly, oldestDateFetch, updateChart])
+  }, [chartDataDaily, tmpPrices, chartDataWeekly, oldestDateFetch, updateChart])
 
   return [chartDataDaily, chartDataWeekly]
 }
 
-async function getGlobalData() {
+async function getGlobalData(prices, hbarPrice) {
   let data = {}
-  let [price, saucePrice] = await getHbarAndSaucePrice()
   try {
     let now_date = Date.now()
     data.totalVolumeUSD = 0
@@ -347,25 +398,26 @@ async function getGlobalData() {
     response = await fetch(`https://api.saucerswap.finance/stats/platformData?field=VOLUME&interval=DAY&from=${now_date / 1000 - 86400 * 4}&to=${now_date / 1000}`)
     if (response.status === 200) {
       let jsonData = await response.json();
-      oneDayData_totalVolumeUSD = (Number(jsonData[jsonData.length - 2]['valueHbar']) / 100000000 * price).toFixed(4)
-      twoDayData_totalVolumeUSD = (Number(jsonData[jsonData.length - 3]['valueHbar']) / 100000000 * price).toFixed(4)
+      oneDayData_totalVolumeUSD = (Number(jsonData[jsonData.length - 2]['valueHbar']) / 100000000 * prices[prices.length - 2][1]).toFixed(4)
+      twoDayData_totalVolumeUSD = (Number(jsonData[jsonData.length - 3]['valueHbar']) / 100000000 * prices[prices.length - 3][1]).toFixed(4)
     }
     response = await fetch(`https://api.saucerswap.finance/stats/platformData?field=VOLUME&interval=WEEK&from=${now_date / 1000 - 86400 * 30}&to=${now_date / 1000}`)
     if (response.status === 200) {
       let jsonData = await response.json();
-      oneWeekData_totalVolumeUSD = (Number(jsonData[jsonData.length - 2]['valueHbar']) / 100000000 * price).toFixed(4)
-      twoWeekData_totalVolumeUSD = (Number(jsonData[jsonData.length - 3]['valueHbar']) / 100000000 * price).toFixed(4)
+      oneWeekData_totalVolumeUSD = (Number(jsonData[jsonData.length - 2]['valueHbar']) / 100000000 * prices[prices.length - 2][1]).toFixed(4)
+      twoWeekData_totalVolumeUSD = (Number(jsonData[jsonData.length - 3]['valueHbar']) / 100000000 * prices[prices.length - 9][1]).toFixed(4)
     }
 
     response = await fetch(`https://api.saucerswap.finance/stats/platformData?field=LIQUIDITY&interval=DAY&from=${now_date / 1000 - 86400 * 3}&to=${now_date / 1000}`)
     if (response.status === 200) {
       let jsonData = await response.json();
-      totalLiquidityUSD = (Number(jsonData[jsonData.length - 1]['valueHbar']) / 100000000 * price).toFixed(4)
-      oneDay_totalLiquidityUSD = (Number(jsonData[jsonData.length - 2]['valueHbar']) / 100000000 * price).toFixed(4)
+      totalLiquidityUSD = (Number(jsonData[jsonData.length - 1]['valueHbar']) / 100000000 * hbarPrice).toFixed(4)
+      oneDay_totalLiquidityUSD = (Number(jsonData[jsonData.length - 2]['valueHbar']) / 100000000 * prices[prices.length - 2][1]).toFixed(4)
       liquidityChangeUSD = getPercentChange(
         totalLiquidityUSD,
         oneDay_totalLiquidityUSD
       )
+      console.log(liquidityChangeUSD, "<<<<<<<<<<<<<<<<<<")
     }
 
     if (data.totalVolumeUSD && oneDayData_totalVolumeUSD && twoDayData_totalVolumeUSD) {
@@ -396,22 +448,14 @@ async function getGlobalData() {
   return data;
 }
 
-const getChartData = async (oldestDateToFetch) => {
+const getChartData = async (oldestDateToFetch, prices) => {
   const [price, saucePrice] = await getHbarAndSaucePrice()
+  console.log (prices, "JJJJJJJJJJJJJJJ")
   try {
     let data = []
     let weekelyData = []
     const now_date = Date.now()
-    let prices = []
     let response = await fetch(`https://api.saucerswap.finance/stats/platformData?field=LIQUIDITY&interval=DAY&from=${oldestDateToFetch}&to=${now_date}`)
-    let response1 = await fetch(`https://api.coingecko.com/api/v3/coins/hedera-hashgraph/market_chart/range?vs_currency=USD&from=${oldestDateToFetch}&to=${now_date}`)
-    while (response.status !== 200) {
-      response1 = await fetch(`https://api.coingecko.com/api/v3/coins/hedera-hashgraph/market_chart/range?vs_currency=USD&from=${oldestDateToFetch}&to=${now_date}`)
-    }
-    if (response1.status === 200) {
-      let jsonData1 = await response1.json();
-      prices = jsonData1['prices'];
-    }
     if (response.status === 200) {
       if (prices.length > 0) {
         let jsonData = await response.json();
@@ -444,8 +488,6 @@ const getChartData = async (oldestDateToFetch) => {
         }
       }
     }
-
-    console.log (weekelyData, ">>>>>>>>>>>>>>>>>")
 
     return [data, weekelyData]
   } catch (e) {

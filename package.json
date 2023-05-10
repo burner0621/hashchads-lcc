@@ -107,6 +107,7 @@
     "remixicon-react": "^1.0.0",
     "save": "^2.9.0",
     "simplebar-react": "^3.2.1",
+    "socket.io-client": "^4.6.1",
     "styled-components": "^5.3.10",
     "swiper": "^9.0.5",
     "web-vitals": "^3.1.1",

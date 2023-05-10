@@ -50,6 +50,7 @@ const TradingViewChart = ({
     width,
     useWeekly = false,
 }) => {
+    console.log (data, "GGGGGGGGGGGGGGG")
     // reference for DOM element to create with chart
     const ref = useRef()
 
@@ -192,7 +193,6 @@ const TradingViewChart = ({
 
             // update the title when hovering on the chart
             chart.subscribeCrosshairMove(function (param) {
-                console.log("hover", param);
                 if (
                     param === undefined ||
                     param.time === undefined ||
