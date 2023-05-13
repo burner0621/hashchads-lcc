@@ -103,7 +103,6 @@ const DataText = styled(Flex)`
   & > * {
     font-size: 14px;
   }
-
   @media screen and (max-width: 600px) {
     font-size: 12px;
   }
@@ -173,13 +172,13 @@ const TopTokenList = ({ tokens, itemMax = 10, useTracked = false }) => {
                     <Row>
                         {!below680 && <div style={{ marginRight: '1rem', width: '10px' }}>{index}</div>}
                         <TokenLogo path={item.icon} />
-                        <CustomLink style={{ marginLeft: '16px', whiteSpace: 'nowrap' }} to={'/token/' + item.id}>
+                        <CustomLink style={{ marginLeft: '16px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 140 }} to={'/tokens/' + item.id}>
                             {below680 ? item.symbol : item.name}
                         </CustomLink>
                     </Row>
                 </DataText>
                 {!below680 && (
-                    <DataText area="symbol" color="text" fontWeight="500">
+                    <DataText area="symbol" color="text" fontWeight="500" style={{justifyContent: 'flex-start'}}>
                         {item.symbol}
                     </DataText>
                 )}
@@ -212,7 +211,7 @@ const TopTokenList = ({ tokens, itemMax = 10, useTracked = false }) => {
                     </ClickableText>
                 </Flex>
                 {!below680 && (
-                    <Flex alignItems="center">
+                    <Flex alignItems="center" style={{justifyContent: 'flex-start'}}>
                         <ClickableText
                             area="symbol"
                             onClick={() => {

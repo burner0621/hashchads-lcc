@@ -176,9 +176,17 @@ const TradingViewChart = ({
             toolTip.style.position = 'absolute'
 
             // format numbers
-            let percentChange = baseChange?.toFixed(2)
-            let formattedPercentChange = (percentChange > 0 ? '+' : '') + percentChange + '%'
-            let color = percentChange >= 0 ? 'green' : 'red'
+            let percentChange = 0
+            let formattedPercentChange = ''
+            let color = ''
+            try{
+                percentChange = baseChange?.toFixed(2)
+                formattedPercentChange = (percentChange > 0 ? '+' : '') + percentChange + '%'
+                color = percentChange >= 0 ? 'green' : 'red'
+            }catch(e) {
+                formattedPercentChange = '-- %'
+                color = 'red'
+            }
 
             // get the title of the chart
             const setLastBarText = () => {

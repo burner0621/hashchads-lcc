@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
+import noImage from '../../assets/images/noimage.png'
 
 const BAD_IMAGES = {}
 
@@ -40,7 +41,7 @@ export default function TokenLogo({ path, header = false, size = '24px', ...rest
     if (error) {
       return (
         <Inline>
-          <span {...rest} alt={''} style={{ fontSize: size }} role="img" aria-label="face">🤔</span>
+          <span {...rest} alt={''} style={{ fontSize: size }} role="img" aria-label="face"><img width={24} src={noImage} alt="pic"/></span>
         </Inline>
       )
     }

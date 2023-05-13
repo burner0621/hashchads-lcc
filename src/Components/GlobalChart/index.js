@@ -29,7 +29,6 @@ const GlobalChart = ({ display }) => {
   // global historical data
   const [dailyData, weeklyData] = useGlobalChartData()
   const { totalLiquidityUSD, oneDayVolumeUSD, volumeChangeUSD, liquidityChangeUSD, oneWeekVolume, weeklyVolumeChange } = useGlobalData()
-  console.log (dailyData, weeklyVolumeChange, volumeChangeUSD, ">>>>>>>>>>>>>>>>>>>>")
   const [stateLiquidityChangeUSD, setStateLiquidityChangeUSD] = useState (0)
   const [stateTotalLiquidityUSD, setStateTotalLiquidityUSD] = useState (0)
   const [stateVolumeChangeUSD, setStateVolumeChangeUSD] = useState (0)
@@ -82,8 +81,9 @@ const GlobalChart = ({ display }) => {
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [isClient, width]) // Empty array ensures that effect is only run on mount and unmount
+  
   return chartDataFiltered ? (
-    <>
+    <div>
       {below800 && (
         <DropdownSelect options={CHART_VIEW} active={chartView} setActive={setChartView} color={'#ff007a'} />
       )}
@@ -92,8 +92,8 @@ const GlobalChart = ({ display }) => {
         <ResponsiveContainer aspect={60 / 28} ref={ref}>
           <TradingViewChart
             data={dailyData}
-            base={stateTotalLiquidityUSD}
-            baseChange={stateLiquidityChangeUSD}
+            base={stateTotalLiquidityUSD ? stateTotalLiquidityUSD: '--'}
+            baseChange={stateLiquidityChangeUSD ? stateLiquidityChangeUSD: '--'}
             title="Liquidity"
             field="liquidity"
             width={width}
@@ -105,7 +105,7 @@ const GlobalChart = ({ display }) => {
         <ResponsiveContainer aspect={60 / 28}>
           <TradingViewChart
             data={chartDataFiltered}
-            base={volumeWindow === VOLUME_WINDOW.WEEKLY ? stateOneWeekVolume : stateOneDayVolumeUSD}
+            base={volumeWindow === VOLUME_WINDOW.WEEKLY ? (stateOneWeekVolume? stateOneWeekVolume:0) : (stateOneDayVolumeUSD?stateOneDayVolumeUSD:0)}
             baseChange={volumeWindow === VOLUME_WINDOW.WEEKLY ? stateWeeklyVolumeChange : stateVolumeChangeUSD}
             title={volumeWindow === VOLUME_WINDOW.WEEKLY ? 'Volume (7d)' : 'Volume'}
             field={volumeWindow === VOLUME_WINDOW.WEEKLY ? 'weeklyVolumeUSD' : 'dailyVolumeUSD'}
@@ -139,9 +139,9 @@ const GlobalChart = ({ display }) => {
           </OptionButton>
         </RowFixed>
       )}
-    </>
+    </div>
   ) : (
-    ''
+    <div></div>
   )
 }
 

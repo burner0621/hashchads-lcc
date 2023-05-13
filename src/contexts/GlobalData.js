@@ -478,10 +478,9 @@ async function getGlobalData(prices, hbarPrice) {
     data.totalLiquidityHbar = 0
     data.todayVolumeUSD = 0
     let nowData_totalVolumeUSD = 0
+    let nowWeekData_totalVolumeUSD = 0
     let oneDayData_totalVolumeUSD = 0
-    let twoDayData_totalVolumeUSD = 0
     let oneWeekData_totalVolumeUSD = 0
-    let twoWeekData_totalVolumeUSD = 0
     let totalLiquidityUSD = 0
     let oneDay_totalLiquidityUSD = 0
     let liquidityChangeUSD = 0
@@ -506,46 +505,42 @@ async function getGlobalData(prices, hbarPrice) {
     response = await fetch(`https://api.saucerswap.finance/stats/platformData?field=VOLUME&interval=DAY&from=${now_date / 1000 - 86400 * 4}&to=${now_date / 1000}`)
     if (response.status === 200) {
       let jsonData = await response.json();
-      nowData_totalVolumeUSD = (Number(jsonData[jsonData.length - 1]['valueHbar']) / 100000000 * prices[prices.length - 1][1]).toFixed(4)
-      oneDayData_totalVolumeUSD = (Number(jsonData[jsonData.length - 2]['valueHbar']) / 100000000 * prices[prices.length - 2][1]).toFixed(4)
-      twoDayData_totalVolumeUSD = (Number(jsonData[jsonData.length - 3]['valueHbar']) / 100000000 * prices[prices.length - 3][1]).toFixed(4)
+      nowData_totalVolumeUSD = (Number(jsonData[jsonData.length - 1]['valueHbar']) / 100000000 * prices[prices.length - 2][1]).toFixed(4)
+      oneDayData_totalVolumeUSD = (Number(jsonData[jsonData.length - 2]['valueHbar']) / 100000000 * prices[prices.length - 3][1]).toFixed(4)
     }
     response = await fetch(`https://api.saucerswap.finance/stats/platformData?field=VOLUME&interval=WEEK&from=${now_date / 1000 - 86400 * 30}&to=${now_date / 1000}`)
     if (response.status === 200) {
       let jsonData = await response.json();
-      oneWeekData_totalVolumeUSD = (Number(jsonData[jsonData.length - 2]['valueHbar']) / 100000000 * prices[prices.length - 2][1]).toFixed(4)
-      twoWeekData_totalVolumeUSD = (Number(jsonData[jsonData.length - 3]['valueHbar']) / 100000000 * prices[prices.length - 3][1]).toFixed(4)
+      nowWeekData_totalVolumeUSD = (Number(jsonData[jsonData.length - 1]['valueHbar']) / 100000000 * prices[prices.length - 2][1]).toFixed(4)
+      oneWeekData_totalVolumeUSD = (Number(jsonData[jsonData.length - 2]['valueHbar']) / 100000000 * prices[prices.length - 3][1]).toFixed(4)
     }
 
     response = await fetch(`https://api.saucerswap.finance/stats/platformData?field=LIQUIDITY&interval=DAY&from=${now_date / 1000 - 86400 * 3}&to=${now_date / 1000}`)
     if (response.status === 200) {
       let jsonData = await response.json();
-      totalLiquidityUSD = (Number(jsonData[jsonData.length - 1]['valueHbar']) / 100000000 * hbarPrice).toFixed(4)
-      oneDay_totalLiquidityUSD = (Number(jsonData[jsonData.length - 2]['valueHbar']) / 100000000 * prices[prices.length - 2][1]).toFixed(4)
+      totalLiquidityUSD = (Number(jsonData[jsonData.length - 1]['valueHbar']) / 100000000 * prices[prices.length - 2][1]).toFixed(4)
+      oneDay_totalLiquidityUSD = (Number(jsonData[jsonData.length - 2]['valueHbar']) / 100000000 * prices[prices.length - 3][1]).toFixed(4)
       liquidityChangeUSD = getPercentChange(
         totalLiquidityUSD,
         oneDay_totalLiquidityUSD
       )
     }
 
-    if (nowData_totalVolumeUSD && oneDayData_totalVolumeUSD && twoDayData_totalVolumeUSD) {
-      let [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
+    if (nowData_totalVolumeUSD && oneDayData_totalVolumeUSD) {
+      const volumeChangeUSD = getPercentChange(
         nowData_totalVolumeUSD,
         oneDayData_totalVolumeUSD,
-        twoDayData_totalVolumeUSD
       )
 
-      const [oneWeekVolume, weeklyVolumeChange] = get2DayPercentChange(
-        nowData_totalVolumeUSD,
+      const weeklyVolumeChange = getPercentChange(
+        nowWeekData_totalVolumeUSD,
         oneWeekData_totalVolumeUSD,
-        twoWeekData_totalVolumeUSD
       )
-      console.log (nowData_totalVolumeUSD, oneDayData_totalVolumeUSD, twoDayData_totalVolumeUSD, volumeChangeUSD, "<<<<<<<<<<<<<<<<<")
 
       data.totalLiquidityUSD = totalLiquidityUSD
       data.liquidityChangeUSD = liquidityChangeUSD
-      data.oneDayVolumeUSD = oneDayData_totalVolumeUSD
-      data.oneWeekVolume = oneWeekData_totalVolumeUSD
+      data.oneDayVolumeUSD = nowData_totalVolumeUSD
+      data.oneWeekVolume = nowWeekData_totalVolumeUSD
       data.weeklyVolumeChange = weeklyVolumeChange
       data.volumeChangeUSD = volumeChangeUSD
       data.liquidityChangeUSD = liquidityChangeUSD
@@ -567,9 +562,10 @@ const getChartData = async (oldestDateToFetch, prices) => {
     if (response.status === 200) {
       if (prices.length > 0) {
         let jsonData = await response.json();
+        jsonData.pop ()
         let diff = prices.length - jsonData.length
         for (var i = 0; i < jsonData.length; i++) {
-          data.push({ "liquidity": Number(jsonData[i]['valueHbar']) / 100000000 * prices[diff + i][1], "date": jsonData[i]['timestampSeconds'] })
+          data.push({ "liquidity": Number(jsonData[i]['valueHbar']) / 100000000 * prices[diff + i - 1][1], "date": jsonData[i]['timestampSeconds'] })
         }
       }
 
@@ -579,9 +575,10 @@ const getChartData = async (oldestDateToFetch, prices) => {
     if (response.status === 200) {
       if (prices.length > 0) {
         let jsonData = await response.json();
+        jsonData.pop ()
         let diff = prices.length - jsonData.length
         for (var i = 0; i < jsonData.length; i++) {
-          data[i]["dailyVolumeUSD"] = Number(jsonData[i]['valueHbar']) / 100000000 * prices[diff + i][1]
+          data[i]["dailyVolumeUSD"] = Number(jsonData[i]['valueHbar']) / 100000000 * prices[diff + i - 1][1]
         }
       }
     }
@@ -592,7 +589,7 @@ const getChartData = async (oldestDateToFetch, prices) => {
         let jsonData = await response.json();
         let diff = prices.length - jsonData.length
         for (var i = 0; i < jsonData.length; i++) {
-          weekelyData.push({ "weeklyVolumeUSD": Number(jsonData[i]['valueHbar']) / 100000000 * prices[diff + i][1], "date": jsonData[i]['timestampSeconds'] })
+          weekelyData.push({ "weeklyVolumeUSD": Number(jsonData[i]['valueHbar']) / 100000000 * prices[diff + i - 1][1], "date": jsonData[i]['timestampSeconds'] })
         }
       }
     }

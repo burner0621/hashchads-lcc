@@ -141,9 +141,6 @@ const TokenPage = ({ address }) => {
         }
     }, [])
 
-    let oneDayVolumeUSD = 23
-    let oneDayVolumeUT = 5323423
-
     const LENGTH = below1080 ? 10 : 16
     const formattedSymbol = symbol?.length > LENGTH ? symbol.slice(0, LENGTH) + '...' : symbol
 
