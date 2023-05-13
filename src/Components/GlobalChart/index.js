@@ -29,6 +29,7 @@ const GlobalChart = ({ display }) => {
   // global historical data
   const [dailyData, weeklyData] = useGlobalChartData()
   const { totalLiquidityUSD, oneDayVolumeUSD, volumeChangeUSD, liquidityChangeUSD, oneWeekVolume, weeklyVolumeChange } = useGlobalData()
+  console.log (dailyData, weeklyVolumeChange, volumeChangeUSD, ">>>>>>>>>>>>>>>>>>>>")
   const [stateLiquidityChangeUSD, setStateLiquidityChangeUSD] = useState (0)
   const [stateTotalLiquidityUSD, setStateTotalLiquidityUSD] = useState (0)
   const [stateVolumeChangeUSD, setStateVolumeChangeUSD] = useState (0)

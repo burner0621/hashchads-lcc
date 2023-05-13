@@ -50,7 +50,6 @@ const TradingViewChart = ({
     width,
     useWeekly = false,
 }) => {
-    console.log (data, "GGGGGGGGGGGGGGG")
     // reference for DOM element to create with chart
     const ref = useRef()
 

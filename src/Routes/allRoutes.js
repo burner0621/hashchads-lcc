@@ -240,7 +240,8 @@ import JobLanding from "../pages/Landing/Job";
 
 const authProtectedRoutes = [
   { path: "/overview", component: <Overview /> },
-  { path: "/tokens", component: <Overview /> },
+  { path: "/tokens", component: <Tokens /> },
+  { path: "/tokens/:tokenAddress", component: <Tokens /> },
 
   // {
   //   path: "/apps-ecommerce-product-details",

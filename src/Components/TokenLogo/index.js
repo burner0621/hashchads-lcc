@@ -40,9 +40,7 @@ export default function TokenLogo({ path, header = false, size = '24px', ...rest
     if (error) {
       return (
         <Inline>
-          <span {...rest} alt={''} style={{ fontSize: size }} role="img" aria-label="face">
-            🤔
-          </span>
+          <span {...rest} alt={''} style={{ fontSize: size }} role="img" aria-label="face">🤔</span>
         </Inline>
       )
     }

@@ -343,7 +343,6 @@ export const Search = ({ small = false }) => {
         setPairsShown(3)
         setTokensShown(3)
         toggleMenu(false)
-        document.getElementById("globalStats").style.display = "block"
         setValue('')
     }
 
@@ -359,7 +358,6 @@ export const Search = ({ small = false }) => {
             setPairsShown(3)
             setTokensShown(3)
             toggleMenu(false)
-            document.getElementById("globalStats").style.display = "block"
         }
     }
 

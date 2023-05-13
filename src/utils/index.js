@@ -134,3 +134,7 @@ export const getPercentChange = (valueNow, value24HoursAgo) => {
   }
   return adjustedPercentChange
 }
+
+export function localNumber(val) {
+  return Numeral(val).format('0,0')
+}
