@@ -312,7 +312,7 @@ const TokenPage = ({ address }) => {
                             <Widgets address={address} price={priceUSD} />
                         </Row>
                         <Row>
-                            <TokenChart dataColors='["--vz-success", "--vz-danger"]' />
+                            <TokenChart dataColors='["--vz-success", "--vz-danger"]' tokenId={address} />
                             <TokenInfo address={address} />
                         </Row>
                     </ContentWrapper>

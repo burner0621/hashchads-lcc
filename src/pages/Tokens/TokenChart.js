@@ -1,10 +1,11 @@
 import React from 'react';
 import { Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
 import ReactApexChart from "react-apexcharts";
-import { TVChartContainer } from '../../Components/TVChartContainer/index';
+// import { TVChartContainer } from '../../Components/TVChartContainer/index';
 import getChartColorsArray from "../../Components/Common/ChartsDynamicColor";
+import Chart from '../../Components/tradingview/index';
 
-const TokenChart = ({ dataColors }) => {
+const TokenChart = ({ dataColors, tokenId }) => {
     var MarketchartColors = getChartColorsArray(dataColors);
     // const series = [{
     //     data: [{
@@ -377,7 +378,8 @@ const TokenChart = ({ dataColors }) => {
                             />
                         </div>
                     </CardBody> */}
-                    <TVChartContainer />
+                    {/* <TVChartContainer tokenId={tokenId}/> */}
+                    <Chart symbol={"AAPL"} stock={"Stock"} interval="5" width="100%" height="100%"/>
                 </Card>
             </Col>
         </React.Fragment>

@@ -96,46 +96,6 @@ const TokenInfo = ({ address }) => {
                         <TabContent activeTab={activeTab} className="text-muted">
                             <TabPane tabId="1">
                                 <div className="p-3">
-                                    {/* <Row>
-                                        <Col xs-={6}>
-                                            <div className="mb-3">
-                                                <Label>Currency :</Label>
-                                                <select className="form-select">
-                                                    <option>BTC</option>
-                                                    <option>ETH</option>
-                                                    <option>LTC</option>
-                                                </select>
-                                            </div>
-                                        </Col>
-                                        <Col xs-={6}>
-                                            <div className="mb-3">
-                                                <Label>Payment Method :</Label>
-                                                <select className="form-select">
-                                                    <option>Wallet Balance</option>
-                                                    <option>Credit / Debit Card</option>
-                                                    <option>PayPal</option>
-                                                    <option>Payoneer</option>
-                                                </select>
-                                            </div>
-                                        </Col>
-                                    </Row> */}
-                                    {/* <div>
-                                        <div className="input-group mb-3">
-                                            <Label className="input-group-text">Amount</Label>
-                                            <Input type="text" className="form-control" placeholder="0" />
-                                        </div>
-
-                                        <div className="input-group mb-3">
-                                            <Label className="input-group-text">Price</Label>
-                                            <Input type="text" className="form-control" placeholder="2.045585" />
-                                            <Label className="input-group-text">$</Label>
-                                        </div>
-
-                                        <div className="input-group mb-0">
-                                            <Label className="input-group-text">Total</Label>
-                                            <Input type="text" className="form-control" placeholder="2700.16" />
-                                        </div>
-                                    </div> */}
                                     <div className="mt-3 pt-2">
                                         <div className="d-flex mb-2">
                                             <div className="flex-grow-1">
@@ -203,39 +163,6 @@ const TokenInfo = ({ address }) => {
                                     <h6 className="mb-0 text-danger">Keys</h6>
                                 </div>
                                 <div className="p-3">
-                                    {/* <Row>
-                                        <Col xs-={6}>
-                                            <div className="mb-3">
-                                                <Label>Currency :</Label>
-                                                <select className="form-select">
-                                                    <option>BTC</option>
-                                                    <option>ETH</option>
-                                                    <option>LTC</option>
-                                                </select>
-                                            </div>
-                                        </Col>
-                                        <Col xs-={6}>
-                                            <div className="mb-3">
-                                                <Label>Email :</Label>
-                                                <Input type="email" className="form-control" placeholder="example@email.com" />
-                                            </div>
-                                        </Col>
-                                    </Row>
-                                    <div>
-                                        <div className="input-group mb-3">
-                                            <Label className="input-group-text">Amount</Label>
-                                            <Input type="text" className="form-control" placeholder="0" />
-                                        </div>
-                                        <div className="input-group mb-3">
-                                            <Label className="input-group-text">Price</Label>
-                                            <Input type="text" className="form-control" placeholder="2.045585" />
-                                            <Label className="input-group-text">$</Label>
-                                        </div>
-                                        <div className="input-group mb-0">
-                                            <Label className="input-group-text">Total</Label>
-                                            <Input type="text" className="form-control" placeholder="2700.16" />
-                                        </div>
-                                    </div> */}
                                     <div className="mt-2">
                                         <div className="d-flex mb-2">
                                             <div className="flex-grow-1">
