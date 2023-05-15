@@ -11,7 +11,7 @@ import Row from '../Row'
 import { formattedNum, formattedPercent } from '../../utils'
 import { useMedia } from 'react-use'
 import withRouter from '../Common/withRouter';
-// import { TOKEN_BLACKLIST } from '../../constants'
+import { useTokenData, useAllTokensInSaucerswap } from '../../contexts/GlobalData'
 
 const Divider = styled(Box)`
   height: 1px;
@@ -109,7 +109,7 @@ const DataText = styled(Flex)`
 `
 
 const SORT_FIELD = {
-    // LIQ: 'totalLiquidityUSD',
+    LIQ: 'totalLiquidityUSD',
     VOL: 'oneDayVolumeUSD',
     // VOL_UT: 'oneDayVolumeUT',
     SYMBOL: 'symbol',
@@ -118,7 +118,7 @@ const SORT_FIELD = {
     CHANGE: 'priceChangeUSD',
 }
 
-const TopTokenList = ({ tokens, itemMax = 10, useTracked = false }) => {
+const TopTokenList = ({ itemMax = 10, useTracked = false }) => {
 
     const [page, setPage] = useState(1)
     const [maxPage, setMaxPage] = useState(1)
@@ -130,16 +130,17 @@ const TopTokenList = ({ tokens, itemMax = 10, useTracked = false }) => {
     const below680 = useMedia('(max-width: 680px)')
     const below600 = useMedia('(max-width: 600px)')
 
+    const tokens = useAllTokensInSaucerswap()
+    const tokenData = useTokenData()
+
     const formattedTokens = useMemo(() => {
-        return (
-            tokens &&
-            Object.keys(tokens)
-                // .filter((key) => {
-                //     return !TOKEN_BLACKLIST.includes(key)
-                // })
-                .map((key) => tokens[key])
-        )
-    }, [tokens])
+        let rlt = []
+        for (let item of tokens) {
+            if (tokenData[item['id']]) item['liquidity'] = tokenData[item['id']]['liquidity']
+            rlt.push(item)
+        }
+        return rlt
+    }, [tokens, tokenData])
     useEffect(() => {
         if (tokens && formattedTokens) {
             let extraPages = 1
@@ -178,11 +179,11 @@ const TopTokenList = ({ tokens, itemMax = 10, useTracked = false }) => {
                     </Row>
                 </DataText>
                 {!below680 && (
-                    <DataText area="symbol" color="text" fontWeight="500" style={{justifyContent: 'flex-start'}}>
+                    <DataText area="symbol" color="text" fontWeight="500" style={{ justifyContent: 'flex-start' }}>
                         {item.symbol}
                     </DataText>
                 )}
-                <DataText area="liq">{formattedNum(item.totalLiquidityUSD, true)}</DataText>
+                <DataText area="liq">{formattedNum(item.liquidity, true)}</DataText>
                 <DataText area="vol">{formattedNum(item.oneDayVolumeUSD, true)}</DataText>
                 {!below1080 && (
                     <DataText area="price" color="text" fontWeight="500">
@@ -211,7 +212,7 @@ const TopTokenList = ({ tokens, itemMax = 10, useTracked = false }) => {
                     </ClickableText>
                 </Flex>
                 {!below680 && (
-                    <Flex alignItems="center" style={{justifyContent: 'flex-start'}}>
+                    <Flex alignItems="center" style={{ justifyContent: 'flex-start' }}>
                         <ClickableText
                             area="symbol"
                             onClick={() => {

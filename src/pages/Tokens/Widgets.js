@@ -30,7 +30,7 @@ const Widgets = ({ address, price }) => {
       }
     }
     fetchData()
-  }, [])
+  }, [price, address])
 
   useEffect (()=> {
     let liquidity = 0

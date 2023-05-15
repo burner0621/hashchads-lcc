@@ -8,7 +8,6 @@ import Panel from '../../Components/Panel'
 import TopTokenList from '../../Components/TokenList'
 import { RowBetween } from '../../Components/Row'
 import Search from '../../Components/Search'
-import { useAllTokensInSaucerswap } from '../../contexts/GlobalData'
 import TokenPage from './TokenPage'
 
 export const PageWrapper = styled.div`
@@ -43,7 +42,6 @@ export const FullWrapper = styled.div`
 
 const Tokens = () => {
     const { tokenAddress } = useParams()
-    const allTokens = useAllTokensInSaucerswap()
     useEffect(() => {
         window.scrollTo(0, 0)
     }, [])
@@ -60,7 +58,7 @@ const Tokens = () => {
                                     {!below600 && <Search small={true} />}
                                 </RowBetween>
                                 <Panel style={{ marginTop: '6px', padding: '1.125rem 0 ' }}>
-                                    <TopTokenList tokens={allTokens} />
+                                    <TopTokenList />
                                 </Panel>
                             </FullWrapper>
                         </PageWrapper>
