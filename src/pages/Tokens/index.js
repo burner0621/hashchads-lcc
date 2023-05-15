@@ -257,7 +257,7 @@ const Tokens = () => {
                                                                 </span>
                                                             }
                                                             {
-                                                                !loadingLoser && (<><i className="mdi mdi-elevation-rise"></i>Losers</>)
+                                                                !loadingLoser && (<><i className="mdi mdi-elevation-decline"></i>Losers</>)
                                                             }
                                                         </Button>
                                                     ) : (
@@ -275,7 +275,7 @@ const Tokens = () => {
                                                                 </span>
                                                             }
                                                             {
-                                                                !loadingLoser && (<><i className="mdi mdi-elevation-rise"></i>Losers</>)
+                                                                !loadingLoser && (<><i className="mdi mdi-elevation-decline"></i>Losers</>)
                                                             }
                                                         </Button>
                                                     )}
