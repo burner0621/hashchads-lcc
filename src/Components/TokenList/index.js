@@ -184,14 +184,14 @@ const TopTokenList = ({ itemMax = 10, useTracked = false }) => {
                         {item.symbol}
                     </DataText>
                 )}
-                <DataText area="liq">{formattedNum(item.liquidity, true)}</DataText>
-                <DataText area="vol">{formattedNum(item.oneDayVolumeUSD, true)}</DataText>
+                <DataText area="liq" color="text" fontWeight="500" style={{justifyContent: 'flex-start'}}>{formattedNum(item.totalLiquidityUSD, true)}</DataText>
+                <DataText area="vol" color="text" fontWeight="500" style={{justifyContent: 'flex-start'}}>{formattedNum(item.oneDayVolumeUSD, true)}</DataText>
                 {!below1080 && (
-                    <DataText area="price" color="text" fontWeight="500">
+                    <DataText area="price" color="text" fontWeight="500" style={{justifyContent: 'flex-start'}}>
                         {formattedNum(item.priceUsd, true)}
                     </DataText>
                 )}
-                {!below1080 && <DataText area="change">{formattedPercent(item.priceChangeUSD)}</DataText>}
+                {!below1080 && <DataText area="change" color="text" fontWeight="500" style={{justifyContent: 'flex-start'}}>{formattedPercent(item.priceChangeUSD)}</DataText>}
             </DashGrid>
         )
     }
@@ -226,7 +226,7 @@ const TopTokenList = ({ itemMax = 10, useTracked = false }) => {
                     </Flex>
                 )}
 
-                <Flex alignItems="center">
+                <Flex alignItems="center" style={{justifyContent: 'flex-start'}}>
                     <ClickableText
                         area="liq"
                         onClick={(e) => {
@@ -237,7 +237,7 @@ const TopTokenList = ({ itemMax = 10, useTracked = false }) => {
                         Liquidity {sortedColumn === SORT_FIELD.LIQ ? (!sortDirection ? '↑' : '↓') : ''}
                     </ClickableText>
                 </Flex>
-                <Flex alignItems="center">
+                <Flex alignItems="center" style={{justifyContent: 'flex-start'}}>
                     <ClickableText
                         area="vol"
                         onClick={() => {
@@ -252,7 +252,7 @@ const TopTokenList = ({ itemMax = 10, useTracked = false }) => {
                     </ClickableText>
                 </Flex>
                 {!below1080 && (
-                    <Flex alignItems="center">
+                    <Flex alignItems="center" style={{justifyContent: 'flex-start'}}>
                         <ClickableText
                             area="price"
                             onClick={(e) => {
@@ -265,7 +265,7 @@ const TopTokenList = ({ itemMax = 10, useTracked = false }) => {
                     </Flex>
                 )}
                 {!below1080 && (
-                    <Flex alignItems="center">
+                    <Flex alignItems="center" style={{justifyContent: 'flex-start'}}>
                         <ClickableText
                             area="change"
                             onClick={(e) => {
@@ -279,14 +279,14 @@ const TopTokenList = ({ itemMax = 10, useTracked = false }) => {
                     </Flex>
                 )}
             </DashGrid>
-            <Divider />
+            {/* <Divider /> */}
             <List p={0}>
                 {filteredList &&
                     filteredList.map((item, index) => {
                         return (
                             <div key={index}>
                                 <ListItem key={index} index={(page - 1) * itemMax + index + 1} item={item} />
-                                <Divider />
+                                {/* <Divider /> */}
                             </div>
                         )
                     })}

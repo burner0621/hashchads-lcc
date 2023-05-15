@@ -25,7 +25,7 @@ const Header = ({ onChangeLayoutMode, layoutModeType, headerClass }) => {
     const toogleSearch = () => {
         setSearch(!search);
     };
-    
+
     const dispatch = useDispatch();
     const { sidebarVisibilitytype } = useSelector(state => ({
         sidebarVisibilitytype: state.Layout.sidebarVisibilitytype
@@ -64,8 +64,7 @@ const Header = ({ onChangeLayoutMode, layoutModeType, headerClass }) => {
             <header id="page-topbar" className={headerClass}>
                 <div className="layout-width">
                     <div className="navbar-header">
-                        <div className="d-flex">
-
+                        <div className="d-flex" style={{ alignItems: 'center' }}>
                             <div className="navbar-brand-box horizontal-logo">
                                 <Link to="/" className="logo logo-dark">
                                     <span className="logo-sm">
