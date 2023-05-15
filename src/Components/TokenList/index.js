@@ -118,7 +118,7 @@ const SORT_FIELD = {
     CHANGE: 'priceChangeUSD',
 }
 
-const TopTokenList = ({ itemMax = 10, useTracked = false }) => {
+const TopTokenList = ({ tokens = [], itemMax = 10, useTracked = false }) => {
 
     const [page, setPage] = useState(1)
     const [maxPage, setMaxPage] = useState(1)
@@ -130,7 +130,6 @@ const TopTokenList = ({ itemMax = 10, useTracked = false }) => {
     const below680 = useMedia('(max-width: 680px)')
     const below600 = useMedia('(max-width: 600px)')
 
-    const tokens = useAllTokensInSaucerswap()
     const tokenData = useTokenData()
 
     const formattedTokens = useMemo(() => {
@@ -150,7 +149,7 @@ const TopTokenList = ({ itemMax = 10, useTracked = false }) => {
             setMaxPage(Math.floor(formattedTokens.length / itemMax) + extraPages)
         }
     }, [tokens, formattedTokens, itemMax])
-    
+
     const filteredList = useMemo(() => {
         return (
             formattedTokens &&
@@ -184,7 +183,7 @@ const TopTokenList = ({ itemMax = 10, useTracked = false }) => {
                         {item.symbol}
                     </DataText>
                 )}
-                <DataText area="liq" color="text" fontWeight="500" style={{justifyContent: 'flex-start'}}>{formattedNum(item.totalLiquidityUSD, true)}</DataText>
+                <DataText area="liq" color="text" fontWeight="500" style={{justifyContent: 'flex-start'}}>{formattedNum(item.liquidity, true)}</DataText>
                 <DataText area="vol" color="text" fontWeight="500" style={{justifyContent: 'flex-start'}}>{formattedNum(item.oneDayVolumeUSD, true)}</DataText>
                 {!below1080 && (
                     <DataText area="price" color="text" fontWeight="500" style={{justifyContent: 'flex-start'}}>

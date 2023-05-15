@@ -145,6 +145,23 @@ const Tokens = () => {
         return options;
     }
 
+    const handleTokenType = (type) => {
+        if(type === TOKEN_TYPE.gainer) {
+            if (tokenType === TOKEN_TYPE.loser) {
+                setTokenType(TOKEN_TYPE.all)
+            } else if (tokenType === TOKEN_TYPE.all) {
+                setTokenType(TOKEN_TYPE.loser)
+            }
+        } else {
+            if (tokenType === TOKEN_TYPE.gainer) {
+                setTokenType(TOKEN_TYPE.all)
+            } else if (tokenType === TOKEN_TYPE.all) {
+                setTokenType(TOKEN_TYPE.gainer)
+            }
+        }
+        
+    }
+
     useEffect(() => {
         window.scrollTo(0, 0)
     }, [])
@@ -161,7 +178,7 @@ const Tokens = () => {
         }
         setGainers(gainers);
         setLosers(losers)
-    }, [allTokens]);
+    }, [allTokens, tokenType]);
 
     const below600 = useMedia('(max-width: 600px)')
     const below900 = useMedia('(max-width: 900px)')
@@ -181,53 +198,31 @@ const Tokens = () => {
                                                 <ButtonGroup style={{ marginRight: 5 }}>
                                                     {tokenType == TOKEN_TYPE.gainer || tokenType == TOKEN_TYPE.all ? (
                                                         <Button
+                                                            className="btn-force"
                                                             color="primary"
-                                                            onClick={() => {
-                                                                if (tokenType != TOKEN_TYPE.gainer) {
-                                                                    setTokenType(tokenType == TOKEN_TYPE.loser ?
-                                                                        TOKEN_TYPE.all : (tokenType == TOKEN_TYPE.all ?
-                                                                            TOKEN_TYPE.loser : TOKEN_TYPE.gainer));
-                                                                }
-                                                            }}>
+                                                            onClick={() => {handleTokenType(TOKEN_TYPE.gainer)}}>
                                                             <i className="mdi mdi-elevation-rise"></i>Gainers
                                                         </Button>
                                                     ) : (
                                                         <Button
                                                             color="dark"
                                                             outline
-                                                            onClick={() => {
-                                                                if (tokenType != TOKEN_TYPE.gainer) {
-                                                                    setTokenType(tokenType == TOKEN_TYPE.loser ?
-                                                                        TOKEN_TYPE.all : (tokenType == TOKEN_TYPE.all ?
-                                                                            TOKEN_TYPE.loser : TOKEN_TYPE.gainer));
-                                                                }
-                                                            }}>
+                                                            onClick={() => {handleTokenType(TOKEN_TYPE.gainer)}}>
                                                             <i className="mdi mdi-elevation-rise"></i>Gainers
                                                         </Button>
                                                     )}
                                                     {tokenType == TOKEN_TYPE.loser || tokenType == TOKEN_TYPE.all ? (
                                                         <Button
                                                             color="primary"
-                                                            onClick={() => {
-                                                                if (tokenType != TOKEN_TYPE.loser) {
-                                                                    setTokenType(tokenType == TOKEN_TYPE.gainer ?
-                                                                        TOKEN_TYPE.all : (tokenType == TOKEN_TYPE.all ?
-                                                                            TOKEN_TYPE.gainer : TOKEN_TYPE.loser));
-                                                                }
-                                                            }}>
+                                                            className="btn-force"
+                                                            onClick={() => {handleTokenType(TOKEN_TYPE.loser)}}>
                                                             <i className="mdi mdi-elevation-decline"></i>Losers
                                                         </Button>
                                                     ) : (
                                                         <Button
                                                             color="dark"
                                                             outline
-                                                            onClick={() => {
-                                                                if (tokenType != TOKEN_TYPE.loser) {
-                                                                    setTokenType(tokenType == TOKEN_TYPE.gainer ?
-                                                                        TOKEN_TYPE.all : (tokenType == TOKEN_TYPE.all ?
-                                                                            TOKEN_TYPE.gainer : TOKEN_TYPE.loser));
-                                                                }
-                                                            }}>
+                                                            onClick={() => {handleTokenType(TOKEN_TYPE.loser)}}>
                                                             <i className="mdi mdi-elevation-decline"></i>Losers
                                                         </Button>
                                                     )}

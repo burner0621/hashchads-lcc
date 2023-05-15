@@ -1,3 +1,24 @@
 .btn-download:hover {
     border: 1px solid white !important    
 }
+
+.btn-force {
+    background-color: #4b38b3 !important;
+}
+
+.btn-primary:focus {
+    background-color: #4b38b3 !important;
+    border-color: #4b38b3 !important;
+}
+
+.btn-primary:hover {
+    border-color: #4b38b3 !important;
+}
+
+.btn-primary:checked {
+    border-color: #4b38b3 !important;
+}
+
+.btn-primary:active {
+    border-color: #4b38b3 !important;
+}
