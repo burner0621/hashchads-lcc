@@ -40,65 +40,6 @@ export default function GlobalStats() {
     const formattedTvlHBAR = totalVolumeHBAR ? formattedNum(totalVolumeHBAR, true) : undefined
     const formattedTodayVolume = todayVolumeUSD ? formattedNum(todayVolumeUSD, true) : undefined
 
-    // const getHbarAndSaucerPrice = async () => {
-    //     let response = await fetch("https://api.saucerswap.finance/tokens")
-    //     if (response.status === 200) {
-    //         const jsonData = await response.json();
-    //         try {
-    //             setHbarPrice(Number(jsonData[0]['priceUsd']));
-    //             setSaucePrice(Number(jsonData[2]['priceUsd']));
-    //         } catch (error) {
-    //             setHbarPrice(0)
-    //             setSaucePrice(0)
-    //         }
-    //     }
-    // }
-
-    // const getTVL = async () => {
-    //     let response = await fetch("https://api.saucerswap.finance/stats")
-    //     if (response.status === 200) {
-    //         const jsonData = await response.json();
-    //         try {
-    //             setTvlHbar((Number(jsonData['tvl'])/100000000).toFixed(2));
-    //             setTvlUsd(Number(jsonData['tvlUsd']).toFixed(2));
-    //         } catch (error) {
-    //             setTvlHbar(0)
-    //             setTvlUsd(0)
-    //         }
-    //     }
-    // }
-
-    // const getDailyVolume = async () => {
-    //     let response = await fetch("https://api.saucerswap.finance/stats/volume/daily")
-    //     if (response.status === 200) {
-    //         const jsonData = await response.json();
-    //         try {
-    //             setDailyVolHbar(Number(jsonData[0]['dailyVolume'])/100000000);
-    //         } catch (error) {
-    //             setDailyVolHbar(0)
-    //         }
-    //     }
-    // }
-
-    // const getDailyFees = async () => {
-    //     let response = await fetch("https://api.saucerswap.finance/pools/daily-volumes")
-    //     if (response.status === 200) {
-    //         const jsonData = await response.json();
-    //         let dailyVol = 0;
-    //         try {
-    //             let i = 0
-    //             for (let v in jsonData) {
-    //                 if (i % 2 === 0) dailyVol += Number (jsonData[v])
-    //                 else dailyVol -= Number (jsonData[v])
-    //                 i ++
-    //                 if (i === 232) break
-    //             }
-    //         } catch (error) {
-    //             setDailyVolHbar(0)
-    //         }
-    //     }
-    // }
-
     return (
         <Header id="globalStats">
             <RowBetween style={{ padding: below816 ? '0.5rem' : '.5rem' }}>

@@ -135,6 +135,7 @@ export function useGlobalData() {
 
       setTmpPrices(p)
       updatePrices(p);
+      if (p && p.length > 0) socket.disconnect ()
     });
   }, [updatePrices]);
 
@@ -166,14 +167,18 @@ export function useGlobalData() {
 }
 
 async function getHbarAndSaucePrice() {
-  let response = await fetch("https://api.saucerswap.finance/tokens")
-  if (response.status === 200) {
-    const jsonData = await response.json();
-    try {
-      return [Number(jsonData[0]['priceUsd']), Number(jsonData[2]['priceUsd'])];
-    } catch (error) {
-      return [0, 0]
+  try {
+    let response = await fetch("https://api.saucerswap.finance/tokens")
+    if (response.status === 200) {
+      const jsonData = await response.json();
+      try {
+        return [Number(jsonData[0]['priceUsd']), Number(jsonData[2]['priceUsd'])];
+      } catch (error) {
+        return [0, 0]
+      }
     }
+  } catch (e) {
+    return [0, 0]
   }
 }
 
@@ -205,10 +210,9 @@ async function getAllPairsOnSaucerswap() {
       const jsonData = await response.json();
       pairs = jsonData;
     }
-
     return pairs
   } catch (e) {
-    console.log(e)
+    return []
   }
 }
 
@@ -230,7 +234,7 @@ async function getAllTokensOnSaucerswap(tokenDailyVolume, priceChanges) {
 
     return rlt
   } catch (e) {
-    console.log(e)
+    return []
   }
 }
 
@@ -413,10 +417,14 @@ export function usePriceChanges() {
   let priceChange = state?.priceChange
   useEffect(() => {
     async function fetchData() {
-      let response = await fetch("https://api.saucerswap.finance/tokens/price-change")
-      if (response.status === 200) {
-        const priceChangeData = await response.json();
-        updatePriceChange(priceChangeData)
+      try {
+        let response = await fetch("https://api.saucerswap.finance/tokens/price-change")
+        if (response.status === 200) {
+          const priceChangeData = await response.json();
+          updatePriceChange(priceChangeData)
+        }
+      } catch (e) {
+        console.log(e)
       }
     }
     if (!priceChange || priceChange?.length === {}) {
@@ -431,11 +439,15 @@ export function useTokenDailyVolume() {
   let tokenDailyVolume = state?.tokenDailyVolume
   useEffect(() => {
     async function fetchData() {
-      let response = await fetch("https://api.saucerswap.finance/tokens/daily-volumes")
+      try {
+        let response = await fetch("https://api.saucerswap.finance/tokens/daily-volumes")
 
-      if (response.status === 200) {
-        const dailyVolData = await response.json();
-        updateTokenDailyVolume(dailyVolData)
+        if (response.status === 200) {
+          const dailyVolData = await response.json();
+          updateTokenDailyVolume(dailyVolData)
+        }
+      } catch (e) {
+        console.log(e)
       }
     }
     if (tokenDailyVolume === undefined || tokenDailyVolume === {}) {
@@ -526,46 +538,66 @@ async function getGlobalData(prices, hbarPrice) {
     let totalLiquidityUSD = 0
     let oneDay_totalLiquidityUSD = 0
     let liquidityChangeUSD = 0
-
-    let response = await fetch("https://api.saucerswap.finance/stats")
-    if (response.status === 200) {
-      const jsonData = await response.json();
-      try {
-        data.totalVolumeHBAR = (Number(jsonData['tvl']) / 100000000).toFixed(4);
-        data.totalVolumeUSD = Number(jsonData['tvlUsd']).toFixed(4);
-      } catch (error) {
-        console.log(error)
+    try {
+      let response = await fetch("https://api.saucerswap.finance/stats")
+      if (response.status === 200) {
+        const jsonData = await response.json();
+        try {
+          data.totalVolumeHBAR = (Number(jsonData['tvl']) / 100000000).toFixed(4);
+          data.totalVolumeUSD = Number(jsonData['tvlUsd']).toFixed(4);
+        } catch (error) {
+          console.log(error)
+        }
       }
+    } catch (e) {
+      console.log(e)
     }
 
-    response = await fetch("https://api.saucerswap.finance/stats/volume/daily")
-    if (response.status === 200) {
-      let jsonData = await response.json();
-      data.todayVolumeUSD = Number(jsonData[0]['dailyVolume'] / 100000000).toFixed(4)
+    try {
+      let response = await fetch("https://api.saucerswap.finance/stats/volume/daily")
+      if (response.status === 200) {
+        let jsonData = await response.json();
+        data.todayVolumeUSD = Number(jsonData[0]['dailyVolume'] / 100000000).toFixed(4)
+      }
+    } catch (e) {
+      console.log(e)
     }
 
-    response = await fetch(`https://api.saucerswap.finance/stats/platformData?field=VOLUME&interval=DAY&from=${now_date / 1000 - 86400 * 4}&to=${now_date / 1000}`)
-    if (response.status === 200) {
-      let jsonData = await response.json();
-      nowData_totalVolumeUSD = (Number(jsonData[jsonData.length - 1]['valueHbar']) / 100000000 * prices[prices.length - 2][1]).toFixed(4)
-      oneDayData_totalVolumeUSD = (Number(jsonData[jsonData.length - 2]['valueHbar']) / 100000000 * prices[prices.length - 3][1]).toFixed(4)
-    }
-    response = await fetch(`https://api.saucerswap.finance/stats/platformData?field=VOLUME&interval=WEEK&from=${now_date / 1000 - 86400 * 30}&to=${now_date / 1000}`)
-    if (response.status === 200) {
-      let jsonData = await response.json();
-      nowWeekData_totalVolumeUSD = (Number(jsonData[jsonData.length - 1]['valueHbar']) / 100000000 * prices[prices.length - 2][1]).toFixed(4)
-      oneWeekData_totalVolumeUSD = (Number(jsonData[jsonData.length - 2]['valueHbar']) / 100000000 * prices[prices.length - 3][1]).toFixed(4)
+    try {
+      let response = await fetch(`https://api.saucerswap.finance/stats/platformData?field=VOLUME&interval=DAY&from=${now_date / 1000 - 86400 * 4}&to=${now_date / 1000}`)
+      if (response.status === 200) {
+        let jsonData = await response.json();
+        nowData_totalVolumeUSD = (Number(jsonData[jsonData.length - 1]['valueHbar']) / 100000000 * prices[prices.length - 2][1]).toFixed(4)
+        oneDayData_totalVolumeUSD = (Number(jsonData[jsonData.length - 2]['valueHbar']) / 100000000 * prices[prices.length - 3][1]).toFixed(4)
+      }
+    } catch (e) {
+      console.log(e)
     }
 
-    response = await fetch(`https://api.saucerswap.finance/stats/platformData?field=LIQUIDITY&interval=DAY&from=${now_date / 1000 - 86400 * 3}&to=${now_date / 1000}`)
-    if (response.status === 200) {
-      let jsonData = await response.json();
-      totalLiquidityUSD = (Number(jsonData[jsonData.length - 1]['valueHbar']) / 100000000 * prices[prices.length - 2][1]).toFixed(4)
-      oneDay_totalLiquidityUSD = (Number(jsonData[jsonData.length - 2]['valueHbar']) / 100000000 * prices[prices.length - 3][1]).toFixed(4)
-      liquidityChangeUSD = getPercentChange(
-        totalLiquidityUSD,
-        oneDay_totalLiquidityUSD
-      )
+    try {
+      let response = await fetch(`https://api.saucerswap.finance/stats/platformData?field=VOLUME&interval=WEEK&from=${now_date / 1000 - 86400 * 30}&to=${now_date / 1000}`)
+      if (response.status === 200) {
+        let jsonData = await response.json();
+        nowWeekData_totalVolumeUSD = (Number(jsonData[jsonData.length - 1]['valueHbar']) / 100000000 * prices[prices.length - 2][1]).toFixed(4)
+        oneWeekData_totalVolumeUSD = (Number(jsonData[jsonData.length - 2]['valueHbar']) / 100000000 * prices[prices.length - 3][1]).toFixed(4)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+
+    try {
+      let response = await fetch(`https://api.saucerswap.finance/stats/platformData?field=LIQUIDITY&interval=DAY&from=${now_date / 1000 - 86400 * 3}&to=${now_date / 1000}`)
+      if (response.status === 200) {
+        let jsonData = await response.json();
+        totalLiquidityUSD = (Number(jsonData[jsonData.length - 1]['valueHbar']) / 100000000 * prices[prices.length - 2][1]).toFixed(4)
+        oneDay_totalLiquidityUSD = (Number(jsonData[jsonData.length - 2]['valueHbar']) / 100000000 * prices[prices.length - 3][1]).toFixed(4)
+        liquidityChangeUSD = getPercentChange(
+          totalLiquidityUSD,
+          oneDay_totalLiquidityUSD
+        )
+      }
+    } catch (e) {
+      console.log(e)
     }
 
     if (nowData_totalVolumeUSD && oneDayData_totalVolumeUSD) {
