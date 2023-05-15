@@ -118,7 +118,7 @@ const SORT_FIELD = {
     CHANGE: 'priceChangeUSD',
 }
 
-const TopTokenList = ({ tokens = [], itemMax = 10, useTracked = false }) => {
+const TopTokenList = ({tokens = [], itemMax = 10, useTracked = false }) => {
 
     const [page, setPage] = useState(1)
     const [maxPage, setMaxPage] = useState(1)
@@ -130,30 +130,20 @@ const TopTokenList = ({ tokens = [], itemMax = 10, useTracked = false }) => {
     const below680 = useMedia('(max-width: 680px)')
     const below600 = useMedia('(max-width: 600px)')
 
-    const tokenData = useTokenData()
-
-    const formattedTokens = useMemo(() => {
-        let rlt = []
-        for (let item of tokens) {
-            if (tokenData[item['id']]) item['liquidity'] = tokenData[item['id']]['liquidity']
-            if (item['liquidity'] >= 500) rlt.push(item)
-        }
-        return rlt
-    }, [tokens, tokenData])
     useEffect(() => {
-        if (tokens && formattedTokens) {
+        if (tokens) {
             let extraPages = 1
-            if (formattedTokens.length % itemMax === 0) {
+            if (tokens.length % itemMax === 0) {
                 extraPages = 0
             }
-            setMaxPage(Math.floor(formattedTokens.length / itemMax) + extraPages)
+            setMaxPage(Math.floor(tokens.length / itemMax) + extraPages)
         }
-    }, [tokens, formattedTokens, itemMax])
+    }, [tokens, itemMax])
 
     const filteredList = useMemo(() => {
         return (
-            formattedTokens &&
-            formattedTokens
+            tokens &&
+            tokens
                 .sort((a, b) => {
                     if (sortedColumn === SORT_FIELD.SYMBOL || sortedColumn === SORT_FIELD.NAME) {
                         return a[sortedColumn] > b[sortedColumn] ? (sortDirection ? -1 : 1) * 1 : (sortDirection ? -1 : 1) * -1
@@ -164,7 +154,7 @@ const TopTokenList = ({ tokens = [], itemMax = 10, useTracked = false }) => {
                 })
                 .slice(itemMax * (page - 1), page * itemMax)
         )
-    }, [formattedTokens, itemMax, page, sortDirection, sortedColumn])
+    }, [tokens, itemMax, page, sortDirection, sortedColumn])
 
     const ListItem = ({ item, index }) => {
         return (

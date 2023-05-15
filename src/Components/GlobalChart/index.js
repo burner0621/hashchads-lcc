@@ -41,7 +41,7 @@ const GlobalChart = ({ display }) => {
   useEffect(() => {
     setStateLiquidityChangeUSD(liquidityChangeUSD)
     setStateTotalLiquidityUSD(totalLiquidityUSD)
-    setStateVolumeChangeUSD(volumeChangeUSD)
+    setStateVolumeChangeUSD(volumeChangeUSD ? volumeChangeUSD: '--')
     setStateOneDayVolumeUSD(oneDayVolumeUSD)
     setStateOneWeekVolume(oneWeekVolume)
     setStateWeeklyVolumeChange(weeklyVolumeChange)

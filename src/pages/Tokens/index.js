@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Button, Container, FormGroup, Badge, Spinner, ButtonGroup } from "reactstrap";
@@ -12,7 +12,7 @@ import TokenPage from './TokenPage'
 import { TOKEN_TYPE, TOKEN_TYPE_NAME } from "../../constants";
 import Select from "react-select";
 import { TokenType } from "@hashgraph/sdk";
-import { useAllTokensInSaucerswap } from "../../contexts/GlobalData";
+import { useAllTokensInSaucerswap, useTokenData } from "../../contexts/GlobalData";
 
 export const PageWrapper = styled.div`
   display: flex;
@@ -52,6 +52,17 @@ const Tokens = () => {
     const [loadingLoser, setLoadingLoser] = useState(false)
     const [loadingExport, setLoadingExport] = useState(false)
 
+    const tokenData = useTokenData()
+
+    const formattedTokens = useMemo(() => {
+        let rlt = []
+        for (let item of allTokens) {
+            if (tokenData[item['id']]) item['liquidity'] = tokenData[item['id']]['liquidity']
+            if (item['liquidity'] >= 500) rlt.push(item)
+        }
+        return rlt
+    }, [allTokens, tokenData])
+
     const [gainerTokens, setGainers] = useState([]);
     const [loserTokens, setLosers] = useState([]);
 
@@ -80,7 +91,7 @@ const Tokens = () => {
         let headers = ['No, Name, Symbol, Liquidity, Volume, Price, PriceChange']
         let tokens = [];
         let no = 1;
-        for (let i = 0; i < allTokens.length; i++) {
+        for (let i = 0; i < formattedTokens.length; i++) {
             /**
              * tokenData format
              * decimals: 8
@@ -100,7 +111,7 @@ const Tokens = () => {
              * twitterHandle: "hedera"
              * website: "https://hedera.com/"
              */
-            let tokenData = allTokens[i];
+            let tokenData = formattedTokens[i];
 
             // if(tokenType == TOKEN_TYPE.gainer) {
             // no ++
@@ -178,16 +189,16 @@ const Tokens = () => {
     useEffect(() => {
         let gainers = [];
         let losers = [];
-        for (let i = 0; i < allTokens.length; i++) {
-            if (allTokens[i].priceChangeUSD >= 0) {
-                gainers.push(allTokens[i]);
+        for (let i = 0; i < formattedTokens.length; i++) {
+            if (formattedTokens[i].priceChangeUSD >= 0) {
+                gainers.push(formattedTokens[i]);
             } else {
-                losers.push(allTokens[i]);
+                losers.push(formattedTokens[i]);
             }
         }
         setGainers(gainers);
         setLosers(losers);
-    }, [allTokens]);
+    }, [formattedTokens]);
 
     const below600 = useMedia('(max-width: 600px)')
     const below900 = useMedia('(max-width: 900px)')
@@ -337,7 +348,7 @@ const Tokens = () => {
                                 {/* TABLE ALL TOKENS */}
                                 {(tokenType === TOKEN_TYPE.all) &&
                                     <Panel className="panel-shadow hsla-bg" style={{ marginTop: '6px', padding: '1.125rem 0 ', border: 'none' }}>
-                                        <TopTokenList tokens={allTokens} />
+                                        <TopTokenList tokens={formattedTokens} />
                                     </Panel>
                                 }
                                 {/* TEXT GAINERS */}
