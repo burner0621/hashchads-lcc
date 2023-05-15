@@ -379,7 +379,7 @@ const TokenChart = ({ dataColors, tokenId }) => {
                         </div>
                     </CardBody> */}
                     {/* <TVChartContainer tokenId={tokenId}/> */}
-                    <Chart symbol={"AAPL"} stock={"Stock"} interval="5" width="100%" height="100%"/>
+                    <Chart symbol={"AAPL"} stock={"Stock"} interval="5" width="100%" tokenId={tokenId} height="100%"/>
                 </Card>
             </Col>
         </React.Fragment>

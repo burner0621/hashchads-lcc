@@ -12,6 +12,7 @@ const Widgets = ({ address, price }) => {
   const dailyVolume = tokenDailyVolume !== undefined ? (tokenDailyVolume[address] !== undefined ? tokenDailyVolume[address] : 0) : 0
   const [totalSupply, setTotalSupply] = useState(0)
   const [totalLiquidity, setTotalLiquidity] = useState (0)
+  const [circulatingSupply, setCirculatingSupply] = useState(0)
 
   useEffect(() => {
     async function fetchData() {
@@ -19,6 +20,13 @@ const Widgets = ({ address, price }) => {
       if (response.status === 200) {
         let jsonData = await response.json()
         setTotalSupply(Number(jsonData?.total_supply) / Math.pow(10, Number(jsonData?.decimals)) * price)
+        let response1 = await fetch(env.MIRROR_NODE_URL + `/api/v1/tokens/${address}/balances?account.id=${jsonData?.treasury_account_id}`);
+        if (response1.status === 200) {
+          let jsonData1 = await response1.json()
+          let balances = jsonData1?.balances
+          let p = (Number(jsonData?.total_supply) - Number(balances[0]['balance'])) / Math.pow(10, Number(jsonData?.decimals)) * price
+          setCirculatingSupply (p)
+        }
       }
     }
     fetchData()
@@ -65,7 +73,7 @@ const Widgets = ({ address, price }) => {
     {
       id: 4,
       title: "Circulating Supply",
-      counter: "87",
+      counter: `${circulatingSupply}`,
       changed: "35",
       icon: "ri-arrow-right-up-fill",
       iconClass: "success",
