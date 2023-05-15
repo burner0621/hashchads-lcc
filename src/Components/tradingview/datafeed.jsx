@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-
+import * as env from '../../env'
 var latestBar;
 const sendResolutions = {
   1: "1min",
@@ -117,12 +117,15 @@ const datafeed = (tokenId) => {
       const resName = sendResolutions[resolution];
       try {
         // let url = `https://api.twelvedata.com/time_series?symbol=${symbolInfo.name}&outputsize=1000&interval=${resName}&apikey=${API_KEY}`;
-        let url = `http://localhost:5005/api/feed/getfeeddata?tokenId=${tokenId}&from=${from}&to=${to}`;
+        let url = `${env.BASE_URL}/api/feed/getfeeddata?tokenId=${tokenId}&from=${from}&to=${to}`;
         console.log(url);
 
         const response = await fetch(url);
+        if (response.status !== 200) {
+          onHistoryCallback([], { noData: false });
+          return;
+        }
         const data = await response.json();
-        console.log(data, ">>>>>>>>>>>>>>>");
 
         if (!data.length) {
           onHistoryCallback([], { noData: true });
@@ -147,7 +150,6 @@ const datafeed = (tokenId) => {
 
         latestBar = bars[bars.length - 1];
         window.delta = 0;
-        console.log("[latestBar]", printDate(latestBar.time));
 
         onHistoryCallback(bars, { noData: false });
       } catch (error) {
