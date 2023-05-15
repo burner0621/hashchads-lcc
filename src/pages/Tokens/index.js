@@ -46,7 +46,7 @@ export const FullWrapper = styled.div`
 const Tokens = () => {
     document.title = "Tokens";
     const { tokenAddress } = useParams()
-    let allTokens = useAllTokensInSaucerswap()
+    const allTokens = useAllTokensInSaucerswap()
     const [tokenType, setTokenType] = useState(TOKEN_TYPE.all)
     const [loadingGainer, setLoadingGainer] = useState(false)
     const [loadingLoser, setLoadingLoser] = useState(false)
@@ -54,12 +54,7 @@ const Tokens = () => {
 
     const [gainerTokens, setGainers] = useState([]);
     const [loserTokens, setLosers] = useState([]);
-    let tmpAllTokens = []
-    for (let item of allTokens) {
-        if (item.liquidity >= 500)
-            tmpAllTokens.push(item);
-    }
-    if (tmpAllTokens.length > 0) allTokens = tmpAllTokens
+
     const downloadFile = ({ data, fileName, fileType }) => {
         const blob = new Blob([data], { type: fileType })
 

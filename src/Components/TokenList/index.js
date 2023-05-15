@@ -136,7 +136,7 @@ const TopTokenList = ({ tokens = [], itemMax = 10, useTracked = false }) => {
         let rlt = []
         for (let item of tokens) {
             if (tokenData[item['id']]) item['liquidity'] = tokenData[item['id']]['liquidity']
-            rlt.push(item)
+            if (item['liquidity'] >= 500) rlt.push(item)
         }
         return rlt
     }, [tokens, tokenData])
