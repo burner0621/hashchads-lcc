@@ -183,14 +183,14 @@ const TopTokenList = ({ tokens = [], itemMax = 10, useTracked = false }) => {
                         {item.symbol}
                     </DataText>
                 )}
-                <DataText area="liq" color="text" fontWeight="500" style={{justifyContent: 'flex-start'}}>{formattedNum(item.liquidity, true)}</DataText>
-                <DataText area="vol" color="text" fontWeight="500" style={{justifyContent: 'flex-start'}}>{formattedNum(item.oneDayVolumeUSD, true)}</DataText>
+                <DataText area="liq" color="text" fontWeight="500">{formattedNum(item.liquidity, true)}</DataText>
+                <DataText area="vol" color="text" fontWeight="500">{formattedNum(item.oneDayVolumeUSD, true)}</DataText>
                 {!below1080 && (
-                    <DataText area="price" color="text" fontWeight="500" style={{justifyContent: 'flex-start'}}>
+                    <DataText area="price" color="text" fontWeight="500">
                         {formattedNum(item.priceUsd, true)}
                     </DataText>
                 )}
-                {!below1080 && <DataText area="change" color="text" fontWeight="500" style={{justifyContent: 'flex-start'}}>{formattedPercent(item.priceChangeUSD)}</DataText>}
+                {!below1080 && <DataText area="change" color="text" fontWeight="500">{formattedPercent(item.priceChangeUSD)}</DataText>}
             </DashGrid>
         )
     }
@@ -225,7 +225,7 @@ const TopTokenList = ({ tokens = [], itemMax = 10, useTracked = false }) => {
                     </Flex>
                 )}
 
-                <Flex alignItems="center" style={{justifyContent: 'flex-start'}}>
+                <Flex alignItems="center">
                     <ClickableText
                         area="liq"
                         onClick={(e) => {
@@ -236,7 +236,7 @@ const TopTokenList = ({ tokens = [], itemMax = 10, useTracked = false }) => {
                         Liquidity {sortedColumn === SORT_FIELD.LIQ ? (!sortDirection ? '↑' : '↓') : ''}
                     </ClickableText>
                 </Flex>
-                <Flex alignItems="center" style={{justifyContent: 'flex-start'}}>
+                <Flex alignItems="center">
                     <ClickableText
                         area="vol"
                         onClick={() => {
@@ -251,7 +251,7 @@ const TopTokenList = ({ tokens = [], itemMax = 10, useTracked = false }) => {
                     </ClickableText>
                 </Flex>
                 {!below1080 && (
-                    <Flex alignItems="center" style={{justifyContent: 'flex-start'}}>
+                    <Flex alignItems="center">
                         <ClickableText
                             area="price"
                             onClick={(e) => {
@@ -264,7 +264,7 @@ const TopTokenList = ({ tokens = [], itemMax = 10, useTracked = false }) => {
                     </Flex>
                 )}
                 {!below1080 && (
-                    <Flex alignItems="center" style={{justifyContent: 'flex-start'}}>
+                    <Flex alignItems="center">
                         <ClickableText
                             area="change"
                             onClick={(e) => {

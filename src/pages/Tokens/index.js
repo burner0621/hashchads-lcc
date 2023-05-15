@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { Button, Container, FormGroup, Input, Label, ButtonGroup } from "reactstrap";
+import { Button, Container, FormGroup, Input, Spinner, ButtonGroup } from "reactstrap";
 import { useMedia } from 'react-use'
 
 import Panel from '../../Components/Panel'
@@ -48,6 +48,9 @@ const Tokens = () => {
     const { tokenAddress } = useParams()
     const allTokens = useAllTokensInSaucerswap()
     const [tokenType, setTokenType] = useState(TOKEN_TYPE.all)
+    const [loadingGainer, setLoadingGainer] = useState(false)
+    const [loadingLoser, setLoadingLoser] = useState(false)
+    const [loadingExport, setLoadingExport] = useState(false)
 
     const [gainerTokens, setGainers] = useState([]);
     const [loserTokens, setLosers] = useState([]);
@@ -70,6 +73,7 @@ const Tokens = () => {
     }
 
     const exportToCsv = e => {
+        setLoadingExport(true)
         e.preventDefault()
 
         // Headers for each column
@@ -111,10 +115,10 @@ const Tokens = () => {
                 no: no,
                 name: tokenData.name,
                 symbol: tokenData.symbol,
-                liquidity: tokenData.totalLiquidityUSD || 0,
-                volume: tokenData.oneDayVolumeUSD,
-                price: tokenData.priceUsd,
-                price_change: tokenData.priceChangeUSD
+                liquidity: tokenData.liquidity || 0,
+                volume: tokenData.oneDayVolumeUSD || 0,
+                price: tokenData.priceUsd || 0,
+                price_change: tokenData.priceChangeUSD || 0
             });
             no++
         }
@@ -131,6 +135,8 @@ const Tokens = () => {
             fileName: 'hashchads.csv',
             fileType: 'text/csv',
         })
+
+        setLoadingExport(false)
     }
 
     const renderTokenTypes = () => {
@@ -146,20 +152,23 @@ const Tokens = () => {
     }
 
     const handleTokenType = (type) => {
-        if(type === TOKEN_TYPE.gainer) {
+        if (type === TOKEN_TYPE.gainer) {
+            setLoadingGainer(true)
             if (tokenType === TOKEN_TYPE.loser) {
                 setTokenType(TOKEN_TYPE.all)
             } else if (tokenType === TOKEN_TYPE.all) {
                 setTokenType(TOKEN_TYPE.loser)
             }
         } else {
+            setLoadingLoser(true)
             if (tokenType === TOKEN_TYPE.gainer) {
                 setTokenType(TOKEN_TYPE.all)
             } else if (tokenType === TOKEN_TYPE.all) {
                 setTokenType(TOKEN_TYPE.gainer)
             }
         }
-        
+        setLoadingGainer(false);
+        setLoadingLoser(false);
     }
 
     useEffect(() => {
@@ -177,8 +186,8 @@ const Tokens = () => {
             }
         }
         setGainers(gainers);
-        setLosers(losers)
-    }, [allTokens, tokenType]);
+        setLosers(losers);
+    }, [allTokens]);
 
     const below600 = useMedia('(max-width: 600px)')
     const below900 = useMedia('(max-width: 900px)')
@@ -196,34 +205,78 @@ const Tokens = () => {
                                             <div className="d-flex items-center" style={{ alignItems: "center" }}>
 
                                                 <ButtonGroup style={{ marginRight: 5 }}>
-                                                    {tokenType == TOKEN_TYPE.gainer || tokenType == TOKEN_TYPE.all ? (
+                                                    {tokenType === TOKEN_TYPE.gainer || tokenType === TOKEN_TYPE.all ? (
                                                         <Button
-                                                            className="btn-force"
-                                                            color="primary"
-                                                            onClick={() => {handleTokenType(TOKEN_TYPE.gainer)}}>
-                                                            <i className="mdi mdi-elevation-rise"></i>Gainers
+                                                            className="btn-force btn-animation"
+                                                            color="success"
+                                                            onClick={() => { handleTokenType(TOKEN_TYPE.gainer) }}>
+                                                            {
+                                                                loadingGainer &&
+                                                                <span className="d-flex align-items-center">
+                                                                    <span className="flex-grow-1 me-2">
+                                                                        Loading...
+                                                                    </span>
+                                                                    <Spinner size="sm" className="flex-shrink-0" role="status"> Loading... </Spinner>
+                                                                </span>
+                                                            }
+                                                            {
+                                                                !loadingGainer && (<><i className="mdi mdi-elevation-rise"></i>Gainers</>)
+                                                            }
                                                         </Button>
                                                     ) : (
                                                         <Button
-                                                            color="dark"
+                                                            color="success"
                                                             outline
-                                                            onClick={() => {handleTokenType(TOKEN_TYPE.gainer)}}>
-                                                            <i className="mdi mdi-elevation-rise"></i>Gainers
+                                                            onClick={() => { handleTokenType(TOKEN_TYPE.gainer) }}>
+                                                            {
+                                                                loadingGainer &&
+                                                                <span className="d-flex align-items-center">
+                                                                    <span className="flex-grow-1 me-2">
+                                                                        Loading...
+                                                                    </span>
+                                                                    <Spinner size="sm" className="flex-shrink-0" role="status"> Loading... </Spinner>
+                                                                </span>
+                                                            }
+                                                            {
+                                                                !loadingGainer && (<><i className="mdi mdi-elevation-rise"></i>Gainers</>)
+                                                            }
                                                         </Button>
                                                     )}
-                                                    {tokenType == TOKEN_TYPE.loser || tokenType == TOKEN_TYPE.all ? (
+                                                    {tokenType === TOKEN_TYPE.loser || tokenType === TOKEN_TYPE.all ? (
                                                         <Button
-                                                            color="primary"
-                                                            className="btn-force"
-                                                            onClick={() => {handleTokenType(TOKEN_TYPE.loser)}}>
-                                                            <i className="mdi mdi-elevation-decline"></i>Losers
+                                                            color="success"
+                                                            className="btn-force btn-animation"
+                                                            onClick={() => { handleTokenType(TOKEN_TYPE.loser) }}>
+                                                            {
+                                                                loadingLoser &&
+                                                                <span className="d-flex align-items-center">
+                                                                    <span className="flex-grow-1 me-2">
+                                                                        Loading...
+                                                                    </span>
+                                                                    <Spinner size="sm" className="flex-shrink-0" role="status"> Loading... </Spinner>
+                                                                </span>
+                                                            }
+                                                            {
+                                                                !loadingLoser && (<><i className="mdi mdi-elevation-rise"></i>Losers</>)
+                                                            }
                                                         </Button>
                                                     ) : (
                                                         <Button
-                                                            color="dark"
+                                                            color="success"
                                                             outline
-                                                            onClick={() => {handleTokenType(TOKEN_TYPE.loser)}}>
-                                                            <i className="mdi mdi-elevation-decline"></i>Losers
+                                                            onClick={() => { handleTokenType(TOKEN_TYPE.loser) }}>
+                                                            {
+                                                                loadingLoser &&
+                                                                <span className="d-flex align-items-center">
+                                                                    <span className="flex-grow-1 me-2">
+                                                                        Loading...
+                                                                    </span>
+                                                                    <Spinner size="sm" className="flex-shrink-0" role="status"> Loading... </Spinner>
+                                                                </span>
+                                                            }
+                                                            {
+                                                                !loadingLoser && (<><i className="mdi mdi-elevation-rise"></i>Losers</>)
+                                                            }
                                                         </Button>
                                                     )}
                                                 </ButtonGroup>
@@ -263,11 +316,25 @@ const Tokens = () => {
                                         }
                                     </div>
                                     {!below900 && <Search small={true} />}
-                                    {!below600 && <Button onClick={exportToCsv} className="btn-download" size="sm" color="light" style={{ marginLeft: '5px' }}>Download CSV</Button>}
+                                    {!below600 && <Button onClick={exportToCsv} className="btn-download btn-animation" size="sm" color="warning" style={{ marginLeft: '5px' }} outline>
+                                        {
+                                            loadingExport &&
+                                            <span className="d-flex align-items-center">
+                                                <span className="flex-grow-1 me-2">
+                                                    Loading...
+                                                </span>
+                                                <Spinner size="sm" className="flex-shrink-0" role="status"> Loading... </Spinner>
+                                            </span>
+                                        }
+                                        {
+                                            !loadingExport && (<>Download CSV</>)
+                                        }
+
+                                    </Button>}
                                 </RowBetween>
                                 {/* TABLE ALL TOKENS */}
-                                {(tokenType == TOKEN_TYPE.all) &&
-                                    <Panel className="hsla-bg" style={{ marginTop: '6px', padding: '1.125rem 0 ', border: 'none' }}>
+                                {(tokenType === TOKEN_TYPE.all) &&
+                                    <Panel className="panel-shadow hsla-bg" style={{ marginTop: '6px', padding: '1.125rem 0 ', border: 'none' }}>
                                         <TopTokenList tokens={allTokens} />
                                     </Panel>
                                 }
@@ -278,8 +345,8 @@ const Tokens = () => {
                                     </RowBetween>
                                 } */}
                                 {/* TABLE GAINERS */}
-                                {(tokenType == TOKEN_TYPE.gainer) &&
-                                    <Panel className="hsla-bg" style={{ marginTop: '6px', padding: '1.125rem 0 ', border: 'none' }}>
+                                {(tokenType === TOKEN_TYPE.gainer) &&
+                                    <Panel className="panel-shadow hsla-bg" style={{ marginTop: '6px', padding: '1.125rem 0 ', border: 'none' }}>
                                         <TopTokenList tokens={gainerTokens} />
                                     </Panel>
                                 }
@@ -290,8 +357,8 @@ const Tokens = () => {
                                     </RowBetween>
                                 } */}
                                 {/* TABLE LOSERS */}
-                                {(tokenType == TOKEN_TYPE.loser) &&
-                                    <Panel className="hsla-bg" style={{ marginTop: '6px', padding: '1.125rem 0 ', border: 'none' }}>
+                                {(tokenType === TOKEN_TYPE.loser) &&
+                                    <Panel className="panel-shadow hsla-bg" style={{ marginTop: '6px', padding: '1.125rem 0 ', border: 'none' }}>
                                         <TopTokenList tokens={loserTokens} />
                                     </Panel>
                                 }
