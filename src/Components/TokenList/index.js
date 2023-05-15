@@ -109,7 +109,7 @@ const DataText = styled(Flex)`
 `
 
 const SORT_FIELD = {
-    LIQ: 'totalLiquidityUSD',
+    LIQ: 'liquidity',
     VOL: 'oneDayVolumeUSD',
     // VOL_UT: 'oneDayVolumeUT',
     SYMBOL: 'symbol',
@@ -150,6 +150,7 @@ const TopTokenList = ({ itemMax = 10, useTracked = false }) => {
             setMaxPage(Math.floor(formattedTokens.length / itemMax) + extraPages)
         }
     }, [tokens, formattedTokens, itemMax])
+    
     const filteredList = useMemo(() => {
         return (
             formattedTokens &&

@@ -414,7 +414,7 @@ export const Search = ({ small = false }) => {
                             //format incorrect names
                             // updateNameData(pair)
                             return (
-                                <BasicLink to={'/pair/' + pair.contractId} key={pair.contractId} onClick={onDismiss}>
+                                <BasicLink to={'/pairs/' + pair.contractId} key={pair.contractId} onClick={onDismiss}>
                                     <MenuItem>
                                         <DoubleTokenLogo a0={pair?.tokenA?.icon} a1={pair?.tokenB?.icon} margin={true} />
                                         <div style={{ marginLeft: '10px' }}>
@@ -450,7 +450,7 @@ export const Search = ({ small = false }) => {
                     {filteredTokenList.slice(0, tokensShown).map((token) => {
                         // update displayed names
                         return (
-                            <BasicLink to={'/token/' + token.id} key={token.id} onClick={onDismiss}>
+                            <BasicLink to={'/tokens/' + token.id} key={token.id} onClick={onDismiss}>
                                 <MenuItem>
                                     <RowFixed>
                                         <TokenLogo path={token.icon} style={{ marginRight: '10px' }} />
