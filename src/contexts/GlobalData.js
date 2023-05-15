@@ -179,20 +179,21 @@ async function getHbarAndSaucePrice() {
 
 async function getTokenData(_allPairs) {
   let _tokenData = {}
-  for (let pair of _allPairs) {
-    if (_tokenData[pair.tokenA.id]) {
-      _tokenData[pair.tokenA.id]['liquidity'] += Number(pair.tokenReserveA) / Math.pow(10, Number(pair.tokenA.decimals)) * Number(pair.tokenA.priceUsd)
-    } else {
-      _tokenData[pair.tokenA.id] = {}
-      _tokenData[pair.tokenA.id]['liquidity'] = Number(pair.tokenReserveA) / Math.pow(10, Number(pair.tokenA.decimals)) * Number(pair.tokenA.priceUsd)
+  if (_allPairs)
+    for (let pair of _allPairs) {
+      if (_tokenData[pair.tokenA.id]) {
+        _tokenData[pair.tokenA.id]['liquidity'] += Number(pair.tokenReserveA) / Math.pow(10, Number(pair.tokenA.decimals)) * Number(pair.tokenA.priceUsd)
+      } else {
+        _tokenData[pair.tokenA.id] = {}
+        _tokenData[pair.tokenA.id]['liquidity'] = Number(pair.tokenReserveA) / Math.pow(10, Number(pair.tokenA.decimals)) * Number(pair.tokenA.priceUsd)
+      }
+      if (_tokenData[pair.tokenB.id]) {
+        _tokenData[pair.tokenB.id]['liquidity'] += Number(pair.tokenReserveB) / Math.pow(10, Number(pair.tokenB.decimals)) * Number(pair.tokenB.priceUsd)
+      } else {
+        _tokenData[pair.tokenB.id] = {}
+        _tokenData[pair.tokenB.id]['liquidity'] = Number(pair.tokenReserveB) / Math.pow(10, Number(pair.tokenB.decimals)) * Number(pair.tokenB.priceUsd)
+      }
     }
-    if (_tokenData[pair.tokenB.id]) {
-      _tokenData[pair.tokenB.id]['liquidity'] += Number(pair.tokenReserveB) / Math.pow(10, Number(pair.tokenB.decimals)) * Number(pair.tokenB.priceUsd)
-    } else {
-      _tokenData[pair.tokenB.id] = {}
-      _tokenData[pair.tokenB.id]['liquidity'] = Number(pair.tokenReserveB) / Math.pow(10, Number(pair.tokenB.decimals)) * Number(pair.tokenB.priceUsd)
-    }
-  }
   return _tokenData
 }
 
