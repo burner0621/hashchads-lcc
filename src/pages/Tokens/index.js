@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { Button, Container, FormGroup, Input, Spinner, ButtonGroup } from "reactstrap";
+import { Button, Container, FormGroup, Badge, Spinner, ButtonGroup } from "reactstrap";
 import { useMedia } from 'react-use'
 
 import Panel from '../../Components/Panel'
@@ -207,7 +207,7 @@ const Tokens = () => {
                                                 <ButtonGroup style={{ marginRight: 5 }}>
                                                     {tokenType === TOKEN_TYPE.gainer || tokenType === TOKEN_TYPE.all ? (
                                                         <Button
-                                                            className="btn-force btn-animation"
+                                                            className="btn-animation"
                                                             color="success"
                                                             onClick={() => { handleTokenType(TOKEN_TYPE.gainer) }}>
                                                             {
@@ -220,8 +220,9 @@ const Tokens = () => {
                                                                 </span>
                                                             }
                                                             {
-                                                                !loadingGainer && (<><i className="mdi mdi-elevation-rise"></i>Gainers</>)
+                                                                !loadingGainer && (<><i className="mdi mdi-elevation-rise"></i> Gainers</>)
                                                             }
+                                                            <Badge color="warning" className="ms-1">{gainerTokens.length}</Badge>
                                                         </Button>
                                                     ) : (
                                                         <Button
@@ -238,14 +239,14 @@ const Tokens = () => {
                                                                 </span>
                                                             }
                                                             {
-                                                                !loadingGainer && (<><i className="mdi mdi-elevation-rise"></i>Gainers</>)
+                                                                !loadingGainer && (<><i className="mdi mdi-elevation-rise"></i> Gainers</>)
                                                             }
                                                         </Button>
                                                     )}
                                                     {tokenType === TOKEN_TYPE.loser || tokenType === TOKEN_TYPE.all ? (
                                                         <Button
-                                                            color="success"
-                                                            className="btn-force btn-animation"
+                                                            color="secondary"
+                                                            className="btn-animation"
                                                             onClick={() => { handleTokenType(TOKEN_TYPE.loser) }}>
                                                             {
                                                                 loadingLoser &&
@@ -257,12 +258,13 @@ const Tokens = () => {
                                                                 </span>
                                                             }
                                                             {
-                                                                !loadingLoser && (<><i className="mdi mdi-elevation-decline"></i>Losers</>)
+                                                                !loadingLoser && (<><i className="mdi mdi-elevation-decline"></i> Losers</>)
                                                             }
+                                                            <Badge color="danger" className="ms-1">{loserTokens.length}</Badge>
                                                         </Button>
                                                     ) : (
                                                         <Button
-                                                            color="success"
+                                                            color="secondary"
                                                             outline
                                                             onClick={() => { handleTokenType(TOKEN_TYPE.loser) }}>
                                                             {
@@ -275,7 +277,7 @@ const Tokens = () => {
                                                                 </span>
                                                             }
                                                             {
-                                                                !loadingLoser && (<><i className="mdi mdi-elevation-decline"></i>Losers</>)
+                                                                !loadingLoser && (<><i className="mdi mdi-elevation-decline"></i> Losers</>)
                                                             }
                                                         </Button>
                                                     )}
