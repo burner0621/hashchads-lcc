@@ -42,7 +42,7 @@ const Trending = () => {
         for (let token of allTokens) {
             if (HOT_TOKENS.includes(token.id)) {
                 let tmp = {}
-                tmp.price = token.priceUsd.toFixed (6)
+                tmp.price = token.priceUsd.toFixed (6) || 0.0
                 tmp.img = `https://saucerswap.finance${token.icon}`
                 tmp.change = token.priceChangeUSD.toFixed (6)
                 tmp.coinName = token.name
@@ -71,7 +71,7 @@ const Trending = () => {
 
     useEffect (() => {
         let tmpCUr = []
-        for (var i = 0 ; i < 5 && sortedList.length > 5 ; i ++) {
+        for (var i = 0 ; i < 5 && sortedList.length > 4; i ++) {
             let token = sortedList[i]
             let tmp = {}
             tmp.price = token.priceUsd.toFixed (6)
@@ -111,9 +111,9 @@ const Trending = () => {
                     <CardHeader className="align-items-center d-flex">
                         <h4 className="card-title mb-0 flex-grow-1">Trending</h4>
                         <div className="flex-shrink-0">
-                            <button className="btn btn-md" style={{color: 'red'}} onClick={() => handleTrendingType(TRENDING_TYPE.hot)}>HOT</button>
-                            <button className="btn btn-md" style={{color: 'red'}} onClick={() => handleTrendingType(TRENDING_TYPE.new)}>NEW</button>
-                            <button className="btn btn-md" style={{color: 'red'}} onClick={() => handleTrendingType(TRENDING_TYPE.pool)}>TOP POOLS</button>
+                            <button className= {trendingType == TRENDING_TYPE.hot ? "btn btn-md button-border" : "btn btn-md"} style={{color: 'red'}} onClick={() => handleTrendingType(TRENDING_TYPE.hot)}>HOT</button>
+                            <button className= {trendingType == TRENDING_TYPE.new ? "btn btn-md button-border" : "btn btn-md"} style={{color: 'red'}} onClick={() => handleTrendingType(TRENDING_TYPE.new)}>NEW</button>
+                            <button className= {trendingType == TRENDING_TYPE.pool ? "btn btn-md button-border" : "btn btn-md"} style={{color: 'red'}} onClick={() => handleTrendingType(TRENDING_TYPE.pool)}>TOP POOLS</button>
                         </div>
                     </CardHeader>
                     <div className="card-body">
