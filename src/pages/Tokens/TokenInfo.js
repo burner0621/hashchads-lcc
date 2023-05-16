@@ -45,7 +45,7 @@ const TokenInfo = ({ address, tokenPrice }) => {
             }
             if (tmpPairs.length > 0) setPairs(tmpPairs)
         }
-    }, [allPairs])
+    }, [allPairs, address])
 
     const [modal_xlarge, setmodal_xlarge] = useState(false);
     const [detail_modal_xlarge, setdetailmodal] = useState(false)
