@@ -16,6 +16,7 @@ const TokenInfo = ({ address, tokenPrice }) => {
 
     const [tokenInfo, setTokenInfo] = useState();
     const [createdAt, setCreatedAt] = useState('')
+    const [feeCreatedAt, setFeeCreatedAt] = useState('')
     const [supplyKey, setSupplyKey] = useState('')
     const [freezeKey, setFreezeKey] = useState('')
     const [pauseKey, setPauseKey] = useState('')
@@ -60,6 +61,10 @@ const TokenInfo = ({ address, tokenPrice }) => {
             setWipeKey(formatString(tokenInfo?.wipe_key?.key))
             setAdminKey(formatString(tokenInfo?.admin_key?.key))
             setDecimals(tokenInfo?.decimals)
+            if (tokenInfo?.custom_fees && tokenInfo?.custom_fees?.created_timestamp) {
+                theDate = new Date(Number(tokenInfo?.custom_fees?.created_timestamp) * 1000)
+                setFeeCreatedAt (theDate.toGMTString())
+            }
         }
     }, [tokenInfo])
 
@@ -102,6 +107,12 @@ const TokenInfo = ({ address, tokenPrice }) => {
                     <CardBody className="p-0">
                         <TabContent activeTab={activeTab} className="text-muted">
                             <TabPane tabId="1">
+                                <div className="p-3 bg-soft-success">
+                                    <div className="float-end ms-2">
+                                        <h6 className="text-warning mb-0"><span className="text-dark" style={{ width: 180, wordWrap: 'break-word' }}>{createdAt}</span></h6>
+                                    </div>
+                                    <h6 className="mb-0 text-warning">Created</h6>
+                                </div>
                                 <div className="p-3">
                                     <div className="mt-3 pt-2">
                                         <div className="d-flex mb-2">
@@ -133,7 +144,7 @@ const TokenInfo = ({ address, tokenPrice }) => {
                                                 <p className="fs-13 mb-0">Market Cap<span className="text-muted ms-1 fs-11">(Circulating)</span></p>
                                             </div>
                                             <div className="flex-shrink-0">
-                                                <h6 className="mb-0">{circulatingSupply.toFixed (4)}</h6>
+                                                <h6 className="mb-0">{'$' + circulatingSupply.toFixed(decimals)}</h6>
                                             </div>
                                         </div>
                                         <div className="d-flex">
@@ -141,25 +152,41 @@ const TokenInfo = ({ address, tokenPrice }) => {
                                                 <p className="fs-13 mb-0">Market Cap<span className="text-muted ms-1 fs-11">(Diluted)</span></p>
                                             </div>
                                             <div className="flex-shrink-0">
-                                                <h6 className="mb-0">{dilutedSupply.toFixed(4)}</h6>
-                                            </div>
-                                        </div>
-                                        <div className="d-flex mb-2">
-                                            <div className="flex-grow-1">
-                                                <p className="fs-13 mb-0">Fees<span className="text-muted ms-1 fs-11"></span></p>
-                                            </div>
-                                            <div className="flex-shrink-0">
-                                                <h6 className="mb-0">{tokenInfo?.custom_fees['fixed_fees'].length > 0 ? tokenInfo?.custom_fees['fixed_fees'][0] : 0}</h6>
+                                                <h6 className="mb-0">{'$' + dilutedSupply.toFixed(decimals)}</h6>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="p-3 bg-soft-success">
-                                    <div className="float-end ms-2">
-                                        <h6 className="text-warning mb-0"><span className="text-dark" style={{ width: 180, wordWrap: 'break-word' }}>{createdAt}</span></h6>
-                                    </div>
-                                    <h6 className="mb-0 text-warning">Created</h6>
-                                </div>
+                                {
+                                    tokenInfo?.custom_fees && tokenInfo?.custom_fees?.fractional_fees?.length > 0 &&
+                                    <>
+                                        <div className="p-3 bg-soft-success">
+                                            <h6 className="mb-0 text-warning">Custome Fees</h6>
+                                        </div>
+                                        <div className="p-3">
+                                            <div className="pt-1">
+                                                <div className="d-flex mb-1">
+                                                    <div className="flex-grow-1">
+                                                        <p className="fs-13 mb-0 mr-1">{"Created at   "}<span className="text-muted ms-1 fs-11"></span></p>
+                                                    </div>
+                                                    <div className="flex-shrink-0">
+                                                        <h6 className="mb-0" style={{ width: 140, wordWrap: 'break-word' }}>{feeCreatedAt}</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="pt-1">
+                                                <div className="d-flex mb-1">
+                                                    <div className="flex-grow-1">
+                                                        <p className="fs-13 mb-0">Fixed Fees<span className="text-muted ms-1 fs-11"></span></p>
+                                                    </div>
+                                                    <div className="flex-shrink-0">
+                                                        <h6 className="mb-0">{tokenInfo?.custom_fees?.fixed_fees?.length > 0? tokenInfo?.custom_fees?.fixed_fees[0]:'None'}</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </>
+                                }
                             </TabPane>
 
                             <TabPane tabId="2">

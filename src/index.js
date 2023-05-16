@@ -11,6 +11,7 @@ import { configureStore } from "./store";
 import LocalStorageContextProvider, { Updater as LocalStorageContextUpdater } from './contexts/LocalStorage'
 import GlobalDataContextProvider from './contexts/GlobalData'
 import ApplicationContextProvider from './contexts/Application'
+import TokenDataContextProvider from './contexts/TokenData'
 
 function Updaters() {
   return (
@@ -24,16 +25,18 @@ const root = ReactDOMClient.createRoot(document.getElementById("root"));
 root.render(
   <LocalStorageContextProvider>
     <ApplicationContextProvider>
-      <GlobalDataContextProvider>
-        <Provider store={configureStore({})}>
-          <Updaters />
-          <React.Fragment>
-            {/* <BrowserRouter basename={process.env.PUBLIC_URL}> */}
-            <App />
-            {/* </BrowserRouter> */}
-          </React.Fragment>
-        </Provider>
-      </GlobalDataContextProvider>
+      <TokenDataContextProvider>
+        <GlobalDataContextProvider>
+          <Provider store={configureStore({})}>
+            <Updaters />
+            <React.Fragment>
+              {/* <BrowserRouter basename={process.env.PUBLIC_URL}> */}
+              <App />
+              {/* </BrowserRouter> */}
+            </React.Fragment>
+          </Provider>
+        </GlobalDataContextProvider>
+      </TokenDataContextProvider>
     </ApplicationContextProvider>
   </LocalStorageContextProvider>
 );

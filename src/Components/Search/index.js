@@ -132,7 +132,7 @@ const Blue = styled.span`
   }
 `
 
-export const Search = ({ small = false }) => {
+export const Search = ({ small = false, display }) => {
 
     const [showMenu, toggleMenu] = useState(false)
     const [value, setValue] = useState('')
@@ -367,10 +367,10 @@ export const Search = ({ small = false }) => {
             document.removeEventListener('click', handleClick)
         }
     })
-    
+
     return (
         <Container small={small}>
-            <Wrapper open={showMenu} shadow={true} small={small} style={{border: "solid 1px #ff007a"}}>
+            <Wrapper open={showMenu} shadow={true} small={small} style={{ border: "solid 1px #ff007a" }}>
                 <Input
                     large={!small}
                     type={'text'}
@@ -387,7 +387,7 @@ export const Search = ({ small = false }) => {
                                         : 'Search Saucerswap pairs and tokens...'
                     }
                     value={value}
-                    style={{color: "white"}}
+                    style={{ color: "white" }}
                     onChange={(e) => {
                         setValue(e.target.value)
                     }}
@@ -397,86 +397,96 @@ export const Search = ({ small = false }) => {
                         }
                     }}
                 />
-                {!showMenu ? <SearchIconLarge /> : <CloseIcon onClick={() => {toggleMenu(false);}} />}
+                {!showMenu ? <SearchIconLarge /> : <CloseIcon onClick={() => { toggleMenu(false); }} />}
             </Wrapper>
-            <Menu hide={!showMenu} ref={menuRef} style={{zIndex: "300", background: "white"}}>
-                <Heading>
-                    <Gray>Pairs</Gray>
-                </Heading>
-                <div>
-                    {filteredPairList && Object.keys(filteredPairList).length === 0 && (
-                        <MenuItem>
-                            <div>No results</div>
-                        </MenuItem>
-                    )}
-                    {filteredPairList &&
-                        filteredPairList.slice(0, pairsShown).map((pair) => {
-                            //format incorrect names
-                            // updateNameData(pair)
-                            return (
-                                <BasicLink to={'/pairs/' + pair.contractId} key={pair.contractId} onClick={onDismiss}>
-                                    <MenuItem>
-                                        <DoubleTokenLogo a0={pair?.tokenA?.icon} a1={pair?.tokenB?.icon} margin={true} />
-                                        <div style={{ marginLeft: '10px' }}>
-                                            {pair.tokenA.symbol + '-' + pair.tokenB.symbol} Pair
-                                        </div>
-                                    </MenuItem>
-                                </BasicLink>
-                            )
-                        })}
-                    <Heading
-                        hide={!(Object.keys(filteredPairList).length > 3 && Object.keys(filteredPairList).length >= pairsShown)}
-                    >
-                        <Blue
-                            onClick={() => {
-                                setPairsShown(pairsShown + 5)
-                            }}
-                        >
-                            See more...
-                        </Blue>
-                    </Heading>
-                </div>
-                <Heading>
-                    <Gray>Tokens</Gray>
-                </Heading>
-                <div>
-                    {Object.keys(filteredTokenList).length === 0 && (
-                        <MenuItem>
-                            {/* <TYPE.body>No results</TYPE.body> */}
-                            No results
-                        </MenuItem>
-                    )}
-
-                    {filteredTokenList.slice(0, tokensShown).map((token) => {
-                        // update displayed names
-                        return (
-                            <BasicLink to={'/tokens/' + token.id} key={token.id} onClick={onDismiss}>
+            <Menu hide={!showMenu} ref={menuRef} style={{ zIndex: "300", background: "white" }}>
+                {
+                    (display === "all" || display === "pair") &&
+                    <>
+                        <Heading>
+                            <Gray>Pairs</Gray>
+                        </Heading>
+                        <div>
+                            {filteredPairList && Object.keys(filteredPairList).length === 0 && (
                                 <MenuItem>
-                                    <RowFixed>
-                                        <TokenLogo path={token.icon} style={{ marginRight: '10px' }} />
-                                        {/* <FormattedName text={token.name} maxCharacters={20} style={{ marginRight: '6px' }} />
-                                        (<FormattedName text={token.symbol} maxCharacters={6} />) */}
-                                        <div style={{ marginLeft: '10px' }}>
-                                            {token.name + "    (" + token.symbol + ")"}
-                                        </div>
-                                    </RowFixed>
+                                    <div>No results</div>
                                 </MenuItem>
-                            </BasicLink>
-                        )
-                    })}
+                            )}
+                            {filteredPairList &&
+                                filteredPairList.slice(0, pairsShown).map((pair) => {
+                                    //format incorrect names
+                                    // updateNameData(pair)
+                                    return (
+                                        <BasicLink to={'/pairs/' + pair.contractId} key={pair.contractId} onClick={onDismiss}>
+                                            <MenuItem>
+                                                <DoubleTokenLogo a0={pair?.tokenA?.icon} a1={pair?.tokenB?.icon} margin={true} />
+                                                <div style={{ marginLeft: '10px' }}>
+                                                    {pair.tokenA.symbol + '-' + pair.tokenB.symbol} Pair
+                                                </div>
+                                            </MenuItem>
+                                        </BasicLink>
+                                    )
+                                })}
+                            <Heading
+                                hide={!(Object.keys(filteredPairList).length > 3 && Object.keys(filteredPairList).length >= pairsShown)}
+                            >
+                                <Blue
+                                    onClick={() => {
+                                        setPairsShown(pairsShown + 5)
+                                    }}
+                                >
+                                    See more...
+                                </Blue>
+                            </Heading>
+                        </div>
+                    </>
+                }
+                {
+                    (display === "all" || display === "token") &&
+                    <>
+                        <Heading>
+                            <Gray>Tokens</Gray>
+                        </Heading>
+                        <div>
+                            {Object.keys(filteredTokenList).length === 0 && (
+                                <MenuItem>
+                                    {/* <TYPE.body>No results</TYPE.body> */}
+                                    No results
+                                </MenuItem>
+                            )}
 
-                    <Heading
-                        hide={!(Object.keys(filteredTokenList).length > 3 && Object.keys(filteredTokenList).length >= tokensShown)}
-                    >
-                        <Blue
-                            onClick={() => {
-                                setTokensShown(tokensShown + 5)
-                            }}
-                        >
-                            See more...
-                        </Blue>
-                    </Heading>
-                </div>
+                            {filteredTokenList.slice(0, tokensShown).map((token) => {
+                                // update displayed names
+                                return (
+                                    <BasicLink to={'/tokens/' + token.id} key={token.id} onClick={onDismiss}>
+                                        <MenuItem>
+                                            <RowFixed>
+                                                <TokenLogo path={token.icon} style={{ marginRight: '10px' }} />
+                                                {/* <FormattedName text={token.name} maxCharacters={20} style={{ marginRight: '6px' }} />
+                                        (<FormattedName text={token.symbol} maxCharacters={6} />) */}
+                                                <div style={{ marginLeft: '10px' }}>
+                                                    {token.name + "    (" + token.symbol + ")"}
+                                                </div>
+                                            </RowFixed>
+                                        </MenuItem>
+                                    </BasicLink>
+                                )
+                            })}
+
+                            <Heading
+                                hide={!(Object.keys(filteredTokenList).length > 3 && Object.keys(filteredTokenList).length >= tokensShown)}
+                            >
+                                <Blue
+                                    onClick={() => {
+                                        setTokensShown(tokensShown + 5)
+                                    }}
+                                >
+                                    See more...
+                                </Blue>
+                            </Heading>
+                        </div>
+                    </>
+                }
             </Menu>
         </Container>
     )

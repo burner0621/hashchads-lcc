@@ -12,7 +12,7 @@ import TokenPage from './TokenPage'
 import { TOKEN_TYPE, TOKEN_TYPE_NAME } from "../../constants";
 import Select from "react-select";
 import { TokenType } from "@hashgraph/sdk";
-import { useAllTokensInSaucerswap, useTokenData } from "../../contexts/GlobalData";
+import { useAllTokensInSaucerswap } from "../../contexts/GlobalData";
 
 export const PageWrapper = styled.div`
   display: flex;
@@ -52,16 +52,13 @@ const Tokens = () => {
     const [loadingLoser, setLoadingLoser] = useState(false)
     const [loadingExport, setLoadingExport] = useState(false)
 
-    const tokenData = useTokenData()
-
     const formattedTokens = useMemo(() => {
         let rlt = []
         for (let item of allTokens) {
-            if (tokenData[item['id']]) item['liquidity'] = tokenData[item['id']]['liquidity']
             if (item['liquidity'] >= 500) rlt.push(item)
         }
         return rlt
-    }, [allTokens, tokenData])
+    }, [allTokens])
 
     const [gainerTokens, setGainers] = useState([]);
     const [loserTokens, setLosers] = useState([]);
@@ -328,7 +325,7 @@ const Tokens = () => {
                                             </div>
                                         }
                                     </div>
-                                    {!below900 && <Search small={true} />}
+                                    {!below900 && <Search display="token" small={true} />}
                                     {!below600 && <Button onClick={exportToCsv} className="btn-download btn-animation" size="sm" color="warning" style={{ marginLeft: '5px' }} outline>
                                         {
                                             loadingExport &&

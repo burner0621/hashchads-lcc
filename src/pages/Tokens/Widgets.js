@@ -13,12 +13,16 @@ const Widgets = ({ address, price }) => {
   const [totalSupply, setTotalSupply] = useState(0)
   const [totalLiquidity, setTotalLiquidity] = useState (0)
   const [circulatingSupply, setCirculatingSupply] = useState(0)
+  const [decimal, setDecimal] = useState (0)
 
   useEffect(() => {
     async function fetchData() {
+      if (Number(price) === 0) return
       let response = await fetch(env.MIRROR_NODE_URL + "/api/v1/tokens/" + address);
       if (response.status === 200) {
         let jsonData = await response.json()
+        console.log (jsonData, price, ">>>>>")
+        setDecimal (jsonData?.decimals)
         setTotalSupply(Number(jsonData?.total_supply) / Math.pow(10, Number(jsonData?.decimals)) * price)
         let response1 = await fetch(env.MIRROR_NODE_URL + `/api/v1/tokens/${address}/balances?account.id=${jsonData?.treasury_account_id}`);
         if (response1.status === 200) {
@@ -42,7 +46,7 @@ const Widgets = ({ address, price }) => {
         liquidity += pair.tokenB.priceUsd * pair.tokenReserveB / Math.pow(10, pair.tokenB.decimals)
       }
     }
-    setTotalLiquidity (liquidity)
+    setTotalLiquidity (liquidity.toFixed (decimal))
   }, [])
 
   const buysellWidgets = [
@@ -92,7 +96,7 @@ const Widgets = ({ address, price }) => {
                   <h2 className="mb-0">
                     $
                     <span className="counter-value">
-                      <CountUp start={0} end={item.counter} duration={3} />
+                      <CountUp start={0} end={item.counter} duration={3} decimals={decimal}/>
                     </span>
                     {/* <small className="text-muted fs-13">.{item.decimal}k</small> */}
                   </h2>

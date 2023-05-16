@@ -127,7 +127,7 @@ const TokenPage = ({ address }) => {
     useEffect(() => {
         for (let token of allTokens) {
             if (token.id === address) {
-                setPriceUSD(Number(token?.priceUsd).toFixed(4))
+                setPriceUSD(Number(token?.priceUsd))
                 setIconPath(token?.icon)
             }
         }
@@ -165,7 +165,7 @@ const TokenPage = ({ address }) => {
                                     </Text>
                                 </Link>
                             </AutoRow>
-                            {!below600 && <Search small={true} />}
+                            {!below600 && <Search display={"token"} small={true} />}
                         </RowBetween>
                         <WarningGrouping disabled={false}>
                             <DashboardWrapper style={{ marginTop: below1080 ? '0' : '1rem' }}>

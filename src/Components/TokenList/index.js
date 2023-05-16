@@ -11,7 +11,6 @@ import Row from '../Row'
 import { formattedNum, formattedPercent } from '../../utils'
 import { useMedia } from 'react-use'
 import withRouter from '../Common/withRouter';
-import { useTokenData, useAllTokensInSaucerswap } from '../../contexts/GlobalData'
 
 const Divider = styled(Box)`
   height: 1px;
@@ -162,10 +161,11 @@ const TopTokenList = ({tokens = [], itemMax = 10, useTracked = false }) => {
                 <DataText area="name" fontWeight="500">
                     <Row>
                         {!below680 && <div style={{ marginRight: '1rem', width: '10px' }}>{index}</div>}
-                        <TokenLogo path={item.icon} />
+                        <TokenLogo path={item.icon}/>
                         <CustomLink style={{ marginLeft: '16px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 140 }} to={'/tokens/' + item.id}>
                             {below680 ? item.symbol : item.name}
                         </CustomLink>
+                        <TokenLogo diligence={item.diligence} logoType={"warning"}/>
                     </Row>
                 </DataText>
                 {!below680 && (

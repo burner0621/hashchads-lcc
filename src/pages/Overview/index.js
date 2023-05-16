@@ -49,7 +49,7 @@ const Overview = () => {
           <Row>
             <Col>
               <div className="h-100">
-                <Search />
+                <Search display={"all"} />
                 <GlobalStats />
               </div>
             </Col>

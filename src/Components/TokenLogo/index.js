@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import noImage from '../../assets/images/noimage.png'
+import warnImage from '../../assets/images/noimage.png'
 
 const BAD_IMAGES = {}
 
@@ -29,7 +29,7 @@ const StyledEthereumLogo = styled.div`
   }
 `
 
-export default function TokenLogo({ path, header = false, size = '24px', ...rest }) {
+export default function TokenLogo({ path, diligence=true, logoType="logo", header = false, size = '24px', ...rest }) {
     const [error, setError] = useState(false)
 
     useEffect(() => {
@@ -37,11 +37,19 @@ export default function TokenLogo({ path, header = false, size = '24px', ...rest
     }, [path])
 
     const path1 = `https://saucerswap.finance${path}`
+    if (logoType === "warning" && diligence === false) {
+      return (
+        <Inline>
+           <span {...rest} alt={''} style={{ fontSize: size }} role="img" aria-label="face"><img src={warnImage} width={24}/></span>
+        </Inline>
+      )
+    }
+    if (logoType === "warning") return;
 
     if (error) {
       return (
         <Inline>
-          <span {...rest} alt={''} style={{ fontSize: size }} role="img" aria-label="face"><img width={24} src={noImage} alt="pic"/></span>
+          <span {...rest} alt={''} style={{ fontSize: size }} role="img" aria-label="face">🤔</span>
         </Inline>
       )
     }
