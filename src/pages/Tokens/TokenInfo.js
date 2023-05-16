@@ -79,7 +79,7 @@ const TokenInfo = ({ address, tokenPrice }) => {
         }
         if (address && tokenPrice && tokenPrice > 0)
             fetchData()
-    }, [])
+    }, [address, tokenPrice])
 
     const formatString = (str) => {
         if (str === undefined) return ''
@@ -164,7 +164,7 @@ const TokenInfo = ({ address, tokenPrice }) => {
             setHolderInfo(rlt)
         }
     }, [decimals, holders, pairs])
-
+    console.log (tokenInfo?.custom_fees?.fractional_fees?.length, ">>>>>>>>>>>>>>")
     const columns = [
 
         {
