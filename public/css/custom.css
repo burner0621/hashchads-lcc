@@ -22,3 +22,11 @@
 .btn-success:active {
     border-color: #37a26a !important;
 }
+
+.justify-center {
+    justify-content: center;
+}
+
+.items-center {
+    align-items: center;
+}
