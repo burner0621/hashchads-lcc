@@ -10,6 +10,7 @@ import { AutoRow, RowBetween } from '../../Components/Row'
 import { AutoColumn } from '../../Components/Column'
 import Search from '../../Components/Search'
 import GlobalChart from '../../Components/GlobalChart'
+import Trending from '../../Components/Trending'
 import { formattedNum, formattedPercent } from '../../utils'
 import GlobalStats from '../../Components/GlobalStats'
 
@@ -126,6 +127,7 @@ const Overview = () => {
               </Panel>
             </GridRow>
           )}
+          <Trending/>
         </Container>
       </div>
     </React.Fragment>
