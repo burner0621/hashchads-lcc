@@ -138,6 +138,7 @@ export function useGlobalData() {
     });
   }, [updatePrices]);
 
+  let isFetching = false;
   useEffect(() => {
     async function fetchData() {
 
@@ -156,9 +157,13 @@ export function useGlobalData() {
 
       let [hbarP, sauceP] = await getHbarAndSaucePrice()
       updateHbarAndSaucePrice(hbarP, sauceP)
+      isFetching = false;
     }
     if (data === undefined && hbarPrice && tmpPrices && tmpPrices.length > 0) {
-      fetchData()
+      if (!isFetching) {
+        fetchData()
+        isFetching = true
+      }
     }
   }, [data, hbarPrice, priceChanges, updateTokenData, tokenDailyVolume, update, updateAllPairsInSaucerswap, updateAllTokensInSaucerswap, updateHbarAndSaucePrice, tmpPrices])
 
@@ -407,7 +412,7 @@ export function useAllPairsInSaucerswap() {
   }, [allPairs, updateAllPairsInSaucerswap])
   return allPairs || []
 }
-
+let isGettingPriceChange = false;
 export function usePriceChanges() {
   const [state, { updatePriceChange }] = useGlobalDataContext()
   let priceChange = state?.priceChange
@@ -418,14 +423,18 @@ export function usePriceChanges() {
         const priceChangeData = await response.json();
         updatePriceChange(priceChangeData)
       }
+      isGettingPriceChange = false;
     }
     if (!priceChange || priceChange?.length === {}) {
-      fetchData()
+      if(!isGettingPriceChange) {
+        fetchData()
+        isGettingPriceChange = true;
+      }
     }
   }, [updatePriceChange, priceChange])
   return priceChange || {}
 }
-
+let isGettingDailyVolumes = false;
 export function useTokenDailyVolume() {
   const [state, { updateTokenDailyVolume }] = useGlobalDataContext()
   let tokenDailyVolume = state?.tokenDailyVolume
@@ -437,9 +446,13 @@ export function useTokenDailyVolume() {
         const dailyVolData = await response.json();
         updateTokenDailyVolume(dailyVolData)
       }
+      isGettingDailyVolumes = false
     }
     if (tokenDailyVolume === undefined || tokenDailyVolume === {}) {
-      fetchData()
+      if(!isGettingDailyVolumes) {
+        fetchData()
+        isGettingDailyVolumes = true;
+      }
     }
   }, [updateTokenDailyVolume, tokenDailyVolume])
   return tokenDailyVolume || {}
