@@ -29,7 +29,7 @@ const StyledEthereumLogo = styled.div`
   }
 `
 
-export default function TokenLogo({ path, diligence=true, logoType="logo", header = false, size = '24px', ...rest }) {
+export default function TokenLogo({ path, diligence=false, logoType="logo", header = false, size = '24px', ...rest }) {
     const [error, setError] = useState(false)
 
     useEffect(() => {
@@ -37,7 +37,7 @@ export default function TokenLogo({ path, diligence=true, logoType="logo", heade
     }, [path])
 
     const path1 = `https://saucerswap.finance${path}`
-    if (logoType === "warning" && diligence === false) {
+    if (logoType === "warning" && diligence === true) {
       return (
         <Inline>
            <span {...rest} alt={''} style={{ fontSize: size }} role="img" aria-label="face"><img src={warnImage} width={24}/></span>
