@@ -407,7 +407,7 @@ export function useTokenData(tokenId) {
   }, [tokenId, tokenData, updateTokenData])
   return tokenData || {}
 }
-
+let isGettingPairs = false;
 export function useAllPairsInSaucerswap() {
   const [state, { updateAllPairsInSaucerswap }] = useGlobalDataContext()
   let allPairs = state?.allPairs
@@ -415,11 +415,15 @@ export function useAllPairsInSaucerswap() {
     async function fetchData() {
       let allPairData = await getAllPairsOnSaucerswap()
       updateAllPairsInSaucerswap(allPairData)
+      isGettingPairs = false
     }
-    if (!allPairs || allPairs?.length === {}) {
-      fetchData()
+    if (!allPairs || allPairs?.length === 0) {
+      if (!isGettingPairs){
+        fetchData()
+        isGettingPairs = true
+      }
     }
-  }, [allPairs, updateAllPairsInSaucerswap])
+  }, [allPairs])
   return allPairs || []
 }
 let isGettingPriceChange = false;

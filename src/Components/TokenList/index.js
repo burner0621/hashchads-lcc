@@ -130,14 +130,14 @@ const TopTokenList = ({ tokens = [], itemMax = 10, useTracked = false }) => {
     const below600 = useMedia('(max-width: 600px)')
 
     useEffect(() => {
-        if (tokens) {
+        if (tokens && itemMax) {
             let extraPages = 1
             if (tokens.length % itemMax === 0) {
                 extraPages = 0
             }
             setMaxPage(Math.floor(tokens.length / itemMax) + extraPages)
         }
-    }, [tokens, itemMax])
+    }, [])
 
     const filteredList = useMemo(() => {
         return (

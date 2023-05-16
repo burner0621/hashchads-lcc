@@ -15,12 +15,6 @@ const TRENDING_TYPE = {
     pool: 'pool'
 }
 
-const TRENDING_TYPE_NAME = {
-    hot: 'HOT',
-    new: 'NEW',
-    pool: 'TOP POOLS'
-}
-
 const HOT_TOKENS = [
     '0.0.1190803',
     '0.0.127877',
@@ -57,7 +51,7 @@ const Trending = () => {
             }
         }
         setHotTokens (tmpCUr)
-    }, [allTokens])
+    }, [])
 
     const sortedList = useMemo(() => {
         return (

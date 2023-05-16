@@ -91,7 +91,7 @@ const Widgets = ({ address, price }) => {
           <Card className="card-animate" style={{border:'1px solid'}}>
             <CardBody>
               <div className="d-flex">
-                <div className="flex-grow-1">
+                <div className="flex-grow-1 w-full">
                   <h6 className="text-muted mb-3 text-white">{item.title}</h6>
                   <h2 className="mb-0">
                     $

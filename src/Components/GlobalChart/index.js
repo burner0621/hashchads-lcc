@@ -159,7 +159,7 @@ const GlobalChart = ({ display }) => {
     <div className='d-flex justify-center items-center'>
       {loading &&
         <span className="d-flex align-items-center">
-          <Spinner size="lg" className="flex-shrink-0"> Loading... </Spinner>
+          <Spinner className="flex-shrink-0"> Loading... </Spinner>
         </span>}
     </div>
   )

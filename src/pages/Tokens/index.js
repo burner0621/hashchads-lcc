@@ -57,7 +57,7 @@ const Tokens = () => {
     const formattedTokens = useMemo(() => {
         let rlt = []
         for (let item of allTokens) {
-            if(showLiquidity) {
+            if (showLiquidity) {
                 if (item['liquidity'] >= 500) rlt.push(item)
             } else {
                 rlt.push(item)
@@ -153,18 +153,6 @@ const Tokens = () => {
         setLoadingExport(false)
     }
 
-    const renderTokenTypes = () => {
-        let options = [];
-        for (let i = 0; i < Object.keys(TOKEN_TYPE).length; i++) {
-            let key = Object.keys(TOKEN_TYPE)[i];
-            options.push({
-                label: TOKEN_TYPE_NAME[key],
-                value: key
-            })
-        }
-        return options;
-    }
-
     const handleTokenType = (type) => {
         if (type === TOKEN_TYPE.gainer) {
             setLoadingGainer(true)
@@ -199,8 +187,10 @@ const Tokens = () => {
                 losers.push(formattedTokens[i]);
             }
         }
-        setGainers(gainers);
-        setLosers(losers);
+        if (gainers.length > 0)
+            setGainers(gainers);
+        if (losers.length > 0)
+            setLosers(losers);
     }, [formattedTokens]);
 
     const below600 = useMedia('(max-width: 600px)')
@@ -224,7 +214,7 @@ const Tokens = () => {
                                         <NavItem style={{ marginRight: '20px' }}>
                                             <NavLink style={{ cursor: "pointer" }} className={classnames({ active: tokenType == TOKEN_TYPE.all || tokenType == TOKEN_TYPE.gainer, })} onClick={() => { handleTokenType(TOKEN_TYPE.gainer) }} >
                                                 <i className="mdi mdi-elevation-rise align-middle me-1"></i> Gainers
-                                                
+
                                                 {/* <Badge color="danger" className="ms-1">{gainerTokens.length}</Badge> */}
                                                 <Badge pill color="success" className="position-absolute top-0 start-100 translate-middle">{gainerTokens.length}
                                                     <span className="visually-hidden">Gainers</span></Badge>
@@ -319,7 +309,7 @@ const Tokens = () => {
                                     </ButtonGroup> */}
                                     {!below600 &&
                                         <div className="d-flex items-center">
-                                            <FormGroup switch style={{marginRight: '5px'}}>
+                                            <FormGroup switch style={{ marginRight: '5px' }}>
                                                 <Input
                                                     type="switch"
                                                     style={{ height: "1.5rem", width: '3rem', marginRight: 5 }}
@@ -327,6 +317,7 @@ const Tokens = () => {
                                                     onClick={() => {
                                                         setShowLiquidity(!showLiquidity)
                                                     }}
+                                                    onChange={() => console.log('onChange')}
                                                 />
                                                 <Label check style={{ fontSize: 18, fontWeight: 450 }}>$500+ Liquidity</Label>
                                             </FormGroup>

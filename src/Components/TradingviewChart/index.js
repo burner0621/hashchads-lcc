@@ -180,7 +180,7 @@ const TradingViewChart = ({
             let color = ''
             let formattedPercentChange = '';
             try{
-                percentChange = baseChange !== undefined ? baseChange.toFixed(2) : 0 ;
+                percentChange = baseChange !== undefined ? Number(baseChange).toFixed(2) : 0 ;
                 formattedPercentChange = (percentChange > 0 ? '+' : '') + percentChange + '%';
                 console.log('=============basechange', baseChange, percentChange, ((percentChange > 0 ? '+' : '') + percentChange + '%'));
                 color = percentChange >= 0 ? 'green' : 'red'

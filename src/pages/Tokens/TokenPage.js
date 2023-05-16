@@ -99,7 +99,6 @@ const PanelWrapper = styled.div`
 const UNTRACKED_COPY = 'Derived USD values may be inaccurate without liquid stablecoin or ETH pairings.'
 
 const TokenPage = ({ address }) => {
-    console.log (address, ">>>>>>>>>>>>>>>>>")
     const allTokens = useAllTokensInSaucerswap()
     const priceChanges = usePriceChanges()
 

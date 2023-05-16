@@ -71,3 +71,7 @@ body {
 .button-border {
     border: 1px solid white !important;
 }
+
+.w-full {
+    width: 100%;
+}

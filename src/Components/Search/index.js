@@ -158,6 +158,7 @@ export const Search = ({ small = false, display }) => {
         }
     }, [value])
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     let uniquePairs = []
     let pairsFound = {}
     allPairs &&
@@ -169,6 +170,7 @@ export const Search = ({ small = false, display }) => {
             return true
         })
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     let uniqueTokens = []
     let found = {}
 
