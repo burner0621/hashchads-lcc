@@ -68,3 +68,21 @@ export const TRACKED_OVERRIDES_PAIRS = [
 // tokens that should be tracked but arent due to lag in subgraph
 // all pairs that include token will be tracked
 export const TRACKED_OVERRIDES_TOKENS = ['0x956f47f50a910163d8bf957cf5846d573e7f87ca']
+
+/**
+ * Newstar Add Start
+ */
+export const TOKEN_TYPE = {
+  all: 'all',
+  gainer: 'gainer',
+  loser: 'loser'
+}
+
+export const TOKEN_TYPE_NAME = {
+  all: 'All Tokens',
+  gainer: 'Gainers',
+  loser: 'Losers'
+}
+/**
+ * Newstar Add End
+ */
