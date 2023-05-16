@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { Button, Container, FormGroup, Input, Label } from "reactstrap";
+import { Button, Container, FormGroup, Input, Label, ButtonGroup } from "reactstrap";
 import { useMedia } from 'react-use'
 
 import Panel from '../../Components/Panel'
@@ -12,6 +12,7 @@ import TokenPage from './TokenPage'
 import { TOKEN_TYPE, TOKEN_TYPE_NAME } from "../../constants";
 import Select from "react-select";
 import { TokenType } from "@hashgraph/sdk";
+import { useAllTokensInSaucerswap } from "../../contexts/GlobalData";
 
 export const PageWrapper = styled.div`
   display: flex;
@@ -176,7 +177,62 @@ const Tokens = () => {
                                         <div style={{ fontWeight: 500, color: 'white', fontSize: 24 }}>{TOKEN_TYPE_NAME[tokenType]}</div>
                                         {!below600 &&
                                             <div className="d-flex items-center" style={{ alignItems: "center" }}>
-                                                <FormGroup switch style={{ marginRight: 5 }}>
+
+                                                <ButtonGroup style={{ marginRight: 5 }}>
+                                                    {tokenType == TOKEN_TYPE.gainer || tokenType == TOKEN_TYPE.all ? (
+                                                        <Button
+                                                            color="primary"
+                                                            onClick={() => {
+                                                                if (tokenType != TOKEN_TYPE.gainer) {
+                                                                    setTokenType(tokenType == TOKEN_TYPE.loser ?
+                                                                        TOKEN_TYPE.all : (tokenType == TOKEN_TYPE.all ?
+                                                                            TOKEN_TYPE.loser : TOKEN_TYPE.gainer));
+                                                                }
+                                                            }}>
+                                                            <i className="mdi mdi-elevation-rise"></i>Gainers
+                                                        </Button>
+                                                    ) : (
+                                                        <Button
+                                                            color="dark"
+                                                            outline
+                                                            onClick={() => {
+                                                                if (tokenType != TOKEN_TYPE.gainer) {
+                                                                    setTokenType(tokenType == TOKEN_TYPE.loser ?
+                                                                        TOKEN_TYPE.all : (tokenType == TOKEN_TYPE.all ?
+                                                                            TOKEN_TYPE.loser : TOKEN_TYPE.gainer));
+                                                                }
+                                                            }}>
+                                                            <i className="mdi mdi-elevation-rise"></i>Gainers
+                                                        </Button>
+                                                    )}
+                                                    {tokenType == TOKEN_TYPE.loser || tokenType == TOKEN_TYPE.all ? (
+                                                        <Button
+                                                            color="primary"
+                                                            onClick={() => {
+                                                                if (tokenType != TOKEN_TYPE.loser) {
+                                                                    setTokenType(tokenType == TOKEN_TYPE.gainer ?
+                                                                        TOKEN_TYPE.all : (tokenType == TOKEN_TYPE.all ?
+                                                                            TOKEN_TYPE.gainer : TOKEN_TYPE.loser));
+                                                                }
+                                                            }}>
+                                                            <i className="mdi mdi-elevation-decline"></i>Losers
+                                                        </Button>
+                                                    ) : (
+                                                        <Button
+                                                            color="dark"
+                                                            outline
+                                                            onClick={() => {
+                                                                if (tokenType != TOKEN_TYPE.loser) {
+                                                                    setTokenType(tokenType == TOKEN_TYPE.gainer ?
+                                                                        TOKEN_TYPE.all : (tokenType == TOKEN_TYPE.all ?
+                                                                            TOKEN_TYPE.gainer : TOKEN_TYPE.loser));
+                                                                }
+                                                            }}>
+                                                            <i className="mdi mdi-elevation-decline"></i>Losers
+                                                        </Button>
+                                                    )}
+                                                </ButtonGroup>
+                                                {/* <FormGroup switch style={{ marginRight: 5 }}>
                                                     <Input
                                                         id="gainersSwitch"
                                                         type="switch"
@@ -207,7 +263,7 @@ const Tokens = () => {
                                                         }}
                                                     />
                                                     <Label check style={{ fontSize: 18, fontWeight: 450 }}>Losers</Label>
-                                                </FormGroup>
+                                                </FormGroup> */}
                                             </div>
                                         }
                                     </div>
