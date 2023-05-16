@@ -99,6 +99,7 @@ const PanelWrapper = styled.div`
 const UNTRACKED_COPY = 'Derived USD values may be inaccurate without liquid stablecoin or ETH pairings.'
 
 const TokenPage = ({ address }) => {
+    console.log (address, ">>>>>>>>>>>>>>>>>")
     const allTokens = useAllTokensInSaucerswap()
     const priceChanges = usePriceChanges()
 
@@ -122,7 +123,7 @@ const TokenPage = ({ address }) => {
             }
         }
         fetchData()
-    }, [])
+    }, [address])
 
     useEffect(() => {
         for (let token of allTokens) {
@@ -131,15 +132,15 @@ const TokenPage = ({ address }) => {
                 setIconPath(token?.icon)
             }
         }
-    }, [])
+    }, [address, allTokens])
     useEffect(() => {
         try {
             if (Number(priceChanges[address]) > 0) { setPriceChange('+' + Number(priceChanges[address]).toFixed(4) + '%'); setPriceChangeColor('green') }
-            else { setPriceChange(priceChange + '%'); setPriceChangeColor('red') }
+            else { setPriceChange(Number(priceChanges[address]) + '%'); setPriceChangeColor('red') }
         }catch(e) {
             console.log (e)
         }
-    }, [])
+    }, [address, priceChanges])
 
     const LENGTH = below1080 ? 10 : 16
     const formattedSymbol = symbol?.length > LENGTH ? symbol.slice(0, LENGTH) + '...' : symbol

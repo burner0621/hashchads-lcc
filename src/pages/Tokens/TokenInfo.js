@@ -3,7 +3,7 @@ import { Card, CardBody, CardHeader, Col, Input, Label, Nav, NavItem, NavLink, R
 import DataTable from 'react-data-table-component';
 import classnames from 'classnames';
 import fetch from 'cross-fetch'
-
+import {useAllPairsInSaucerswap} from '../../contexts/GlobalData'
 import * as env from "../../env"
 
 const TokenInfo = ({ address, tokenPrice }) => {
@@ -14,6 +14,8 @@ const TokenInfo = ({ address, tokenPrice }) => {
             setActiveTab(tab);
         }
     };
+
+    const allPairs = useAllPairsInSaucerswap ()
 
     const [tokenInfo, setTokenInfo] = useState();
     const [createdAt, setCreatedAt] = useState('')
@@ -27,6 +29,19 @@ const TokenInfo = ({ address, tokenPrice }) => {
     const [holders, setHolders] = useState([])
     const [circulatingSupply, setCirculatingSupply] = useState(0)
     const [dilutedSupply, setDilutedSupply] = useState(0)
+    const [holderInfo, setHolderInfo] = useState ({})
+    const [pairs, setPairs] = useState ([])
+
+    let totalBalance = 0
+    let tmpPairs = []
+
+    if (allPairs) {
+        for (let pair of allPairs) {
+            if (address && address === pair.tokenA.id) tmpPairs.push(pair)
+            if (address && address === pair.tokenB.id) tmpPairs.push(pair)
+        }
+        setPairs (tmpPairs)
+    }
 
     const [modal_xlarge, setmodal_xlarge] = useState(false);
 
@@ -52,12 +67,14 @@ const TokenInfo = ({ address, tokenPrice }) => {
             }
         }
         fetchData()
-    }, [tokenInfo?.symbol, address])
+    }, [address, tokenPrice])
+
     const formatString = (str) => {
         if (str === undefined) return ''
         if (str.length === 0) return ''
         return str.slice(0, 5) + "..." + str.slice(-5);
     }
+
     useEffect(() => {
         if (tokenInfo) {
             var theDate = new Date(Number(tokenInfo?.created_timestamp) * 1000)
@@ -85,6 +102,43 @@ const TokenInfo = ({ address, tokenPrice }) => {
         }
         fetchData()
     }, [address])
+
+    const calculateSwapImpactUsd = (amount) => {
+        let maxSwapImpactUsd = 0
+        for (let pair of pairs) {
+            let deltaYUsd = 0
+            let reserveA = Number(pair.tokenA.tokenReserveB)/Number(pair.tokenA.decimals)
+            let reserveB = Number(pair.tokenB.tokenReserveB)/Number(pair.tokenB.decimals)
+            if (address === pair.tokenA.id) {
+                deltaYUsd = reserveB * (1 - reserveA / (reserveA + amount)) * pair.tokenB.priceUsd
+            }
+            if (address === pair.tokenB.id) {
+                deltaYUsd = reserveA * (1 - reserveB / (reserveB + amount)) * pair.tokenA.priceUsd
+            }
+            if (maxSwapImpactUsd < deltaYUsd) maxSwapImpactUsd = deltaYUsd
+        }
+        return maxSwapImpactUsd
+    }
+
+    // useEffect (() => {
+    //     if (holders) {
+    //         for (let holder of holders) {
+    //             // eslint-disable-next-line react-hooks/exhaustive-deps
+    //             totalBalance += holder.balance / Math.pow (10, Number(decimals))
+    //         }
+    //         let tmp = {}
+    //         for (let holder of holders) {
+    //             tmp[holder.account]['balance'] = holder.balance / Math.pow (10, Number(decimals))
+    //             tmp[holder.account]['percent'] = (tmp[holder.account]['balance'] / totalBalance * 100).toFixed(2)
+    //             tmp[holder.account]['usd'] = (tmp[holder.account]['balance'] * tokenPrice).toFixed(decimals)
+    //             tmp[holder.account]['impactUsd'] = calculateSwapImpactUsd (tmp[holder.account]['balance'])
+    //             tmp[holder.account]['impactPercent'] = (tmp[holder.account]['impactUsd'] / tmp[holder.account]['usd'] * 100).toFixed (2)
+    //             tmp[holder.account]['actualUsd'] = tmp[holder.account]['usd'] - tmp[holder.account]['impactUsd']
+    //         }
+    //         setHolderInfo (tmp)
+    //         console.log (tmp, ">>>>>>>>>>>>>>")
+    //     }
+    // }, [decimals, holders, pairs])
 
     const columns = [
 
@@ -141,7 +195,6 @@ const TokenInfo = ({ address, tokenPrice }) => {
                 minimum: 0
                 net_of_transfers: false
      */
-    console.log(tokenInfo, tokenInfo?.decimals, tokenPrice, Number(tokenInfo?.max_supply / Number(tokenInfo?.decimals)) * Number(tokenPrice), "<<<<<<<<<<<<<<<")
     return (
         <React.Fragment>
 

@@ -57,7 +57,7 @@ const Trending = () => {
             }
         }
         setHotTokens (tmpCUr)
-    }, [])
+    }, [allTokens])
 
     const sortedList = useMemo(() => {
         return (
@@ -71,7 +71,7 @@ const Trending = () => {
 
     useEffect (() => {
         let tmpCUr = []
-        for (var i = 0 ; i < 5 ; i ++) {
+        for (var i = 0 ; i < 5 && sortedList.length > 5 ; i ++) {
             let token = sortedList[i]
             let tmp = {}
             tmp.price = token.priceUsd.toFixed (6)
