@@ -25,6 +25,7 @@ const UPDATE_HBAR_AND_SAUCE_PRICE = 'UPDATE_HBAR_AND_SAUCE_PRICE'
 const UPDATE_PRICES = 'UPDATE_PRICES'
 const UPDATE_TOKEN_DAILY_VOLUME = 'UPDATE_TOKEN_DAILY_VOLUME'
 const UPDATE_PRICE_CHANGE = 'UPDATE_PRICE_CHANGE'
+const UPDATE_TOKEN_DATA = 'UPDATE_TOKEN_DATA'
 
 const socket = socketIO.connect(env.BASE_URL);
 // format dayjs with the libraries that we need
@@ -97,6 +98,15 @@ function reducer(state, { type, payload }) {
         },
       }
     }
+
+    case UPDATE_TOKEN_DATA: {
+      const { tokenData } = payload
+      return {
+        ...state,
+        tokenData
+      }
+    }
+
     case UPDATE_HBAR_AND_SAUCE_PRICE: {
       const { hBarPrice, saucePrice } = payload
       return {
@@ -112,11 +122,11 @@ function reducer(state, { type, payload }) {
 }
 
 export function useGlobalData() {
-  const [state, { update, updateAllPairsInSaucerswap, updateAllTokensInSaucerswap, updateHbarAndSaucePrice, updatePrices }] = useGlobalDataContext()
+  const [state, { update, updateTokenData, updateAllPairsInSaucerswap, updateAllTokensInSaucerswap, updateHbarAndSaucePrice, updatePrices }] = useGlobalDataContext()
   const [tmpPrices, setTmpPrices] = useState([])
   const [hbarPrice, saucePrice] = useHbarAndSaucePrice()
-  const tokenDailyVolume = useTokenDailyVolume ()
-  const priceChanges = usePriceChanges ()
+  const tokenDailyVolume = useTokenDailyVolume()
+  const priceChanges = usePriceChanges()
 
   const data = state?.globalData
 
@@ -138,6 +148,9 @@ export function useGlobalData() {
       let allPairs = await getAllPairsOnSaucerswap()
       updateAllPairsInSaucerswap(allPairs)
 
+      let tokenData = await getTokenData(allPairs)
+      updateTokenData(tokenData)
+
       let allTokens = await getAllTokensOnSaucerswap(tokenDailyVolume, priceChanges)
       updateAllTokensInSaucerswap(allTokens)
 
@@ -147,27 +160,9 @@ export function useGlobalData() {
     if (data === undefined && hbarPrice && tmpPrices && tmpPrices.length > 0) {
       fetchData()
     }
-  }, [data, hbarPrice, priceChanges, tokenDailyVolume, update, updateAllPairsInSaucerswap, updateAllTokensInSaucerswap, updateHbarAndSaucePrice, tmpPrices])
+  }, [data, hbarPrice, priceChanges, updateTokenData, tokenDailyVolume, update, updateAllPairsInSaucerswap, updateAllTokensInSaucerswap, updateHbarAndSaucePrice, tmpPrices])
 
   return data || {}
-}
-
-async function getPrices(oldestDateFetch) {
-  // const now_date = Date.now()
-  // var myHeaders = new Headers();
-  // myHeaders.append("Cookie", "__cf_bm=YNlckYdSka0TdMLFUjID5IkJdOChqO0nbvnwTWxEXSA-1683711491-0-AdwF1R49qpBFsd6fPsCEEDIpzBD6W4LqBfwjwCfrRd+BUYaj/k9+38xZrodAK6IIa1UTWP23gyXbYm+QJIiE2dw=");
-
-  // var requestOptions = {
-  //   method: 'GET',
-  //   headers: myHeaders,
-  //   redirect: 'follow'
-  // };
-  // let response = await fetch(`https://api.coingecko.com/api/v3/coins/hedera-hashgraph/market_chart/range?vs_currency=USD&from=${oldestDateFetch}&to=${now_date}`, requestOptions)
-  // if (response.status === 200) {
-  //   let jsonData = await response.json();
-  //   return jsonData['prices'];
-  // }
-  // return []
 }
 
 async function getHbarAndSaucePrice() {
@@ -177,9 +172,28 @@ async function getHbarAndSaucePrice() {
     try {
       return [Number(jsonData[0]['priceUsd']), Number(jsonData[2]['priceUsd'])];
     } catch (error) {
-      return [0,0]
+      return [0, 0]
     }
   }
+}
+
+async function getTokenData(_allPairs) {
+  let _tokenData = {}
+  for (let pair of _allPairs) {
+    if (_tokenData[pair.tokenA.id]) {
+      _tokenData[pair.tokenA.id]['liquidity'] += Number(pair.tokenReserveA) / Math.pow(10, Number(pair.tokenA.decimals)) * Number(pair.tokenA.priceUsd)
+    } else {
+      _tokenData[pair.tokenA.id] = {}
+      _tokenData[pair.tokenA.id]['liquidity'] = Number(pair.tokenReserveA) / Math.pow(10, Number(pair.tokenA.decimals)) * Number(pair.tokenA.priceUsd)
+    }
+    if (_tokenData[pair.tokenB.id]) {
+      _tokenData[pair.tokenB.id]['liquidity'] += Number(pair.tokenReserveB) / Math.pow(10, Number(pair.tokenB.decimals)) * Number(pair.tokenB.priceUsd)
+    } else {
+      _tokenData[pair.tokenB.id] = {}
+      _tokenData[pair.tokenB.id]['liquidity'] = Number(pair.tokenReserveB) / Math.pow(10, Number(pair.tokenB.decimals)) * Number(pair.tokenB.priceUsd)
+    }
+  }
+  return _tokenData
 }
 
 async function getAllPairsOnSaucerswap() {
@@ -210,7 +224,7 @@ async function getAllTokensOnSaucerswap(tokenDailyVolume, priceChanges) {
     for (let token of tokens) {
       token['oneDayVolumeUSD'] = Number(tokenDailyVolume[token['id']])
       token['priceChangeUSD'] = Number(priceChanges[token['id']])
-      rlt.push (token)
+      rlt.push(token)
     }
 
     return rlt
@@ -235,6 +249,15 @@ export default function Provider({ children }) {
       type: UPDATE_PRICES,
       payload: {
         prices: data,
+      },
+    })
+  }, [])
+
+  const updateTokenData = useCallback((data) => {
+    dispatch({
+      type: UPDATE_TOKEN_DATA,
+      payload: {
+        tokenData: data,
       },
     })
   }, [])
@@ -303,6 +326,7 @@ export default function Provider({ children }) {
           {
             update,
             updatePrices,
+            updateTokenData,
             updatePriceChange,
             updateTokenDailyVolume,
             updateAllPairsInSaucerswap,
@@ -315,6 +339,7 @@ export default function Provider({ children }) {
           state,
           update,
           updatePrices,
+          updateTokenData,
           updatePriceChange,
           updateTokenDailyVolume,
           updateAllPairsInSaucerswap,
@@ -351,34 +376,50 @@ export function usePrices() {
   return prices
 }
 
+export function useTokenData() {
+  const [state, { updateTokenData }] = useGlobalDataContext()
+  const _allPairs = state?.allPairs
+  let tokenData = state?.tokenData
+  useEffect(() => {
+    async function fetchData() {
+      let _tokenData = await getTokenData(_allPairs)
+      updateTokenData(_tokenData)
+    }
+    if (_allPairs && (tokenData === undefined || tokenData === {})) {
+      fetchData()
+    }
+  }, [_allPairs, tokenData, updateTokenData])
+  return tokenData || {}
+}
+
 export function useAllPairsInSaucerswap() {
-  const [state, {updateAllPairsInSaucerswap}] = useGlobalDataContext()
+  const [state, { updateAllPairsInSaucerswap }] = useGlobalDataContext()
   let allPairs = state?.allPairs
   useEffect(() => {
     async function fetchData() {
-      let allPairData = await getAllPairsOnSaucerswap ()
-      updateAllPairsInSaucerswap (allPairData)
+      let allPairData = await getAllPairsOnSaucerswap()
+      updateAllPairsInSaucerswap(allPairData)
     }
     if (!allPairs || allPairs?.length === {}) {
-      fetchData ()
+      fetchData()
     }
   }, [allPairs, updateAllPairsInSaucerswap])
   return allPairs || []
 }
 
 export function usePriceChanges() {
-  const [state, {updatePriceChange}] = useGlobalDataContext ()
+  const [state, { updatePriceChange }] = useGlobalDataContext()
   let priceChange = state?.priceChange
   useEffect(() => {
     async function fetchData() {
       let response = await fetch("https://api.saucerswap.finance/tokens/price-change")
       if (response.status === 200) {
         const priceChangeData = await response.json();
-        updatePriceChange (priceChangeData)
+        updatePriceChange(priceChangeData)
       }
     }
     if (!priceChange || priceChange?.length === {}) {
-      fetchData ()
+      fetchData()
     }
   }, [updatePriceChange, priceChange])
   return priceChange || {}
@@ -390,14 +431,14 @@ export function useTokenDailyVolume() {
   useEffect(() => {
     async function fetchData() {
       let response = await fetch("https://api.saucerswap.finance/tokens/daily-volumes")
-      
+
       if (response.status === 200) {
         const dailyVolData = await response.json();
-        updateTokenDailyVolume (dailyVolData)
+        updateTokenDailyVolume(dailyVolData)
       }
     }
     if (tokenDailyVolume === undefined || tokenDailyVolume === {}) {
-      fetchData ()
+      fetchData()
     }
   }, [updateTokenDailyVolume, tokenDailyVolume])
   return tokenDailyVolume || {}
@@ -405,16 +446,16 @@ export function useTokenDailyVolume() {
 
 export function useAllTokensInSaucerswap() {
   const [state, { updateAllTokensInSaucerswap }] = useGlobalDataContext()
-  const tokenDailyVolume = useTokenDailyVolume ()
-  const priceChanges = usePriceChanges ()
+  const tokenDailyVolume = useTokenDailyVolume()
+  const priceChanges = usePriceChanges()
 
   let allTokens = state?.allTokens
   useEffect(() => {
     async function fetchData() {
       let data = await getAllTokensOnSaucerswap(tokenDailyVolume, priceChanges)
-      updateAllTokensInSaucerswap (data)
+      updateAllTokensInSaucerswap(data)
     }
-    if (!allTokens && allTokens?.length > 0) fetchData ()
+    if (!allTokens && allTokens?.length > 0) fetchData()
   }, [allTokens, priceChanges, updateAllTokensInSaucerswap, tokenDailyVolume])
   return allTokens || []
 }
@@ -562,7 +603,7 @@ const getChartData = async (oldestDateToFetch, prices) => {
     if (response.status === 200) {
       if (prices.length > 0) {
         let jsonData = await response.json();
-        jsonData.pop ()
+        jsonData.pop()
         let diff = prices.length - jsonData.length
         for (var i = 0; i < jsonData.length; i++) {
           data.push({ "liquidity": Number(jsonData[i]['valueHbar']) / 100000000 * prices[diff + i - 1][1], "date": jsonData[i]['timestampSeconds'] })
@@ -575,7 +616,7 @@ const getChartData = async (oldestDateToFetch, prices) => {
     if (response.status === 200) {
       if (prices.length > 0) {
         let jsonData = await response.json();
-        jsonData.pop ()
+        jsonData.pop()
         let diff = prices.length - jsonData.length
         for (var i = 0; i < jsonData.length; i++) {
           data[i]["dailyVolumeUSD"] = Number(jsonData[i]['valueHbar']) / 100000000 * prices[diff + i - 1][1]

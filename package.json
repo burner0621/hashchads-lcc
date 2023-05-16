@@ -1,6 +1,6 @@
 {
-  "name": "material-velzon-react",
-  "version": "0.1.0",
+  "name": "hashchads",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@ckeditor/ckeditor5-build-classic": "^36.0.1",

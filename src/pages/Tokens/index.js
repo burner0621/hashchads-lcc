@@ -8,7 +8,6 @@ import Panel from '../../Components/Panel'
 import TopTokenList from '../../Components/TokenList'
 import { RowBetween } from '../../Components/Row'
 import Search from '../../Components/Search'
-import { useAllTokensInSaucerswap } from '../../contexts/GlobalData'
 import TokenPage from './TokenPage'
 import { TOKEN_TYPE, TOKEN_TYPE_NAME } from "../../constants";
 import Select from "react-select";

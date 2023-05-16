@@ -313,7 +313,7 @@ const TokenPage = ({ address }) => {
                         </Row>
                         <Row>
                             <TokenChart dataColors='["--vz-success", "--vz-danger"]' tokenId={address} />
-                            <TokenInfo address={address} />
+                            <TokenInfo address={address}  tokenPrice={priceUSD}/>
                         </Row>
                     </ContentWrapper>
                 </Container>

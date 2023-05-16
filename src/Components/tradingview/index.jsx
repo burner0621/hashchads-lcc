@@ -4,7 +4,7 @@ import Datafeed from "./datafeed";
 
 const Chart = (props) => {
 
-  const { symbol, stock, interval, width, height } = props;
+  const { symbol, tokenId, interval, width, height } = props;
 
   useEffect(() => {
     if (symbol && interval) {
@@ -18,7 +18,7 @@ const Chart = (props) => {
         width: "100%",
         height: "100%",
         container_id: "tv_chart_container",
-        datafeed: Datafeed,
+        datafeed: Datafeed(tokenId),
         library_path: "/charting_library/",
         overrides: {
           "paneProperties.vertGridProperties.color": "#E3E3E5", // Grid Vertical Lines Color
