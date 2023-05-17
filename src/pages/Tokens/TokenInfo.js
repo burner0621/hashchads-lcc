@@ -151,6 +151,7 @@ const TokenInfo = ({ address, tokenPrice }) => {
                 toggle={() => {
                     tog_xlarge();
                 }}
+                style={{ background: '#1a1d21' }}
             >
                 <DataTable
                     style={{textAlign: 'center'}}
@@ -241,6 +242,7 @@ const TokenInfo = ({ address, tokenPrice }) => {
                                             <h6 className="mb-0 text-warning">Custome Fees</h6>
                                             <div
                                                 style={{ marginleft: 5, marginRight: 5 }}
+                                                className='cursor'
                                                 onClick={() => tog_xlarge()}
                                             >
                                                 <i className='mdi mdi-file-table-box-multiple'></i>

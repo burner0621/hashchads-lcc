@@ -399,7 +399,7 @@ export const Search = ({ small = false, display }) => {
                 />
                 {!showMenu ? <SearchIconLarge /> : <CloseIcon onClick={() => { toggleMenu(false); }} />}
             </Wrapper>
-            <Menu hide={!showMenu} ref={menuRef} style={{ zIndex: "300", background: "white" }}>
+            <Menu hide={!showMenu} ref={menuRef} style={{ zIndex: "300", background: "#1a1d21" }}>
                 {
                     (display === "all" || display === "pair") &&
                     <>

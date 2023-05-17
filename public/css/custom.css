@@ -63,3 +63,7 @@ body {
 .text-symbol {
     color: #1896b2;
 }
+
+.cursor:hover {
+    cursor: pointer;
+}

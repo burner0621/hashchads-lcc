@@ -88,14 +88,14 @@ const Widgets = ({ address, price }) => {
     <React.Fragment>
       {buysellWidgets.map((item, key) => (
         <Col xl={3} sm={6} key={key}>
-          <Card className="card-animate">
+          <Card className="card-animate" style={{border:'1px solid'}}>
             <CardBody>
               <div className="d-flex">
                 <div className="flex-grow-1">
                   <h6 className="text-muted mb-3 text-white">{item.title}</h6>
                   <h2 className="mb-0">
                     $
-                    <span className="counter-value">
+                    <span className="counter-value" style={{textOverflow:"ellipsis"}}>
                       <CountUp start={0} end={item.counter} duration={3} decimals={decimal}/>
                     </span>
                     {/* <small className="text-muted fs-13">.{item.decimal}k</small> */}
