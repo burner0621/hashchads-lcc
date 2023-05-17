@@ -26,6 +26,8 @@ const UPDATE_PRICES = 'UPDATE_PRICES'
 const UPDATE_TOKEN_DAILY_VOLUME = 'UPDATE_TOKEN_DAILY_VOLUME'
 const UPDATE_PRICE_CHANGE = 'UPDATE_PRICE_CHANGE'
 const UPDATE_TOKEN_DATA = 'UPDATE_TOKEN_DATA'
+const UPDATE_PAIR_WEEKLY_VOLUME = 'UPDATE_PAIR_WEEKLY_VOLUME'
+const UPDATE_PAIR_DAILY_VOLUME = 'UPDATE_PAIR_DAILY_VOLUME'
 
 const socket = socketIO.connect(env.BASE_URL);
 // format dayjs with the libraries that we need
@@ -61,6 +63,22 @@ function reducer(state, { type, payload }) {
       return {
         ...state,
         tokenDailyVolume,
+      }
+    }
+
+    case UPDATE_PAIR_DAILY_VOLUME: {
+      const { pairDailyVolume } = payload
+      return {
+        ...state,
+        pairDailyVolume,
+      }
+    }
+
+    case UPDATE_PAIR_WEEKLY_VOLUME: {
+      const { pairWeeklyVolume } = payload
+      return {
+        ...state,
+        pairWeeklyVolume,
       }
     }
 
@@ -289,6 +307,24 @@ export default function Provider({ children }) {
       },
     })
   }, [])
+  
+  const updatePairDailyVolume = useCallback((data) => {
+    dispatch({
+      type: UPDATE_PAIR_DAILY_VOLUME,
+      payload: {
+        pairDailyVolume: data,
+      },
+    })
+  }, [])
+  
+  const updatePairWeeklyVolume = useCallback((data) => {
+    dispatch({
+      type: UPDATE_PAIR_WEEKLY_VOLUME,
+      payload: {
+        pairWeeklyVolume: data,
+      },
+    })
+  }, [])
 
   const updatePriceChange = useCallback((data) => {
     dispatch({
@@ -346,6 +382,8 @@ export default function Provider({ children }) {
             update,
             updatePrices,
             updatePriceChange,
+            updatePairDailyVolume,
+            updatePairWeeklyVolume,
             updateTokenDailyVolume,
             updateAllPairsInSaucerswap,
             updateAllTokensInSaucerswap,
@@ -358,6 +396,8 @@ export default function Provider({ children }) {
           update,
           updatePrices,
           updatePriceChange,
+          updatePairDailyVolume,
+          updatePairWeeklyVolume,
           updateTokenDailyVolume,
           updateAllPairsInSaucerswap,
           updateAllTokensInSaucerswap,
@@ -478,6 +518,52 @@ export function useTokenDailyVolume() {
     }
   }, [updateTokenDailyVolume, tokenDailyVolume])
   return tokenDailyVolume || {}
+}
+
+export function usePairDailyVolume() {
+  const [state, { updatePairDailyVolume }] = useGlobalDataContext()
+  let pairDailyVolume = state?.pairDailyVolume
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        let response = await fetch("https://api.saucerswap.finance/pools/daily-volumes")
+
+        if (response.status === 200) {
+          const dailyVolData = await response.json();
+          updatePairDailyVolume(dailyVolData)
+        }
+      } catch (e) {
+        console.log(e)
+      }
+    }
+    if (pairDailyVolume === undefined || pairDailyVolume.length === 0) {
+        fetchData()
+    }
+  }, [updatePairDailyVolume, pairDailyVolume])
+  return pairDailyVolume || {}
+}
+
+export function usePairWeeklyVolume() {
+  const [state, { updatePairWeeklyVolume }] = useGlobalDataContext()
+  let pairWeeklyVolume = state?.pairWeeklyVolume
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        let response = await fetch("https://api.saucerswap.finance/pools/weekly-volumes")
+
+        if (response.status === 200) {
+          const dailyVolData = await response.json();
+          updatePairWeeklyVolume(dailyVolData)
+        }
+      } catch (e) {
+        console.log(e)
+      }
+    }
+    if (pairWeeklyVolume === undefined || pairWeeklyVolume.length === 0) {
+        fetchData()
+    }
+  }, [updatePairWeeklyVolume, pairWeeklyVolume])
+  return pairWeeklyVolume || {}
 }
 
 export function useAllTokensInSaucerswap() {

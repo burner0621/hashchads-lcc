@@ -5,6 +5,9 @@ import { RowBetween } from '../../Components/Row'
 import classnames from "classnames";
 import styled from 'styled-components'
 import DataTable from 'react-data-table-component';
+
+import { useAllPairsInSaucerswap, usePriceChanges, usePairDailyVolume, usePairWeeklyVolume } from "../../contexts/GlobalData";
+
 import TokenLogo from "../../Components/TokenLogo";
 import { FullWrapper, PageWrapper } from "../Tokens";
 
@@ -22,23 +25,49 @@ const PAIRS_TYPE_NAME = {
 
 const TIME_RANGE_TYPE = {
     day: 'day',
-    sixh: 'sixh',
-    oneh: 'oneh',
-    fivem: 'fivem'
+    week: 'week',
 }
 
 const TIME_RANGE_TYPE_NAME = {
     day: '24h',
-    sixh: '6h',
-    oneh: '1h',
-    fivem: '5m'
+    week: '1W',
 }
 
 const Pairs = () => {
     document.title = "Pairs";
 
     const [pairsType, setPairsType] = useState(PAIRS_TYPE.pairs)
-    const [timeRangeType, setTimeRangeType] = useState(TIME_RANGE_TYPE.all)
+    const [timeRangeType, setTimeRangeType] = useState(TIME_RANGE_TYPE.day)
+    const [data, setData] = useState ([])
+
+    const _allPairs = useAllPairsInSaucerswap()
+    const _dailyPairVolume = usePairDailyVolume ()
+    const _weeklyPairVolume = usePairWeeklyVolume ()
+    const _priceChanges = usePriceChanges()
+
+    
+    console.log (_priceChanges, _allPairs.length, ">>>>>>>>>>>>>>>>>>>")
+
+    useEffect(() => {
+        if (_priceChanges && (Object.keys(_priceChanges)).length > 0) {
+            let _data = []
+            for (let pair of _allPairs) {
+                let tmp = {}
+                tmp.icon = pair.tokenA.icon
+                tmp.first = pair.tokenA.symbol
+                tmp.second = pair.tokenB.symbol
+                tmp.pair_address = pair.contractId
+                tmp.price = pair.tokenA.priceUsd
+                tmp.percent = _priceChanges[pair.tokenA.id]
+                tmp.createdAt = ''
+                if (timeRangeType === TIME_RANGE_TYPE.day) tmp.volume = _dailyPairVolume[pair.id]
+                if (timeRangeType === TIME_RANGE_TYPE.week) tmp.volume = _weeklyPairVolume[pair.id]
+                tmp.liquidity = 2 * pair.tokenA.priceUsd * pair.tokenReserveA / Math.pow(10, pair.tokenA.decimals)
+                _data.push (tmp)
+            }
+            setData (_data)
+        }
+    }, [_allPairs, _priceChanges, _dailyPairVolume, _weeklyPairVolume, timeRangeType])
 
     const below600 = useMedia('(max-width: 600px)')
     const below700 = useMedia('(max-width: 700px)')
@@ -56,8 +85,6 @@ const Pairs = () => {
     const handleCopyAddress = () => {
 
     }
-
-    const data = [];
 
     const columns = [
 
@@ -143,18 +170,6 @@ const Pairs = () => {
             selector: row => row.cap ? '$' + row.cap : '-'
         },
         {
-            name: <span className='font-weight-bold fs-13'>DEX</span>,
-            sortable: true,
-            selector: row => {
-                return (
-                    <div className="d-flex justify-center items-center">
-                        <TokenLogo path={row.dex} />
-                        <TokenLogo path={row.dex_pair} style={{ position: "absolute" }} />
-                    </div>
-                )
-            }
-        },
-        {
             name: <span className='font-weight-bold fs-13'>Actions</span>,
             sortable: true,
             selector: row => {
@@ -197,23 +212,13 @@ const Pairs = () => {
                                 {!below600 &&
                                     <Nav pills className="mb-3">
                                         <NavItem>
-                                            <NavLink style={{ cursor: "pointer" }} className={classnames({ active: timeRangeType == TIME_RANGE_TYPE.all, })} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.all) }} >
+                                            <NavLink style={{ cursor: "pointer" }} className={classnames({ active: timeRangeType == TIME_RANGE_TYPE.day, })} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.day) }} >
                                                 <span className="badge">24h</span>
                                             </NavLink>
                                         </NavItem>
                                         <NavItem>
-                                            <NavLink style={{ cursor: "pointer" }} className={classnames({ active: timeRangeType == TIME_RANGE_TYPE.sixh })} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.sixh) }} >
-                                                <span className="badge">6h</span>
-                                            </NavLink>
-                                        </NavItem>
-                                        <NavItem>
-                                            <NavLink style={{ cursor: "pointer" }} className={classnames({ active: timeRangeType == TIME_RANGE_TYPE.oneh })} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.oneh) }} >
-                                                <span className="badge">1h</span>
-                                            </NavLink>
-                                        </NavItem>
-                                        <NavItem>
-                                            <NavLink style={{ cursor: "pointer" }} className={classnames({ active: timeRangeType == TIME_RANGE_TYPE.fivem })} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.fivem) }} >
-                                                <span className="badge">5m</span>
+                                            <NavLink style={{ cursor: "pointer" }} className={classnames({ active: timeRangeType == TIME_RANGE_TYPE.week })} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.week) }} >
+                                                <span className="badge">1W</span>
                                             </NavLink>
                                         </NavItem>
                                     </Nav>
@@ -221,7 +226,7 @@ const Pairs = () => {
                             </RowBetween>
                             {/* PAIRS DATA TABLE */}
                             <DataTable
-                                style={{ textAlign: 'center', background:'black' }}
+                                style={{ textAlign: 'center', background: 'black' }}
                                 columns={columns}
                                 data={data || []}
                                 pagination
