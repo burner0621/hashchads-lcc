@@ -29,9 +29,16 @@ const TokenInfo = ({ address, tokenPrice }) => {
     const [dilutedSupply, setDilutedSupply] = useState(0)
 
     const [modal_xlarge, setmodal_xlarge] = useState(false);
+    const [detail_modal_xlarge, setdetailmodal] = useState(false)
+
+    const [hoderData, setHolderData] = useState([])
 
     function tog_xlarge() {
         setmodal_xlarge(!modal_xlarge);
+    }
+
+    function detail_tog_xlarge() {
+        setdetailmodal(!detail_modal_xlarge)
     }
 
     useEffect(() => {
@@ -154,11 +161,50 @@ const TokenInfo = ({ address, tokenPrice }) => {
                 style={{ background: '#1a1d21' }}
             >
                 <DataTable
-                    style={{textAlign: 'center'}}
+                    style={{ textAlign: 'center' }}
                     columns={columns}
                     data={tokenInfo && tokenInfo.custom_fees && tokenInfo.custom_fees.fractional_fees || []}
                     pagination
                 />
+            </Modal>}
+
+            {tokenInfo && <Modal
+                size="xl"
+                isOpen={detail_modal_xlarge}
+                toggle={() => {
+                    detail_tog_xlarge();
+                }}
+            >
+                <div className="card-body">
+                    <div className="table-responsive table-card">
+                        <table className="table table-hover table-borderless table-centered align-middle table-nowrap mb-0">
+                            <thead className="text-muted bg-soft-light">
+                                <tr>
+                                    <th>RANK</th>
+                                    <th>ACCOUNT ID</th>
+                                    <th>BALANCE</th>
+                                    <th>PERCENT</th>
+                                    <th>USD</th>
+                                    <th>SWAP IMPACT</th>
+                                    <th>ACTUAL USD</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {(hoderData || []).map((item, key) => (
+                                    <tr key={key}>
+                                        <td>${key + 1}</td>
+                                        <td>${item.acccountId}</td>
+                                        <td>${item.balance}</td>
+                                        <td>${item.percent}</td>
+                                        <td>${item.usd}</td>
+                                        <td>${item.swap_impact}</td>
+                                        <td>${item.actual_usd}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </Modal>}
             <Col xxl={3}>
                 <Card className="card-height-100">
@@ -245,7 +291,7 @@ const TokenInfo = ({ address, tokenPrice }) => {
                                                 className='cursor'
                                                 onClick={() => tog_xlarge()}
                                             >
-                                                <i className='mdi mdi-file-table-box-multiple'></i>
+                                                <i className='mdi mdi-hand-pointing-right'></i>
                                             </div>
                                         </div>
                                         <div className="p-3">
@@ -325,11 +371,19 @@ const TokenInfo = ({ address, tokenPrice }) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="p-3 bg-soft-warning">
-                                    <div className="float-end ms-2">
+                                <div className="p-3 bg-soft-warning d-flex justify-between">
+                                    {/* <div className="float-end ms-2">
                                         <h6 className="text-warning mb-0"><span className="text-dark"></span></h6>
-                                    </div>
+                                    </div> */}
                                     <h6 className="mb-0 text-warning">Holders</h6>
+
+                                    <div
+                                        style={{ marginleft: 5, marginRight: 5 }}
+                                        className='cursor'
+                                        onClick={() => detail_tog_xlarge()}
+                                    >
+                                        <i className='mdi mdi-hand-pointing-right'></i>
+                                    </div>
                                 </div>
                                 <div className="p-3">
                                     <div className="mt-2" style={{ height: 300, overflowY: 'auto' }}>
