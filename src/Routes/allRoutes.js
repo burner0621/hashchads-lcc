@@ -4,6 +4,7 @@ import { Navigate } from "react-router-dom";
 //Dashboard
 import Overview from "../pages/Overview";
 import Tokens from "../pages/Tokens";
+import Pairs from "../pages/Pairs";
 import DashboardAnalytics from "../pages/DashboardAnalytics";
 import DashboardCrm from "../pages/DashboardCrm";
 import DashboardEcommerce from "../pages/DashboardEcommerce";
@@ -242,7 +243,7 @@ const authProtectedRoutes = [
   { path: "/overview", component: <Overview /> },
   { path: "/tokens", component: <Tokens /> },
   { path: "/tokens/:tokenAddress", component: <Tokens /> },
-
+  { path: "/pairs", component: <Pairs /> },
   // {
   //   path: "/apps-ecommerce-product-details",
   //   component: <EcommerceProductDetail />,

@@ -157,6 +157,16 @@ const Navdata = () => {
         setIscurrentState("Tokens");
       },
     },
+    {
+      id: "pairs",
+      label: "Pairs",
+      icon: "mdi mdi-circle-multiple",
+      link: "/pairs",
+      click: function (e) {
+        e.preventDefault();
+        setIscurrentState("Pairs");
+      },
+    },
     // {
     //   id: "apps",
     //   label: "Apps",

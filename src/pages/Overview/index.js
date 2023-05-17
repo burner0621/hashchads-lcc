@@ -36,7 +36,7 @@ const Overview = () => {
   const [rightColumn, setRightColumn] = useState(true);
 
   const { totalLiquidityUSD, oneDayVolumeUSD, volumeChangeUSD, liquidityChangeUSD } = useGlobalData()
-
+  console.log('newstar totalLiquidityUSD', totalLiquidityUSD, oneDayVolumeUSD, volumeChangeUSD, liquidityChangeUSD);
   const toggleRightColumn = () => {
     setRightColumn(!rightColumn);
   };
@@ -124,6 +124,7 @@ const Overview = () => {
                   style={{ position: 'absolute', bottom: '0', right: '0.125rem', height: '0.25rem', borderRadius: '0.25rem', backgroundImage: 'linear-gradient(to right,hsla(0,0%,100%,.15),#00e9b1)', filter: 'blur(1px)' }}
                 />
                 <GlobalChart display="volume" id="volume" />
+                {/* <GlobalChart display="liquidity" /> */}
               </Panel>
             </GridRow>
           )}
