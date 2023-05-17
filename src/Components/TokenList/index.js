@@ -117,7 +117,7 @@ const SORT_FIELD = {
     CHANGE: 'priceChangeUSD',
 }
 
-const TopTokenList = ({tokens = [], itemMax = 10, useTracked = false }) => {
+const TopTokenList = ({ tokens = [], itemMax = 10, useTracked = false }) => {
 
     const [page, setPage] = useState(1)
     const [maxPage, setMaxPage] = useState(1)
@@ -161,11 +161,11 @@ const TopTokenList = ({tokens = [], itemMax = 10, useTracked = false }) => {
                 <DataText area="name" fontWeight="500">
                     <Row>
                         {!below680 && <div style={{ marginRight: '1rem', width: '10px' }}>{index}</div>}
-                        <TokenLogo path={item.icon}/>
-                        <CustomLink style={{ marginLeft: '16px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 140 }} to={'/tokens/' + item.id}>
+                        <TokenLogo path={item.icon} />
+                        <CustomLink style={{ marginLeft: '16px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 140, display: 'flex' }} to={'/tokens/' + item.id}>
                             {below680 ? item.symbol : item.name}
+                            <TokenLogo diligence={item.dueDiligenceComplete} logoType={"warning"} />
                         </CustomLink>
-                        <TokenLogo diligence={item.diligence} logoType={"warning"}/>
                     </Row>
                 </DataText>
                 {!below680 && (

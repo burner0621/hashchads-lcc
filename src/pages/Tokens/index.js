@@ -216,7 +216,7 @@ const Tokens = () => {
                                     <div style={{ display: "flex", width: '100%', marginRight: '10px' }}>
                                         <div style={{ fontWeight: 500, color: 'white', fontSize: 24 }}>{TOKEN_TYPE_NAME[tokenType]}</div>
                                     </div>
-                                    {!below600 && <Search display="token" small={true} />}
+                                    {!below600 && <Search display={"token"} small={true} />}
                                 </RowBetween>
 
                                 <RowBetween>

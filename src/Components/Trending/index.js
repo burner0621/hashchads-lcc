@@ -1,11 +1,13 @@
 import { Button } from 'reactstrap';
 import { TableContainer } from '../Common/TableContainer'
 import TokenLogo from '../TokenLogo';
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardHeader, Col, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
+import fetch from 'cross-fetch'
+import {useAllTokensInSaucerswap} from "../../contexts/GlobalData"
 
 const TRENDING_TYPE = {
     hot: 'hot',
@@ -19,100 +21,85 @@ const TRENDING_TYPE_NAME = {
     pool: 'TOP POOLS'
 }
 
+const HOT_TOKENS = [
+    '0.0.1190803',
+    '0.0.127877',
+    '0.0.786931',
+    '0.0.1109951',
+    '0.0.1055483',
+]
+
 const Trending = () => {
     const [trendingType, setTrendingType] = useState(TRENDING_TYPE.hot)
-    // const [currencies, setCurrency] = useState([])
-    const currencies = [
-        {
-            id: 1,
-            img: "/images/tokens/hbar.svg",
-            coinName: "Bitcoin",
-            price: "48,568.025",
-            iconClass: "success",
-            icon: "mdi mdi-trending-up",
-            change: "5.26",
-            balance: "53,914.025",
-            totalCoin: "1.25634801",
-        },
-        {
-            id: 2,
-            img: "/images/tokens/hbar.svg",
-            coinName: "Litecoin",
-            price: "87,142.027",
-            iconClass: "danger",
-            icon: "mdi mdi-trending-down",
-            change: "3.07",
-            balance: "75,854.127",
-            totalCoin: "2.85472161",
-        },
-        {
-            id: 3,
-            img: "/images/tokens/hbar.svg",
-            coinName: "Eathereum",
-            price: "33,847.961",
-            iconClass: "success",
-            icon: "mdi mdi-trending-up",
-            change: "7.13",
-            balance: "44,152.185",
-            totalCoin: "1.45612347",
-        },
-        {
-            id: 4,
-            img: "/images/tokens/hbar.svg",
-            coinName: "Binance",
-            price: "73,654.421",
-            iconClass: "success",
-            icon: "mdi mdi-trending-up",
-            change: "0.97",
-            balance: "48,367.125",
-            totalCoin: "0.35734601",
-        },
-        {
-            id: 5,
-            img: "/images/tokens/hbar.svg",
-            coinName: "Tether",
-            price: "66,742.077",
-            iconClass: "danger",
-            icon: "mdi mdi-trending-down",
-            change: "1.08",
-            balance: "53,487.083",
-            totalCoin: "3.62912570",
-        },
-        {
-            id: 6,
-            img: "/images/tokens/hbar.svg",
-            coinName: "Dash",
-            price: "34,736.209",
-            iconClass: "success",
-            icon: "mdi mdi-trending-up",
-            change: "4.52",
-            balance: "15,203.347",
-            totalCoin: "1.85412740",
-        },
-        {
-            id: 7,
-            img: "/images/tokens/hbar.svg",
-            coinName: "Neo",
-            price: "56,357.313",
-            iconClass: "danger",
-            icon: "mdi mdi-trending-down",
-            change: "2.87",
-            balance: "61,843.173",
-            totalCoin: "1.87732061",
-        },
-        {
-            id: 8,
-            img: "/images/tokens/hbar.svg",
-            coinName: "Dogecoin",
-            price: "62,357.649",
-            iconClass: "success",
-            icon: "mdi mdi-trending-up",
-            change: "3.45",
-            balance: "54,843.173",
-            totalCoin: "0.95632087",
-        },
-    ];
+    const [currencies, setCurrencies] = useState ([])
+    const [newTokens, setNewTokens] = useState ([])
+    const [hotTokens, setHotTokens] = useState ([])
+    
+    const allTokens = useAllTokensInSaucerswap ()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useEffect(() => {
+        let tmpCUr = []
+        for (let token of allTokens) {
+            if (HOT_TOKENS.includes(token.id)) {
+                let tmp = {}
+                tmp.price = token.priceUsd.toFixed (6)
+                tmp.img = `https://saucerswap.finance${token.icon}`
+                tmp.change = token.priceChangeUSD.toFixed (6)
+                tmp.coinName = token.name
+                if (Number(token.priceChangeUSD) > 0) {
+                    tmp.iconClass = "success"
+                    tmp.icon = "mdi mdi-trending-up"
+                } else {
+                    tmp.iconClass = "danger"
+                    tmp.icon = "mdi mdi-trending-down"
+                }
+                tmpCUr.push (tmp)
+            }
+        }
+        setHotTokens (tmpCUr)
+    }, [])
 
+    const sortedList = useMemo(() => {
+        return (
+            allTokens &&
+            allTokens
+                .sort((a, b) => {
+                    return a['timestampSecondsLastListingChange'] > b['timestampSecondsLastListingChange'] ? -1 : 1
+                })
+        )
+    }, [allTokens])
+
+    useEffect (() => {
+        let tmpCUr = []
+        for (var i = 0 ; i < 5 ; i ++) {
+            let token = sortedList[i]
+            let tmp = {}
+            tmp.price = token.priceUsd.toFixed (6)
+            tmp.img = `https://saucerswap.finance${token.icon}`
+            tmp.change = token.priceChangeUSD.toFixed (6)
+            tmp.coinName = token.name
+            if (Number(token.priceChangeUSD) > 0) {
+                tmp.iconClass = "success"
+                tmp.icon = "mdi mdi-trending-up"
+            } else {
+                tmp.iconClass = "danger"
+                tmp.icon = "mdi mdi-trending-down"
+            }
+            tmpCUr.push (tmp)
+        }
+        setNewTokens (tmpCUr)
+    }, [])
+
+    useEffect (() => {
+        if (trendingType === TRENDING_TYPE.hot) {
+            setCurrencies (hotTokens)
+        }
+        else if (trendingType === TRENDING_TYPE.new) {
+            setCurrencies (newTokens)
+        }
+        else setCurrencies ([])
+    }, [hotTokens, newTokens, trendingType])
+    
     const handleTrendingType = (type) => {
         if(type !== trendingType) setTrendingType(type)
     }
