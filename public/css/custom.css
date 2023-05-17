@@ -27,6 +27,10 @@
     justify-content: center;
 }
 
+.justify-between {
+    justify-content: space-between;
+}
+
 .items-center {
     align-items: center;
 }
@@ -49,4 +53,13 @@
 
 .normal-background {
     background-color: blueviolet;
+}
+
+body {
+    background-image: none;
+    background-color: #1a1d21 !important;
+}
+
+.text-symbol {
+    color: #1896b2;
 }

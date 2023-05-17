@@ -246,14 +246,16 @@ input:-webkit-autofill:active {
 }
 
 body {
-  background-image: linear-gradient(
-    rgb(0, 0, 0),
-    rgba(75, 56, 179, 0.9)
-  ) !important;
+  // background-image: linear-gradient(
+  //   rgb(0, 0, 0),
+  //   rgba(75, 56, 179, 0.9)
+  // ) !important;
+  background-color: #1a1d21;
 }
 
 .footer {
-  background-color: rgba(75, 56, 179, 0.9) !important;
+  // background-color: rgba(75, 56, 179, 0.9) !important;
+  background-color: #262a2f !important;
 }
 
 .panel-shadow {
