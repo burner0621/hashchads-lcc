@@ -127,24 +127,6 @@ const Pairs = () => {
             },
         },
         {
-            name: <span className='font-weight-bold fs-13'>Contact</span>,
-            selector: (row) => {
-                if (row.contact) {
-                    return (
-                        <div>
-                            <i className={row.contact.mint ? "bx bx bxs-layer-plus text-yellow" : "bx bx-book-add"}></i>
-                            <i className={row.contact.lock ? "bx bx bxs-lock-alt text-yellow" : "bx bx bxs-lock-alt"}></i>
-                            <i className={row.contact.share ? "bx bx bxs-share-alt text-yellow" : "bx bx bxs-share-alt"}></i>
-                            <i className={row.contact.fee ? "bx bx-money text-yellow" : "bx bx-money"}></i>
-                        </div>
-                    )
-                } else {
-                    return <span className="badge bg-dark">No data</span>
-                }
-            },
-            sortable: true
-        },
-        {
             name: <span className='font-weight-bold fs-13'>Created</span>,
             selector: row => row.createdAt,
             sortable: true
@@ -168,6 +150,11 @@ const Pairs = () => {
             name: <span className='font-weight-bold fs-13'>T.M.Cap.</span>,
             sortable: true,
             selector: row => row.cap ? '$' + row.cap : '-'
+        },
+        {
+            name: <span className='font-weight-bold fs-13'>Daily Fees</span>,
+            sortable: true,
+            selector: row => (row.volume / 40)
         },
         {
             name: <span className='font-weight-bold fs-13'>Actions</span>,
