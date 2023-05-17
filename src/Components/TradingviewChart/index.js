@@ -56,7 +56,7 @@ const TradingViewChart = ({
     // pointer to the chart object
     const [chartCreated, setChartCreated] = useState(false)
     const dataPrev = usePrevious(data)
-    
+
     useEffect(() => {
         if (data !== dataPrev && chartCreated && type === CHART_TYPES.BAR) {
             // remove the tooltip element
@@ -64,7 +64,7 @@ const TradingViewChart = ({
             let node = document.getElementById('test-id' + type)
             node.removeChild(tooltip)
             chartCreated.resize(0, 0)
-            setChartCreated()
+            setChartCreated(false)
         }
     }, [chartCreated, data, dataPrev, type])
 
@@ -91,11 +91,74 @@ const TradingViewChart = ({
             let node = document.getElementById('test-id' + type)
             node.removeChild(tooltip)
             chartCreated.resize(0, 0)
-            setChartCreated()
+            setChartCreated(false)
         }
     }, [chartCreated, darkMode, previousTheme, type])
     // if no chart created yet, create one with options and add to DOM manually
     useEffect(() => {
+        if (chartCreated && base && baseChange && formattedData) {
+            let toolTip = document.getElementById('tooltip-id' + type);
+
+            if (toolTip) {
+                
+                let percentChange = 0
+                let color = ''
+                let formattedPercentChange = '';
+                try {
+                    percentChange = baseChange !== undefined ? Number(baseChange).toFixed(2) : 0;
+                    formattedPercentChange = (percentChange > 0 ? '+' : '') + percentChange + '%';
+                    color = percentChange >= 0 ? 'green' : 'red'
+                } catch (e) {
+                    formattedPercentChange = '--%'
+                    color = 'red'
+                }
+
+                const setLastBarText = () => {
+                    toolTip.innerHTML = `<div style="font-size: 16px; margin: 4px 0px; color: ${textColor};">${title} ${type === CHART_TYPES.BAR && !useWeekly ? '(24hr)' : ''}</div>
+                    <div style="font-size: 22px; margin: 4px 0px; color:${textColor}" >
+                    ${formattedNum(base ?? 0, true)}
+                    <span style="margin-left: 10px; font-size: 16px; color: ${color};">${formattedPercentChange}</span>
+                    </div>`
+                }
+
+                setLastBarText();
+
+                chartCreated.subscribeCrosshairMove(function (param) {
+                    if (
+                        param === undefined ||
+                        param.time === undefined ||
+                        param.point.x < 0 ||
+                        param.point.x > width ||
+                        param.point.y < 0 ||
+                        param.point.y > HEIGHT
+                    ) {
+                        setLastBarText()
+                    } else {
+                        let dateStr = useWeekly
+                            ? dayjs(param.time.year + '-' + param.time.month + '-' + param.time.day)
+                                .startOf('week')
+                                .format('MMMM D, YYYY') +
+                            '-' +
+                            dayjs(param.time.year + '-' + param.time.month + '-' + param.time.day)
+                                .endOf('week')
+                                .format('MMMM D, YYYY')
+                            : dayjs(param.time.year + '-' + param.time.month + '-' + param.time.day).format('MMMM D, YYYY')
+                        var price = param.seriesPrices.get(series)
+
+                        toolTip.innerHTML =
+                            `<div style="font-size: 16px; margin: 4px 0px; color: ${textColor};">${title}</div>` +
+                            `<div style="font-size: 22px; margin: 4px 0px; color: ${textColor}">` +
+                            formattedNum(price, true) +
+                            '</div>' +
+                            '<div>' +
+                            dateStr +
+                            '</div>'
+                    }
+                })
+
+            }
+
+        }
         if (!chartCreated && formattedData) {
             var chart = createChart(ref.current, {
                 width: width,
@@ -179,12 +242,12 @@ const TradingViewChart = ({
             let percentChange = 0
             let color = ''
             let formattedPercentChange = '';
-            try{
-                percentChange = baseChange !== undefined ? Number(baseChange).toFixed(2) : 0 ;
+            try {
+                percentChange = baseChange !== undefined ? Number(baseChange).toFixed(2) : 0;
                 formattedPercentChange = (percentChange > 0 ? '+' : '') + percentChange + '%';
                 console.log('=============basechange', baseChange, percentChange, ((percentChange > 0 ? '+' : '') + percentChange + '%'));
                 color = percentChange >= 0 ? 'green' : 'red'
-            }catch(e) {
+            } catch (e) {
                 console.log('=================basechange', e);
                 formattedPercentChange = '--%'
                 color = 'red'
@@ -199,7 +262,7 @@ const TradingViewChart = ({
                     </div>`
             }
             setLastBarText()
-            console.log('============setLastBar', formattedNum(base ?? 0, true));
+
             // update the title when hovering on the chart
             chart.subscribeCrosshairMove(function (param) {
                 if (

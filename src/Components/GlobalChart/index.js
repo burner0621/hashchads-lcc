@@ -31,7 +31,7 @@ const GlobalChart = ({ display }) => {
   // global historical data
   const [dailyData, weeklyData] = useGlobalChartData()
   const { totalLiquidityUSD, oneDayVolumeUSD, volumeChangeUSD, liquidityChangeUSD, oneWeekVolume, weeklyVolumeChange } = useGlobalData()
-  console.log('===============>liquidityChangeUSD', liquidityChangeUSD);
+  
   const [stateLiquidityChangeUSD, setStateLiquidityChangeUSD] = useState(0)
   const [stateTotalLiquidityUSD, setStateTotalLiquidityUSD] = useState(0)
   const [stateVolumeChangeUSD, setStateVolumeChangeUSD] = useState(0)
@@ -41,7 +41,6 @@ const GlobalChart = ({ display }) => {
 
   useEffect(() => {
     setStateLiquidityChangeUSD(liquidityChangeUSD)
-    console.log('===============>liquidityChangeUSD1', liquidityChangeUSD);
     setStateTotalLiquidityUSD(totalLiquidityUSD)
     setStateVolumeChangeUSD(volumeChangeUSD ? volumeChangeUSD: '--')
     setStateOneDayVolumeUSD(oneDayVolumeUSD)
@@ -117,7 +116,7 @@ const GlobalChart = ({ display }) => {
         </ResponsiveContainer>
       )}
       {chartDataFiltered && chartView === CHART_VIEW.VOLUME && (
-        <ResponsiveContainer aspect={60 / 28} >
+        <ResponsiveContainer aspect={60 / 28} ref={ref}>
           <TradingViewChart
             data={chartDataFiltered}
             base={volumeWindow === VOLUME_WINDOW.WEEKLY ? (stateOneWeekVolume ? stateOneWeekVolume : 0) : (stateOneDayVolumeUSD ? stateOneDayVolumeUSD : 0)}

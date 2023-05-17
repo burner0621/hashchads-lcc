@@ -8,7 +8,7 @@ import { useMedia } from 'react-use'
 import Panel from '../../Components/Panel'
 import { AutoRow, RowBetween } from '../../Components/Row'
 import { AutoColumn } from '../../Components/Column'
-import Search from '../../Components/Search'
+// import Search from '../../Components/Search'
 import GlobalChart from '../../Components/GlobalChart'
 import Trending from '../../Components/Trending'
 import { formattedNum, formattedPercent } from '../../utils'
@@ -50,7 +50,7 @@ const Overview = () => {
           <Row>
             <Col>
               <div className="h-100">
-                <Search display={"all"} />
+                {/* <Search display={"all"} /> */}
                 <GlobalStats />
               </div>
             </Col>
@@ -108,7 +108,7 @@ const Overview = () => {
                 <div className="animate-x-slide"
                   style={{ position: 'absolute', bottom: '0', right: '0.125rem', height: '0.25rem', borderRadius: '0.25rem', backgroundImage: 'linear-gradient(to right,hsla(0,0%,100%,.15),#00e9b1)', filter: 'blur(1px)' }}
                 />
-                <GlobalChart display="liquidity" />
+                <GlobalChart display="liquidity" id="liquidity" />
               </Panel>
               <Panel style={{ height: '100%', minHeight: '300px', maxHeight: '500px' }} className="panel-shadow hsla-bg">
                 <div className="animate-x-slide"
@@ -124,7 +124,6 @@ const Overview = () => {
                   style={{ position: 'absolute', bottom: '0', right: '0.125rem', height: '0.25rem', borderRadius: '0.25rem', backgroundImage: 'linear-gradient(to right,hsla(0,0%,100%,.15),#00e9b1)', filter: 'blur(1px)' }}
                 />
                 <GlobalChart display="volume" id="volume" />
-                {/* <GlobalChart display="liquidity" /> */}
               </Panel>
             </GridRow>
           )}
