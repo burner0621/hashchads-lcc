@@ -345,14 +345,14 @@ const TokenInfo = ({ address, tokenPrice }) => {
                                 {
                                     tokenInfo?.custom_fees && tokenInfo?.custom_fees?.fractional_fees?.length > 0 &&
                                     <>
-                                        <div className="p-3 bg-soft-success d-flex justify-between">
+                                        <div className="p-3 bg-soft-success d-flex justify-between items-center">
                                             <h6 className="mb-0 text-warning">Custome Fees</h6>
                                             <div
                                                 style={{ marginleft: 5, marginRight: 5 }}
                                                 className='cursor'
                                                 onClick={() => tog_xlarge()}
                                             >
-                                                <i className='mdi mdi-hand-pointing-right'></i>
+                                                <span className="fs-24 border-expand text-green"><i className='mdi mdi-hand-pointing-right'></i></span>
                                             </div>
                                         </div>
                                         <div className="p-3">
@@ -432,7 +432,7 @@ const TokenInfo = ({ address, tokenPrice }) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="p-3 bg-soft-warning d-flex justify-between">
+                                <div className="p-3 bg-soft-warning d-flex justify-between items-center">
                                     {/* <div className="float-end ms-2">
                                         <h6 className="text-warning mb-0"><span className="text-dark"></span></h6>
                                     </div> */}
@@ -443,7 +443,7 @@ const TokenInfo = ({ address, tokenPrice }) => {
                                         className='cursor'
                                         onClick={() => detail_tog_xlarge()}
                                     >
-                                        <i className='mdi mdi-hand-pointing-right'></i>
+                                        <span className="fs-24 border-expand text-green"><i className='mdi mdi-hand-pointing-right'></i></span>
                                     </div>
                                 </div>
                                 <div className="p-3">

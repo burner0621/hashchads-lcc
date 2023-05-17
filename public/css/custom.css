@@ -1,5 +1,5 @@
 .btn-download:hover {
-    border: 1px solid white !important    
+    border: 1px solid white !important
 }
 
 .btn-force {
@@ -35,8 +35,16 @@
     align-items: center;
 }
 
+.text-green {
+    color: green;
+}
+
 .text-whitc {
     color: white;
+}
+
+.fs-20 {
+    font-size: 24px;
 }
 
 .fs-24 {
@@ -74,4 +82,13 @@ body {
 
 .w-full {
     width: 100%;
+}
+
+.border-expand {
+    outline: 1px solid #333;
+    outline-offset: -1px;
+
+    &:hover {
+        outline: none;
+    }
 }
