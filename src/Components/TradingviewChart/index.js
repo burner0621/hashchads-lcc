@@ -96,11 +96,36 @@ const TradingViewChart = ({
     }, [chartCreated, darkMode, previousTheme, type])
     // if no chart created yet, create one with options and add to DOM manually
     useEffect(() => {
-        if (chartCreated && base && baseChange && formattedData) {
+        if (chartCreated && base !== '--' && baseChange !== '--' && formattedData) {
             let toolTip = document.getElementById('tooltip-id' + type);
 
             if (toolTip) {
-                
+
+                var series =
+                    type === CHART_TYPES.BAR
+                        ? chartCreated.addHistogramSeries({
+                            color: '#ff007a',
+                            priceFormat: {
+                                type: 'volume',
+                            },
+                            scaleMargins: {
+                                top: 0.32,
+                                bottom: 0,
+                            },
+                            lineColor: '#ff007a',
+                            lineWidth: 3,
+                            visible: false
+                        })
+                        : chartCreated.addAreaSeries({
+                            topColor: '#ff007a',
+                            bottomColor: 'rgba(255, 0, 122, 0)',
+                            lineColor: '#ff007a',
+                            lineWidth: 3,
+                            visible: false
+                        })
+
+                series.setData(formattedData)
+
                 let percentChange = 0
                 let color = ''
                 let formattedPercentChange = '';
@@ -144,7 +169,7 @@ const TradingViewChart = ({
                                 .format('MMMM D, YYYY')
                             : dayjs(param.time.year + '-' + param.time.month + '-' + param.time.day).format('MMMM D, YYYY')
                         var price = param.seriesPrices.get(series)
-
+                        
                         toolTip.innerHTML =
                             `<div style="font-size: 16px; margin: 4px 0px; color: ${textColor};">${title}</div>` +
                             `<div style="font-size: 22px; margin: 4px 0px; color: ${textColor}">` +

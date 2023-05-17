@@ -43,6 +43,20 @@
     color: white;
 }
 
+.text-red {
+    color: red;
+}
+
+.text-grey {
+    color: gray;
+}
+.text-hover {
+    color: white;
+}
+.text-hover:hover {
+    color: #1896b2 !important;
+}
+
 .fs-20 {
     font-size: 24px;
 }
@@ -65,7 +79,7 @@
 
 body {
     background-image: none;
-    background-color: #1a1d21 !important;
+    background-color: #0b1217 !important;
 }
 
 .text-symbol {
@@ -101,4 +115,16 @@ body {
     50% {
         opacity: 0;
     }
+}
+
+.new-bg {
+    background: #142028 !important;
+}
+
+#page-topbar {
+    background: #142028 !important;
+}
+
+.badge-bg {
+    background: #23323c !important;
 }
