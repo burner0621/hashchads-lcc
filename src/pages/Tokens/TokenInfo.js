@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import fetch from 'cross-fetch'
 import { useAllPairsInSaucerswap } from '../../contexts/GlobalData'
 import * as env from "../../env"
+import { formattedNum } from '../../utils'
 
 const TokenInfo = ({ address, tokenPrice }) => {
     //Tab 
@@ -29,22 +30,22 @@ const TokenInfo = ({ address, tokenPrice }) => {
     const [holders, setHolders] = useState([])
     const [circulatingSupply, setCirculatingSupply] = useState(0)
     const [dilutedSupply, setDilutedSupply] = useState(0)
-    const [holderInfo, setHolderInfo] = useState({})
+    const [holderInfo, setHolderInfo] = useState([])
     const [pairs, setPairs] = useState([])
 
     let totalBalance = 0
     let tmpPairs = []
 
     useEffect(() => {
-        if(allPairs) {
-            for(let i = 0; i < allPairs.length; i++) {
+        if (allPairs) {
+            for (let i = 0; i < allPairs.length; i++) {
                 let pair = allPairs[i];
                 if (address && address === pair.tokenA.id) tmpPairs.push(pair)
                 if (address && address === pair.tokenB.id) tmpPairs.push(pair)
             }
             if (tmpPairs.length > 0) setPairs(tmpPairs)
         }
-    },[allPairs])
+    }, [allPairs])
 
     const [modal_xlarge, setmodal_xlarge] = useState(false);
     const [detail_modal_xlarge, setdetailmodal] = useState(false)
@@ -101,7 +102,7 @@ const TokenInfo = ({ address, tokenPrice }) => {
                 setFeeCreatedAt(theDate.toGMTString())
             }
         }
-    }, [])
+    }, [tokenInfo])
 
     useEffect(() => {
         async function fetchData() {
@@ -113,18 +114,17 @@ const TokenInfo = ({ address, tokenPrice }) => {
         }
         if (address)
             fetchData()
-    }, [])
+    }, [address])
 
     const calculateSwapImpactUsd = (amount) => {
         let maxSwapImpactUsd = 0
         for (let pair of pairs) {
             let deltaYUsd = 0
-            let reserveA = Number(pair.tokenReserveA) / Number(pair.tokenA.decimals)
-            let reserveB = Number(pair.tokenReserveB) / Number(pair.tokenB.decimals)
+            let reserveA = Number(pair.tokenReserveA) / Math.pow(10, Number(pair.tokenA.decimals))
+            let reserveB = Number(pair.tokenReserveB) / Math.pow(10, Number(pair.tokenB.decimals))
 
             if (address === pair.tokenA.id) {
                 deltaYUsd = reserveB * (1 - reserveA / (reserveA + amount)) * pair.tokenB.priceUsd
-                console.log(reserveB, reserveA, amount, pair.tokenB.priceUsd, ">>>>>>>>>>>>>")
             }
             if (address === pair.tokenB.id) {
                 deltaYUsd = reserveA * (1 - reserveB / (reserveB + amount)) * pair.tokenA.priceUsd
@@ -141,17 +141,27 @@ const TokenInfo = ({ address, tokenPrice }) => {
                 // eslint-disable-next-line react-hooks/exhaustive-deps
                 totalBalance += holder.balance / Math.pow(10, Number(decimals))
             }
-            let tmp = {}
+            let rlt = []
             for (let holder of holders) {
-                tmp[holder.account] = {}
-                tmp[holder.account]['balance'] = holder.balance / Math.pow(10, Number(decimals))
-                tmp[holder.account]['percent'] = (tmp[holder.account]['balance'] / totalBalance * 100).toFixed(2)
-                tmp[holder.account]['usd'] = (tmp[holder.account]['balance'] * tokenPrice).toFixed(decimals)
-                tmp[holder.account]['impactUsd'] = calculateSwapImpactUsd(tmp[holder.account]['balance'])
-                tmp[holder.account]['impactPercent'] = (tmp[holder.account]['impactUsd'] / tmp[holder.account]['usd'] * 100).toFixed(2)
-                tmp[holder.account]['actualUsd'] = tmp[holder.account]['usd'] - tmp[holder.account]['impactUsd']
+                let tmp = {}
+                tmp['accountId'] = holder.account
+                tmp['balance'] = holder.balance / Math.pow(10, Number(decimals))
+                tmp['percent'] = (tmp['balance'] / totalBalance * 100).toFixed(2)
+                tmp['usd'] = (tmp['balance'] * tokenPrice).toFixed(decimals)
+                tmp['impactUsd'] = calculateSwapImpactUsd(tmp['balance'])
+                if (tmp['impactUsd'] > 0) {
+                    tmp['impactPercent'] = (tmp['impactUsd'] / tmp['usd'] * 100).toFixed(2)
+                    if (tmp['impactPercent'] > 100) tmp['impactPercent'] = 100
+                }
+                else tmp['impactPercent'] = "0"
+                tmp['actualUsd'] = tmp['usd'] - tmp['impactUsd']
+                if (tmp['actualUsd'] < 0) tmp['actualUsd'] = 0
+                rlt.push (tmp)
             }
-            setHolderInfo(tmp)
+            rlt.sort ((a, b) => {
+                return a.balance > b.balance ? -1 : 1
+            })
+            setHolderInfo(rlt)
         }
     }, [decimals, holders, pairs])
 
@@ -238,10 +248,10 @@ const TokenInfo = ({ address, tokenPrice }) => {
             >
                 <div className="card-body">
                     <div className="table-responsive table-card">
-                        <table className="table table-hover table-borderless table-centered align-middle table-nowrap mb-0">
+                        <table className="table table-hover table-borderless table-centered align-middle table-nowrap mb-0" style={{background: "#1a1d21"}}>
                             <thead className="text-muted bg-soft-light">
                                 <tr>
-                                    <th>RANK</th>
+                                    <th style={{textAlign:"center"}}>RANK</th>
                                     <th>ACCOUNT ID</th>
                                     <th>BALANCE</th>
                                     <th>PERCENT</th>
@@ -251,15 +261,15 @@ const TokenInfo = ({ address, tokenPrice }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {(hoderData || []).map((item, key) => (
+                                {(holderInfo || []).map((item, key) => (
                                     <tr key={key}>
-                                        <td>${key + 1}</td>
-                                        <td>${item.acccountId}</td>
-                                        <td>${item.balance}</td>
-                                        <td>${item.percent}</td>
-                                        <td>${item.usd}</td>
-                                        <td>${item.swap_impact}</td>
-                                        <td>${item.actual_usd}</td>
+                                        <td style={{textAlign:"center"}}>{`${key + 1}`}</td>
+                                        <td>{item.accountId}</td>
+                                        <td>{formattedNum(item.balance, false)}</td>
+                                        <td>{item.percent + '%'}</td>
+                                        <td>{formattedNum(item.usd, true)}</td>
+                                        <td>{item.impactPercent + '%'}</td>
+                                        <td>{formattedNum(item.actualUsd, true)}</td>
                                     </tr>
                                 ))}
                             </tbody>
