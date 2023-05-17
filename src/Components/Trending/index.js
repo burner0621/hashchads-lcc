@@ -25,7 +25,7 @@ const Trending = () => {
     const currencies = [
         {
             id: 1,
-            img: btcCoin,
+            img: "/images/tokens/hbar.svg",
             coinName: "Bitcoin",
             price: "48,568.025",
             iconClass: "success",
@@ -36,7 +36,7 @@ const Trending = () => {
         },
         {
             id: 2,
-            img: ltcCoin,
+            img: "/images/tokens/hbar.svg",
             coinName: "Litecoin",
             price: "87,142.027",
             iconClass: "danger",
@@ -47,7 +47,7 @@ const Trending = () => {
         },
         {
             id: 3,
-            img: ethCoin,
+            img: "/images/tokens/hbar.svg",
             coinName: "Eathereum",
             price: "33,847.961",
             iconClass: "success",
@@ -58,7 +58,7 @@ const Trending = () => {
         },
         {
             id: 4,
-            img: bnbCoin,
+            img: "/images/tokens/hbar.svg",
             coinName: "Binance",
             price: "73,654.421",
             iconClass: "success",
@@ -69,7 +69,7 @@ const Trending = () => {
         },
         {
             id: 5,
-            img: usdtCoin,
+            img: "/images/tokens/hbar.svg",
             coinName: "Tether",
             price: "66,742.077",
             iconClass: "danger",
@@ -80,7 +80,7 @@ const Trending = () => {
         },
         {
             id: 6,
-            img: dashCoin,
+            img: "/images/tokens/hbar.svg",
             coinName: "Dash",
             price: "34,736.209",
             iconClass: "success",
@@ -91,7 +91,7 @@ const Trending = () => {
         },
         {
             id: 7,
-            img: neoCoin,
+            img: "/images/tokens/hbar.svg",
             coinName: "Neo",
             price: "56,357.313",
             iconClass: "danger",
@@ -102,7 +102,7 @@ const Trending = () => {
         },
         {
             id: 8,
-            img: dogeCoin,
+            img: "/images/tokens/hbar.svg",
             coinName: "Dogecoin",
             price: "62,357.649",
             iconClass: "success",
@@ -112,40 +112,42 @@ const Trending = () => {
             totalCoin: "0.95632087",
         },
     ];
+
+    const handleTrendingType = (type) => {
+        if(type !== trendingType) setTrendingType(type)
+    }
+
     return (
         <React.Fragment>
-            <Col xl={8}>
+            <Col xl={12}>
                 <Card>
                     <CardHeader className="align-items-center d-flex">
-                        <h4 className="card-title mb-0 flex-grow-1">My Currencies</h4>
+                        <h4 className="card-title mb-0 flex-grow-1">Trending</h4>
                         <div className="flex-shrink-0">
-                            <button className="btn btn-soft-primary btn-sm">24H</button>
-                        </div>
-                        <div className="flex-shrink-0 ms-2">
-                            <UncontrolledDropdown className="card-header-dropdown" direction='start'>
-                                <DropdownToggle className="btn btn-soft-primary btn-sm" role="button" tag="a">
-                                    Get Report<i className="mdi mdi-chevron-down align-middle ms-1"></i>
-                                </DropdownToggle>
-                                <DropdownMenu className="dropdown-menu dropdown-menu-end">
-                                    <DropdownItem>Download Report</DropdownItem>
-                                    <DropdownItem>Export</DropdownItem>
-                                    <DropdownItem>Import</DropdownItem>
-                                </DropdownMenu>
-                            </UncontrolledDropdown>
+                            <button className="btn btn-md" style={{color: 'red'}} onClick={() => handleTrendingType(TRENDING_TYPE.hot)}>HOT</button>
+                            <button className="btn btn-md" style={{color: 'red'}} onClick={() => handleTrendingType(TRENDING_TYPE.new)}>NEW</button>
+                            <button className="btn btn-md" style={{color: 'red'}} onClick={() => handleTrendingType(TRENDING_TYPE.pool)}>TOP POOLS</button>
                         </div>
                     </CardHeader>
                     <div className="card-body">
                         <div className="table-responsive table-card">
                             <table className="table table-hover table-borderless table-centered align-middle table-nowrap mb-0">
                                 <thead className="text-muted bg-soft-light">
-                                    <tr>
-                                        <th>Coin Name</th>
-                                        <th>Price</th>
-                                        <th>24h Change</th>
-                                        <th>Total Balance</th>
-                                        <th>Total Coin</th>
-                                        <th>Actions</th>
-                                    </tr>
+                                    {trendingType == TRENDING_TYPE.pool ? (
+                                        <tr>
+                                            <th>Trading Pair</th>
+                                            <th>24h Change</th>
+                                            <th>LP Rewoard APR</th>
+                                            {/* <th>Actions</th> */}
+                                        </tr>    
+                                    ) : (
+                                        <tr>
+                                            <th>Token Name</th>
+                                            <th>Price</th>
+                                            <th>Change</th>
+                                            {/* <th>Actions</th> */}
+                                        </tr>
+                                    )}
                                 </thead>
                                 <tbody>
                                     {(currencies || []).map((item, key) => (
@@ -162,9 +164,9 @@ const Trending = () => {
                                             </td>
                                             <td>${item.price}</td>
                                             <td><h6 className={"fs-13 mb-0 text-" + item.iconClass}><i className={"align-middle me-1 " + item.icon}></i>{item.change}</h6></td>
-                                            <td>${item.balance}</td>
-                                            <td>{item.totalCoin}</td>
-                                            <td><Link to="/apps-crypto-buy-sell" className="btn btn-sm btn-soft-secondary">Trade</Link></td>
+                                            {/* <td>${item.balance}</td>
+                                            <td>{item.totalCoin}</td> */}
+                                            {/* <td><Link to="/apps-crypto-buy-sell" className="btn btn-md btn-success">Trade</Link></td> */}
                                         </tr>
                                     ))}
                                 </tbody>

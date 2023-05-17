@@ -56,7 +56,7 @@ const TradingViewChart = ({
     // pointer to the chart object
     const [chartCreated, setChartCreated] = useState(false)
     const dataPrev = usePrevious(data)
-
+    
     useEffect(() => {
         if (data !== dataPrev && chartCreated && type === CHART_TYPES.BAR) {
             // remove the tooltip element
@@ -177,14 +177,16 @@ const TradingViewChart = ({
 
             // format numbers
             let percentChange = 0
-            let formattedPercentChange = ''
             let color = ''
+            let formattedPercentChange = '';
             try{
-                percentChange = baseChange?.toFixed(2)
-                formattedPercentChange = (percentChange > 0 ? '+' : '') + percentChange + '%'
+                percentChange = baseChange !== undefined ? baseChange.toFixed(2) : 0 ;
+                formattedPercentChange = (percentChange > 0 ? '+' : '') + percentChange + '%';
+                console.log('=============basechange', baseChange, percentChange, ((percentChange > 0 ? '+' : '') + percentChange + '%'));
                 color = percentChange >= 0 ? 'green' : 'red'
             }catch(e) {
-                formattedPercentChange = '-- %'
+                console.log('=================basechange', e);
+                formattedPercentChange = '--%'
                 color = 'red'
             }
 
@@ -197,7 +199,7 @@ const TradingViewChart = ({
                     </div>`
             }
             setLastBarText()
-
+            console.log('============setLastBar', formattedNum(base ?? 0, true));
             // update the title when hovering on the chart
             chart.subscribeCrosshairMove(function (param) {
                 if (
@@ -248,7 +250,7 @@ const TradingViewChart = ({
         topScale,
         type,
         useWeekly,
-        width,
+        width
     ])
 
     // responsiveness

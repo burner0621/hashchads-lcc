@@ -608,9 +608,10 @@ async function getGlobalData(prices, hbarPrice) {
           totalLiquidityUSD,
           oneDay_totalLiquidityUSD
         )
+        console.log('=======================>', totalLiquidityUSD, oneDay_totalLiquidityUSD, liquidityChangeUSD, "<======================");
       }
     } catch (e) {
-      console.log(e)
+      console.log('=======================>', e);
     }
 
     if (nowData_totalVolumeUSD && oneDayData_totalVolumeUSD) {
@@ -630,12 +631,12 @@ async function getGlobalData(prices, hbarPrice) {
       data.oneWeekVolume = nowWeekData_totalVolumeUSD
       data.weeklyVolumeChange = weeklyVolumeChange
       data.volumeChangeUSD = volumeChangeUSD
-      data.liquidityChangeUSD = liquidityChangeUSD
     }
 
   } catch (e) {
     console.log(e)
   }
+  console.log('==================>', data)
   return data;
 }
 

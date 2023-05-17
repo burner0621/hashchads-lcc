@@ -31,6 +31,7 @@ const GlobalChart = ({ display }) => {
   // global historical data
   const [dailyData, weeklyData] = useGlobalChartData()
   const { totalLiquidityUSD, oneDayVolumeUSD, volumeChangeUSD, liquidityChangeUSD, oneWeekVolume, weeklyVolumeChange } = useGlobalData()
+  console.log('===============>liquidityChangeUSD', liquidityChangeUSD);
   const [stateLiquidityChangeUSD, setStateLiquidityChangeUSD] = useState(0)
   const [stateTotalLiquidityUSD, setStateTotalLiquidityUSD] = useState(0)
   const [stateVolumeChangeUSD, setStateVolumeChangeUSD] = useState(0)
@@ -40,6 +41,7 @@ const GlobalChart = ({ display }) => {
 
   useEffect(() => {
     setStateLiquidityChangeUSD(liquidityChangeUSD)
+    console.log('===============>liquidityChangeUSD1', liquidityChangeUSD);
     setStateTotalLiquidityUSD(totalLiquidityUSD)
     setStateVolumeChangeUSD(volumeChangeUSD ? volumeChangeUSD: '--')
     setStateOneDayVolumeUSD(oneDayVolumeUSD)

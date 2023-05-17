@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { Button, Container, FormGroup, Badge, Spinner, ButtonGroup } from "reactstrap";
+import { Button, Container, FormGroup, Badge, Spinner, ButtonGroup, NavItem, Nav, NavLink, Input, Label } from "reactstrap";
 import { useMedia } from 'react-use'
 
 import Panel from '../../Components/Panel'
@@ -13,6 +13,7 @@ import { TOKEN_TYPE, TOKEN_TYPE_NAME } from "../../constants";
 import Select from "react-select";
 import { TokenType } from "@hashgraph/sdk";
 import { useAllTokensInSaucerswap, useTokenData } from "../../contexts/GlobalData";
+import classnames from "classnames";
 
 export const PageWrapper = styled.div`
   display: flex;
@@ -51,6 +52,7 @@ const Tokens = () => {
     const [loadingGainer, setLoadingGainer] = useState(false)
     const [loadingLoser, setLoadingLoser] = useState(false)
     const [loadingExport, setLoadingExport] = useState(false)
+    const [showLiquidity, setShowLiquidity] = useState(true)
 
     const tokenData = useTokenData()
 
@@ -58,10 +60,14 @@ const Tokens = () => {
         let rlt = []
         for (let item of allTokens) {
             if (tokenData[item['id']]) item['liquidity'] = tokenData[item['id']]['liquidity']
-            if (item['liquidity'] >= 500) rlt.push(item)
+            if(showLiquidity) {
+                if (item['liquidity'] >= 500) rlt.push(item)
+            } else {
+                rlt.push(item)
+            }
         }
         return rlt
-    }, [allTokens, tokenData])
+    }, [allTokens, tokenData, showLiquidity])
 
     const [gainerTokens, setGainers] = useState([]);
     const [loserTokens, setLosers] = useState([]);
@@ -210,140 +216,140 @@ const Tokens = () => {
                         <PageWrapper>
                             <FullWrapper>
                                 <RowBetween>
-                                    <div style={{ display: "flex", width: '100%', justifyContent: 'space-between', marginRight: '10px' }}>
+                                    <div style={{ display: "flex", width: '100%', marginRight: '10px' }}>
                                         <div style={{ fontWeight: 500, color: 'white', fontSize: 24 }}>{TOKEN_TYPE_NAME[tokenType]}</div>
-                                        {!below600 &&
-                                            <div className="d-flex items-center" style={{ alignItems: "center" }}>
-
-                                                <ButtonGroup style={{ marginRight: 5 }}>
-                                                    {tokenType === TOKEN_TYPE.gainer || tokenType === TOKEN_TYPE.all ? (
-                                                        <Button
-                                                            className="btn-animation"
-                                                            color="success"
-                                                            onClick={() => { handleTokenType(TOKEN_TYPE.gainer) }}>
-                                                            {
-                                                                loadingGainer &&
-                                                                <span className="d-flex align-items-center">
-                                                                    <span className="flex-grow-1 me-2">
-                                                                        Loading...
-                                                                    </span>
-                                                                    <Spinner size="sm" className="flex-shrink-0" role="status"> Loading... </Spinner>
-                                                                </span>
-                                                            }
-                                                            {
-                                                                !loadingGainer && (<><i className="mdi mdi-elevation-rise"></i> Gainers</>)
-                                                            }
-                                                            <Badge color="warning" className="ms-1">{gainerTokens.length}</Badge>
-                                                        </Button>
-                                                    ) : (
-                                                        <Button
-                                                            color="success"
-                                                            outline
-                                                            onClick={() => { handleTokenType(TOKEN_TYPE.gainer) }}>
-                                                            {
-                                                                loadingGainer &&
-                                                                <span className="d-flex align-items-center">
-                                                                    <span className="flex-grow-1 me-2">
-                                                                        Loading...
-                                                                    </span>
-                                                                    <Spinner size="sm" className="flex-shrink-0" role="status"> Loading... </Spinner>
-                                                                </span>
-                                                            }
-                                                            {
-                                                                !loadingGainer && (<><i className="mdi mdi-elevation-rise"></i> Gainers</>)
-                                                            }
-                                                        </Button>
-                                                    )}
-                                                    {tokenType === TOKEN_TYPE.loser || tokenType === TOKEN_TYPE.all ? (
-                                                        <Button
-                                                            color="secondary"
-                                                            className="btn-animation"
-                                                            onClick={() => { handleTokenType(TOKEN_TYPE.loser) }}>
-                                                            {
-                                                                loadingLoser &&
-                                                                <span className="d-flex align-items-center">
-                                                                    <span className="flex-grow-1 me-2">
-                                                                        Loading...
-                                                                    </span>
-                                                                    <Spinner size="sm" className="flex-shrink-0" role="status"> Loading... </Spinner>
-                                                                </span>
-                                                            }
-                                                            {
-                                                                !loadingLoser && (<><i className="mdi mdi-elevation-decline"></i> Losers</>)
-                                                            }
-                                                            <Badge color="danger" className="ms-1">{loserTokens.length}</Badge>
-                                                        </Button>
-                                                    ) : (
-                                                        <Button
-                                                            color="secondary"
-                                                            outline
-                                                            onClick={() => { handleTokenType(TOKEN_TYPE.loser) }}>
-                                                            {
-                                                                loadingLoser &&
-                                                                <span className="d-flex align-items-center">
-                                                                    <span className="flex-grow-1 me-2">
-                                                                        Loading...
-                                                                    </span>
-                                                                    <Spinner size="sm" className="flex-shrink-0" role="status"> Loading... </Spinner>
-                                                                </span>
-                                                            }
-                                                            {
-                                                                !loadingLoser && (<><i className="mdi mdi-elevation-decline"></i> Losers</>)
-                                                            }
-                                                        </Button>
-                                                    )}
-                                                </ButtonGroup>
-                                                {/* <FormGroup switch style={{ marginRight: 5 }}>
-                                                    <Input
-                                                        id="gainersSwitch"
-                                                        type="switch"
-                                                        style={{ height: "1.5rem", width: '3rem', marginRight: 5 }}
-                                                        checked={tokenType == TOKEN_TYPE.gainer || tokenType == TOKEN_TYPE.all}
-                                                        onClick={() => {
-                                                            if (tokenType != TOKEN_TYPE.gainer) {
-                                                                setTokenType(tokenType == TOKEN_TYPE.loser ?
-                                                                    TOKEN_TYPE.all : (tokenType == TOKEN_TYPE.all ?
-                                                                        TOKEN_TYPE.loser : TOKEN_TYPE.gainer));
-                                                            }
-                                                        }}
-                                                    />
-                                                    <Label check style={{ fontSize: 18, fontWeight: 450 }}>Gainers</Label>
-                                                </FormGroup>
-                                                <FormGroup switch>
-                                                    <Input
-                                                        id="losersSwitch"
-                                                        type="switch"
-                                                        style={{ height: "1.5rem", width: '3rem', marginRight: 5 }}
-                                                        checked={tokenType == TOKEN_TYPE.loser || tokenType == TOKEN_TYPE.all}
-                                                        onClick={() => {
-                                                            if (tokenType != TOKEN_TYPE.loser) {
-                                                                setTokenType(tokenType == TOKEN_TYPE.gainer ?
-                                                                    TOKEN_TYPE.all : (tokenType == TOKEN_TYPE.all ?
-                                                                        TOKEN_TYPE.gainer : TOKEN_TYPE.loser));
-                                                            }
-                                                        }}
-                                                    />
-                                                    <Label check style={{ fontSize: 18, fontWeight: 450 }}>Losers</Label>
-                                                </FormGroup> */}
-                                            </div>
-                                        }
                                     </div>
-                                    {!below900 && <Search small={true} />}
-                                    {!below600 && <Button onClick={exportToCsv} className="btn-download btn-animation" size="sm" color="warning" style={{ marginLeft: '5px' }} outline>
-                                        {
-                                            loadingExport &&
-                                            <span className="d-flex align-items-center">
-                                                <span className="flex-grow-1 me-2">
-                                                    Loading...
-                                                </span>
-                                                <Spinner size="sm" className="flex-shrink-0" role="status"> Loading... </Spinner>
-                                            </span>
-                                        }
-                                        {
-                                            !loadingExport && (<>Download CSV</>)
-                                        }
+                                    {!below600 && <Search small={true} />}
+                                </RowBetween>
 
-                                    </Button>}
+                                <RowBetween>
+                                    <Nav tabs className="nav nav-tabs nav-border-top nav-border-top-success">
+                                        <NavItem style={{ marginRight: '20px' }}>
+                                            <NavLink style={{ cursor: "pointer" }} className={classnames({ active: tokenType == TOKEN_TYPE.all || tokenType == TOKEN_TYPE.gainer, })} onClick={() => { handleTokenType(TOKEN_TYPE.gainer) }} >
+                                                <i className="mdi mdi-elevation-rise align-middle me-1"></i> Gainers
+                                                
+                                                {/* <Badge color="danger" className="ms-1">{gainerTokens.length}</Badge> */}
+                                                <Badge pill color="success" className="position-absolute top-0 start-100 translate-middle">{gainerTokens.length}
+                                                    <span className="visually-hidden">Gainers</span></Badge>
+                                            </NavLink>
+                                        </NavItem>
+                                        <NavItem>
+                                            <NavLink style={{ cursor: "pointer" }} className={classnames({ active: tokenType == TOKEN_TYPE.loser || tokenType == TOKEN_TYPE.all, })} onClick={() => { handleTokenType(TOKEN_TYPE.loser) }} >
+                                                <i className="mdi mdi-elevation-decline me-1 align-middle"></i> Losers
+                                                {/* <Badge color="warning" className="ms-1">{loserTokens.length}</Badge> */}
+                                                <Badge pill color="danger" className="position-absolute top-0 start-100 translate-middle">{loserTokens.length}
+                                                    <span className="visually-hidden">Gainers</span></Badge>
+                                            </NavLink>
+                                        </NavItem>
+                                    </Nav>
+                                    {/* <ButtonGroup style={{ marginRight: 5 }}>
+                                        {tokenType === TOKEN_TYPE.gainer || tokenType === TOKEN_TYPE.all ? (
+                                            <Button
+                                                className="btn-animation"
+                                                color="success"
+                                                onClick={() => { handleTokenType(TOKEN_TYPE.gainer) }}>
+                                                {
+                                                    loadingGainer &&
+                                                    <span className="d-flex align-items-center">
+                                                        <span className="flex-grow-1 me-2">
+                                                            Loading...
+                                                        </span>
+                                                        <Spinner size="sm" className="flex-shrink-0" role="status"> Loading... </Spinner>
+                                                    </span>
+                                                }
+                                                {
+                                                    !loadingGainer && (<><i className="mdi mdi-elevation-rise"></i> Gainers</>)
+                                                }
+                                                <Badge color="warning" className="ms-1">{gainerTokens.length}</Badge>
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                color="success"
+                                                outline
+                                                onClick={() => { handleTokenType(TOKEN_TYPE.gainer) }}>
+                                                {
+                                                    loadingGainer &&
+                                                    <span className="d-flex align-items-center">
+                                                        <span className="flex-grow-1 me-2">
+                                                            Loading...
+                                                        </span>
+                                                        <Spinner size="sm" className="flex-shrink-0" role="status"> Loading... </Spinner>
+                                                    </span>
+                                                }
+                                                {
+                                                    !loadingGainer && (<><i className="mdi mdi-elevation-rise"></i> Gainers</>)
+                                                }
+                                            </Button>
+                                        )}
+                                        {tokenType === TOKEN_TYPE.loser || tokenType === TOKEN_TYPE.all ? (
+                                            <Button
+                                                color="secondary"
+                                                className="btn-animation"
+                                                onClick={() => { handleTokenType(TOKEN_TYPE.loser) }}>
+                                                {
+                                                    loadingLoser &&
+                                                    <span className="d-flex align-items-center">
+                                                        <span className="flex-grow-1 me-2">
+                                                            Loading...
+                                                        </span>
+                                                        <Spinner size="sm" className="flex-shrink-0" role="status"> Loading... </Spinner>
+                                                    </span>
+                                                }
+                                                {
+                                                    !loadingLoser && (<><i className="mdi mdi-elevation-decline"></i> Losers</>)
+                                                }
+                                                <Badge color="danger" className="ms-1">{loserTokens.length}</Badge>
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                color="secondary"
+                                                outline
+                                                onClick={() => { handleTokenType(TOKEN_TYPE.loser) }}>
+                                                {
+                                                    loadingLoser &&
+                                                    <span className="d-flex align-items-center">
+                                                        <span className="flex-grow-1 me-2">
+                                                            Loading...
+                                                        </span>
+                                                        <Spinner size="sm" className="flex-shrink-0" role="status"> Loading... </Spinner>
+                                                    </span>
+                                                }
+                                                {
+                                                    !loadingLoser && (<><i className="mdi mdi-elevation-decline"></i> Losers</>)
+                                                }
+                                            </Button>
+                                        )}
+                                    </ButtonGroup> */}
+                                    {!below600 &&
+                                        <div className="d-flex items-center">
+                                            <FormGroup switch style={{marginRight: '5px'}}>
+                                                <Input
+                                                    type="switch"
+                                                    style={{ height: "1.5rem", width: '3rem', marginRight: 5 }}
+                                                    checked={showLiquidity}
+                                                    onClick={() => {
+                                                        setShowLiquidity(!showLiquidity)
+                                                    }}
+                                                />
+                                                <Label check style={{ fontSize: 18, fontWeight: 450 }}>$500+ Liquidity</Label>
+                                            </FormGroup>
+                                            <Button onClick={exportToCsv} className="btn-download btn-animation" size="md" color="warning" style={{ marginLeft: '5px' }} outline>
+                                                {
+                                                    loadingExport &&
+                                                    <span className="d-flex align-items-center">
+                                                        <span className="flex-grow-1 me-2">
+                                                            Loading...
+                                                        </span>
+                                                        <Spinner size="sm" className="flex-shrink-0" role="status"> Loading... </Spinner>
+                                                    </span>
+                                                }
+                                                {
+                                                    !loadingExport && (<>Download CSV</>)
+                                                }
+
+                                            </Button>
+                                        </div>
+                                    }
                                 </RowBetween>
                                 {/* TABLE ALL TOKENS */}
                                 {(tokenType === TOKEN_TYPE.all) &&

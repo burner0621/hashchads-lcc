@@ -30,3 +30,23 @@
 .items-center {
     align-items: center;
 }
+
+.text-whitc {
+    color: white;
+}
+
+.fs-24 {
+    font-size: 24px;
+}
+
+.fw-450 {
+    font-weight: 450;
+}
+
+.mt-30 {
+    margin-top: 30px;
+}
+
+.normal-background {
+    background-color: blueviolet;
+}

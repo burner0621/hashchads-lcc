@@ -85,10 +85,10 @@ const Widgets = ({ address, price }) => {
       {buysellWidgets.map((item, key) => (
         <Col xl={3} sm={6} key={key}>
           <Card className="card-animate">
-            <CardBody>
+            <CardBody className="normal-background">
               <div className="d-flex">
                 <div className="flex-grow-1">
-                  <h6 className="text-muted mb-3">{item.title}</h6>
+                  <h6 className="text-muted mb-3 text-white">{item.title}</h6>
                   <h2 className="mb-0">
                     $
                     <span className="counter-value">
