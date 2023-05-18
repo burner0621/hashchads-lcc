@@ -40,6 +40,9 @@ const Pairs = () => {
     const [pairsType, setPairsType] = useState(PAIRS_TYPE.pairs)
     const [timeRangeType, setTimeRangeType] = useState(TIME_RANGE_TYPE.day)
     const [data, setData] = useState([])
+    const [allPairs, setAllPairs] = useState([])
+    const [gainers, setGainers] = useState([])
+    const [losers, setLosers] = useState([])
 
     const _allPairs = useAllPairsInSaucerswap()
     const _dailyPairVolume = usePairDailyVolume()
@@ -48,7 +51,7 @@ const Pairs = () => {
 
     useEffect(() => {
         if (_priceChanges && (Object.keys(_priceChanges)).length > 0) {
-            let _data = []
+            let _data = [], tmpGainers = [], tmpLosers = []
             for (let pair of _allPairs) {
                 /**
                  * pair info
@@ -106,8 +109,12 @@ const Pairs = () => {
                 if (timeRangeType === TIME_RANGE_TYPE.week) tmp.volume = _weeklyPairVolume[pair.id]
                 tmp.liquidity = 2 * pair.tokenA.priceUsd * pair.tokenReserveA / Math.pow(10, pair.tokenA.decimals)
                 _data.push(tmp)
+                if (tmp.percent <= 0) tmpLosers.push(tmp)
+                else tmpGainers.push(tmp)
             }
-            setData(_data)
+            setAllPairs(_data)
+            setGainers(tmpGainers)
+            setLosers(tmpLosers)
         }
     }, [_allPairs, _priceChanges, _dailyPairVolume, _weeklyPairVolume, timeRangeType])
 
@@ -116,6 +123,12 @@ const Pairs = () => {
     const below800 = useMedia('(max-width: 800px)')
     const below900 = useMedia('(max-width: 900px)')
 
+    useEffect (() => {
+        if (pairsType === PAIRS_TYPE.pairs) setData (allPairs)
+        else if (pairsType === PAIRS_TYPE.gainers) setData (gainers)
+        else setData (losers)
+    }, [pairsType, allPairs, gainers, losers])
+    
     const handlePairsType = (type) => {
         if (pairsType !== type) setPairsType(type)
     }
