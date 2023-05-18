@@ -118,7 +118,6 @@ const datafeed = (tokenId) => {
       try {
         // let url = `https://api.twelvedata.com/time_series?symbol=${symbolInfo.name}&outputsize=1000&interval=${resName}&apikey=${API_KEY}`;
         let url = `${env.BASE_URL}/api/feed/getfeeddata?tokenId=${tokenId}&from=${from}&to=${to}`;
-        console.log(url);
 
         const response = await fetch(url);
         if (response.status !== 200) {
