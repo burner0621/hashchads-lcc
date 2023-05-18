@@ -50,8 +50,8 @@ const Trending = () => {
                 tmpCUr.push (tmp)
             }
         }
-        setHotTokens (tmpCUr)
-    }, [])
+        if (tmpCUr.length >0) setHotTokens (tmpCUr)
+    }, [allTokens])
 
     const sortedList = useMemo(() => {
         return (
@@ -81,8 +81,8 @@ const Trending = () => {
             }
             tmpCUr.push (tmp)
         }
-        setNewTokens (tmpCUr)
-    }, [])
+        if (tmpCUr.length >0) setNewTokens (tmpCUr)
+    }, [sortedList])
 
     useEffect (() => {
         if (trendingType === TRENDING_TYPE.hot) {
