@@ -151,6 +151,6 @@ export const OptionButton = styled.div`
   color: ${({ theme }) => theme.text1};
   
   :hover {
-    cursor: ${({ disabled }) => !disabled && 'pointer'};
+    cursor: pointer;
   }
 `

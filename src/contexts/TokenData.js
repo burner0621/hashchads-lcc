@@ -287,6 +287,7 @@ const getTokenChartData = async (tokenId) => {
     let response = await fetch(`https://api.saucerswap.finance/tokens/prices/${tokenId}?interval=DAY&from=${startTime}&to=${Date.now() / 1000}`)
     if (response.status === 200) {
       let jsonData = await response.json()
+      console.log(jsonData, "<<<<<<<<<<<<<<")
       return jsonData
     } else {
       return []
@@ -461,6 +462,7 @@ export function useTokenData(tokenAddress) {
 export function useTokenChartData(tokenAddress) {
   const [state, { updateChartData }] = useTokenDataContext()
   const chartData = state?.[tokenAddress]?.chartData
+  console.log(chartData, "BBBBBBBBBBBB")
   useEffect(() => {
     async function checkForChartData() {
       if (!chartData) {
@@ -468,7 +470,7 @@ export function useTokenChartData(tokenAddress) {
         updateChartData(tokenAddress, data)
       }
     }
-    checkForChartData()
+    if (!chartData || chartData.length === 0) checkForChartData()
   }, [chartData, tokenAddress, updateChartData])
   return chartData
 }
@@ -491,8 +493,11 @@ export function useTokenPriceData(tokenAddress, timeWindow, interval = 3600) {
       timeWindow === timeframeOptions.ALL_TIME ? 1589760000 : currentTime.subtract(1, windowSize).startOf('hour').unix()
 
     async function fetchData() {
-      let data = await fetch (`https://api.saucerswap.finance/tokens/prices/${tokenAddress}?interval=DAY&from=${startTime}&to=${Date.now()/1000}`)
-      updatePriceData(tokenAddress, data, timeWindow, interval)
+      let res = await fetch(`https://api.saucerswap.finance/tokens/prices/${tokenAddress}?interval=DAY&from=${startTime}&to=${Date.now() / 1000}`)
+      if (res.status === 200) {
+        let data = await res.json()
+        updatePriceData(tokenAddress, data, timeWindow, interval)
+      }
     }
     if (!chartData) {
       fetchData()
