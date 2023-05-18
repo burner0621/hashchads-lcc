@@ -134,3 +134,11 @@ body {
 .flex-column {
     flex-direction: column;
 }
+
+.border-red {
+    border: 1px solid red;
+}
+
+.border-green {
+    border: 1px solid green !important;
+}
