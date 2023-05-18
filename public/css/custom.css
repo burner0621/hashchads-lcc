@@ -142,3 +142,7 @@ body {
 .border-green {
     border: 1px solid green !important;
 }
+
+.green-bg {
+    background: green;
+}

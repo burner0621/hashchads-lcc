@@ -18,7 +18,7 @@ import { Activity } from 'react-feather'
 const ChartWrapper = styled.div`
   height: 100%;
   min-height: 300px;
-
+  margin-bottom: 20px;
   @media screen and (max-width: 600px) {
     min-height: 200px;
   }
@@ -149,6 +149,7 @@ const TokenChart = ({ address, color, base }) => {
                                 active={chartFilter === CHART_VIEW.LIQUIDITY}
                                 onClick={() => setChartFilter(CHART_VIEW.LIQUIDITY)}
                                 style={{ marginRight: '6px' }}
+                                className={chartFilter === CHART_VIEW.LIQUIDITY ? "green-bg" : ""}
                             >
                                 Liquidity
                             </OptionButton>
@@ -156,6 +157,7 @@ const TokenChart = ({ address, color, base }) => {
                                 active={chartFilter === CHART_VIEW.VOLUME}
                                 onClick={() => setChartFilter(CHART_VIEW.VOLUME)}
                                 style={{ marginRight: '6px' }}
+                                className={chartFilter === CHART_VIEW.VOLUME ? "green-bg" : ""}
                             >
                                 Volume
                             </OptionButton>
@@ -165,6 +167,7 @@ const TokenChart = ({ address, color, base }) => {
                                 onClick={() => {
                                     setChartFilter(CHART_VIEW.PRICE)
                                 }}
+                                className={chartFilter === CHART_VIEW.PRICE ? "green-bg" : ""}
                             >
                                 Price
                             </OptionButton>
@@ -177,18 +180,21 @@ const TokenChart = ({ address, color, base }) => {
                                         setTimeWindow(timeframeOptions.MONTH)
                                         setFrequency(DATA_FREQUENCY.DAY)
                                     }}
+                                    style={frequency === DATA_FREQUENCY.DAY ? {background: "green"} : {}}
                                 >
                                     D
                                 </PriceOption>
                                 <PriceOption
                                     active={frequency === DATA_FREQUENCY.HOUR}
                                     onClick={() => setFrequency(DATA_FREQUENCY.HOUR)}
+                                    style={frequency === DATA_FREQUENCY.HOUR ? {background: "green"} : {}}
                                 >
                                     H
                                 </PriceOption>
                                 <PriceOption
                                     active={frequency === DATA_FREQUENCY.LINE}
                                     onClick={() => setFrequency(DATA_FREQUENCY.LINE)}
+                                    style={frequency === DATA_FREQUENCY.LINE ? {background: "green"} : {}}
                                 >
                                     <Activity size={14} />
                                 </PriceOption>
@@ -199,18 +205,21 @@ const TokenChart = ({ address, color, base }) => {
                         <OptionButton
                             active={timeWindow === timeframeOptions.WEEK}
                             onClick={() => setTimeWindow(timeframeOptions.WEEK)}
+                            className={timeWindow === timeframeOptions.WEEK ? "green-bg" : ""}
                         >
                             1W
                         </OptionButton>
                         <OptionButton
                             active={timeWindow === timeframeOptions.MONTH}
                             onClick={() => setTimeWindow(timeframeOptions.MONTH)}
+                            className={timeWindow === timeframeOptions.MONTH ? "green-bg" : ""}
                         >
                             1M
                         </OptionButton>
                         <OptionButton
                             active={timeWindow === timeframeOptions.ALL_TIME}
                             onClick={() => setTimeWindow(timeframeOptions.ALL_TIME)}
+                            className={timeWindow === timeframeOptions.ALL_TIME ? "green-bg" : ""}
                         >
                             All
                         </OptionButton>
