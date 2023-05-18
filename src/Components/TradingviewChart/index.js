@@ -169,7 +169,7 @@ const TradingViewChart = ({
                                 .format('MMMM D, YYYY')
                             : dayjs(param.time.year + '-' + param.time.month + '-' + param.time.day).format('MMMM D, YYYY')
                         var price = param.seriesPrices.get(series)
-                        
+
                         toolTip.innerHTML =
                             `<div style="font-size: 16px; margin: 4px 0px; color: ${textColor};">${title}</div>` +
                             `<div style="font-size: 22px; margin: 4px 0px; color: ${textColor}">` +
@@ -255,6 +255,11 @@ const TradingViewChart = ({
             var toolTip = document.createElement('div')
             toolTip.setAttribute('id', 'tooltip-id' + type)
             toolTip.className = darkMode ? 'three-line-legend-dark' : 'three-line-legend'
+            
+            while(ref.current.childElementCount > 2) {
+                ref.current.removeChild(ref.current.firstElementChild);
+            }
+            
             ref.current.appendChild(toolTip)
             toolTip.style.display = 'block'
             toolTip.style.fontWeight = '500'
