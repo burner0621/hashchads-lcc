@@ -1,38 +1,40 @@
 import React, { createContext, useContext, useReducer, useMemo, useCallback, useEffect, useState } from 'react'
 
-import { client } from '../apollo/client'
-import {
-  PAIR_DATA,
-  PAIR_CHART,
-  FILTERED_TRANSACTIONS,
-  PAIRS_CURRENT,
-  PAIRS_BULK,
-  PAIRS_HISTORICAL_BULK,
-  HOURLY_PAIR_RATES,
-} from '../apollo/queries'
+// import { client } from '../apollo/client'
+// import {
+//   PAIR_DATA,
+//   PAIR_CHART,
+//   FILTERED_TRANSACTIONS,
+//   PAIRS_CURRENT,
+//   PAIRS_BULK,
+//   PAIRS_HISTORICAL_BULK,
+//   HOURLY_PAIR_RATES,
+// } from '../apollo/queries'
 
 import { useAllPairsInSaucerswap } from './GlobalData'
 
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 
-import {
-  getPercentChange,
-  get2DayPercentChange,
-  isAddress,
-  getBlocksFromTimestamps,
-  getTimestampsForChanges,
-  splitQuery,
-} from '../utils'
-import { timeframeOptions, TRACKED_OVERRIDES_PAIRS, TRACKED_OVERRIDES_TOKENS } from '../constants'
-import { useLatestBlocks } from './Application'
-import { updateNameData } from '../utils/data'
+// import {
+//   getPercentChange,
+//   get2DayPercentChange,
+//   isAddress,
+//   getBlocksFromTimestamps,
+//   getTimestampsForChanges,
+//   splitQuery,
+// } from '../utils'
+// import { timeframeOptions, TRACKED_OVERRIDES_PAIRS, TRACKED_OVERRIDES_TOKENS } from '../constants'
+// import { useLatestBlocks } from './Application'
+// import { updateNameData } from '../utils/data'
 
 const UPDATE = 'UPDATE'
 const UPDATE_PAIR_TXNS = 'UPDATE_PAIR_TXNS'
 const UPDATE_CHART_DATA = 'UPDATE_CHART_DATA'
 const UPDATE_TOP_PAIRS = 'UPDATE_TOP_PAIRS'
 const UPDATE_HOURLY_DATA = 'UPDATE_HOURLY_DATA'
+const ETH_PRICE_KEY = 'ETH_PRICE_KEY'
+const UPDATE_ETH_PRICE = 'UPDATE_ETH_PRICE'
 
 dayjs.extend(utc)
 
@@ -148,6 +150,17 @@ export default function Provider({ children }) {
   //   })
   // }, [])
 
+  // const updateEthPrice = useCallback((ethPrice, oneDayPrice, ethPriceChange) => {
+  //   dispatch({
+  //     type: UPDATE_ETH_PRICE,
+  //     payload: {
+  //       ethPrice,
+  //       oneDayPrice,
+  //       ethPriceChange,
+  //     },
+  //   })
+  // }, [])
+
   const updateChartData = useCallback((address, chartData) => {
     dispatch({
       type: UPDATE_CHART_DATA,
@@ -183,7 +196,7 @@ export default function Provider({ children }) {
   )
 }
 
-// async function getBulkPairData(pairList) {
+// async function getBulkPairData(pairList, ethPrice) {
 //   const [t1, t2, tWeek] = getTimestampsForChanges()
 //   let [{ number: b1 }, { number: b2 }, { number: bWeek }] = await getBlocksFromTimestamps([t1, t2, tWeek])
 

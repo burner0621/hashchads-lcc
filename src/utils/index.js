@@ -2,6 +2,9 @@ import Numeral from 'numeral'
 import { Text } from 'rebass'
 import { timeframeOptions } from '../constants'
 import dayjs from 'dayjs'
+import { GET_BLOCK, GET_BLOCKS, SHARE_VALUE } from '../apollo/queries'
+import { client, blockClient } from '../apollo/client'
+// import { ethers } from 'ethers'
 
 export const toK = (num, digit=4) => {
   if (digit === 4) return Numeral(num).format('0,0.[0000]')
@@ -138,3 +141,93 @@ export const getPercentChange = (valueNow, value24HoursAgo) => {
 export function localNumber(val) {
   return Numeral(val).format('0,0')
 }
+
+export function getTimestampsForChanges() {
+  const utcCurrentTime = dayjs()
+  const t1 = utcCurrentTime.subtract(1, 'day').startOf('minute').unix()
+  const t2 = utcCurrentTime.subtract(2, 'day').startOf('minute').unix()
+  const tWeek = utcCurrentTime.subtract(1, 'week').startOf('minute').unix()
+  return [t1, t2, tWeek]
+}
+
+/**
+ * @notice Fetches block objects for an array of timestamps.
+ * @dev blocks are returned in chronological order (ASC) regardless of input.
+ * @dev blocks are returned at string representations of Int
+ * @dev timestamps are returns as they were provided; not the block time.
+ * @param {Array} timestamps
+ */
+export async function getBlocksFromTimestamps(timestamps, skipCount = 500) {
+  if (timestamps?.length === 0) {
+    return []
+  }
+
+  let fetchedData = await splitQuery(GET_BLOCKS, blockClient, [], timestamps, skipCount)
+
+  let blocks = []
+  if (fetchedData) {
+    for (var t in fetchedData) {
+      if (fetchedData[t].length > 0) {
+        blocks.push({
+          timestamp: t.split('t')[1],
+          number: fetchedData[t][0]['number'],
+        })
+      }
+    }
+  }
+  return blocks
+}
+
+export async function splitQuery(query, localClient, vars, list, skipCount = 100) {
+  let fetchedData = {}
+  let allFound = false
+  let skip = 0
+
+  while (!allFound) {
+    let end = list.length
+    if (skip + skipCount < list.length) {
+      end = skip + skipCount
+    }
+    let sliced = list.slice(skip, end)
+    let result = await localClient.query({
+      query: query(...vars, sliced),
+      fetchPolicy: 'cache-first',
+    })
+    fetchedData = {
+      ...fetchedData,
+      ...result.data,
+    }
+    if (Object.keys(result.data).length < skipCount || skip + skipCount > list.length) {
+      allFound = true
+    } else {
+      skip += skipCount
+    }
+  }
+
+  return fetchedData
+}
+
+/**
+ * @notice Fetches first block after a given timestamp
+ * @dev Query speed is optimized by limiting to a 600-second period
+ * @param {Int} timestamp in seconds
+ */
+export async function getBlockFromTimestamp(timestamp) {
+  let result = await blockClient.query({
+    query: GET_BLOCK,
+    variables: {
+      timestampFrom: timestamp,
+      timestampTo: timestamp + 600,
+    },
+    fetchPolicy: 'cache-first',
+  })
+  return result?.data?.blocks?.[0]?.number
+}
+
+// export const isAddress = (value) => {
+//   try {
+//     return ethers.utils.getAddress(value.toLowerCase())
+//   } catch {
+//     return false
+//   }
+// }

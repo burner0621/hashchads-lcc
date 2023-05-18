@@ -5,12 +5,14 @@ import { Navigate } from "react-router-dom";
 import Overview from "../pages/Overview";
 import Tokens from "../pages/Tokens";
 import Pairs from "../pages/Pairs";
+import TokenPair from "../pages/Tokens/TokenPairPage";
 
 const authProtectedRoutes = [
   { path: "/overview", component: <Overview /> },
   { path: "/tokens", component: <Tokens /> },
   { path: "/tokens/:tokenAddress", component: <Tokens /> },
   { path: "/pairs", component: <Pairs /> },
+  { path: "/pairs/:contractId", component: <TokenPair /> },
   // {
   //   path: "/apps-ecommerce-product-details",
   //   component: <EcommerceProductDetail />,

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { Container, NavItem, Nav, NavLink } from "reactstrap";
+import { Link } from 'react-router-dom';
 import { useMedia } from 'react-use'
 import { RowBetween } from '../../Components/Row'
 import classnames from "classnames";
@@ -52,6 +53,50 @@ const Pairs = () => {
         if (_priceChanges && (Object.keys(_priceChanges)).length > 0) {
             let _data = []
             for (let pair of _allPairs) {
+                /**
+                 * pair info
+                 * contractId: "0.0.1062795"
+                 * id: 0
+                 * lpToken: 
+                    decimals: 8
+                    id: "0.0.1062796"
+                    name: "SS-LP SAUCE - HBAR"
+                    priceUsd: "0.59602128698449251874"
+                    symbol: "SAUCE - HBAR"
+                    lpTokenReserve: "5360501802534"
+                  * tokenA: 
+                    decimals: 6
+                    description: "SaucerSwap is an open source and non-custodial AMM protocol native to Hedera. Users can swap tokens, provide liquidity, farm, and stake in a fully permissionless environment.\n\nSAUCE is a transferable representation of attributed utility functions; namely, liquidity, staking, and governance, specified in the code. It is therefore designed to be a utility token essential to the SaucerSwap protocol. \n\n200 million SAUCE tokens were minted at genesis, while the remaining 800 million are brought into circulation according to the release schedule. The total supply of SAUCE is hard-capped and will not exceed 1 billion tokens. There are no lockup periods or private sales of the SAUCE token.\n\nSAUCE has the following essential utilities:\n\nGovernance - SaucerSwap will phase in a DAO, where SAUCE holders can create and vote on proposals to steer protocol development and management. Votes will be proportional to the amount of SAUCE in a user's account.\n\nStaking - the token plays an integral role in single-sided staking and Community Pools. Users can stake SAUCE to receive a percentage of swap fees, HBAR native staking rewards, and emissions. By staking SAUCE, a user immediately receives xSAUCE tokens as receipt of the liquidity they provided, which they can then add to liquidity pools or stake in Community Pools to stack their rewards. \n\nLiquidity - newly minted SAUCE serves as a liquidity mining incentive to offset impermanent loss and bootstrap liquidity on the protocol. \n\nPayments - SAUCE will serve as the exclusive method of payment for several SaucerSwap ecosystem integrations, including a subscription-based model that offers real-time notifications, insights, advanced analytics, and UX customization."
+                    dueDiligenceComplete: true
+                    icon: "/images/tokens/sauce.svg"
+                    id: "0.0.731861"
+                    isFeeOnTransferToken: false
+                    name: "SAUCE"
+                    price: "30199302"
+                    priceUsd: 0.01610206
+                    sentinelReport: "https://sentinel.headstarter.org/details/saucerswap"
+                    symbol: "SAUCE"
+                    timestampSecondsLastListingChange: 0
+                    twitterHandle: "SaucerSwapLabs"
+                    website: "https://www.saucerswap.finance/"
+                  * tokenB: 
+                    decimals: 8
+                    description: "Hedera is a public, open source, proof-of-stake network, with native cryptocurrency HBAR.  HBAR is used to pay application transaction fees and protect the network from attack through proof-of-stake. When HBAR is staked to network nodes, it has a weighted influence on consensus for validating transactions.  Developers use HBAR to pay for network services, such as transferring tokens, minting fungible and non-fungible tokens, calling smart contracts, and logging data. For every transaction submitted to the network, HBAR is used to pay fees that compensate validator nodes for bandwidth, compute, and storage."
+                    dueDiligenceComplete: true
+                    icon: "/images/tokens/hbar.svg"
+                    id: "0.0.1062664"
+                    isFeeOnTransferToken: false
+                    name: "WHBAR [old]"
+                    price: "100000000"
+                    priceUsd: 0.05331931
+                    sentinelReport: null
+                    symbol: "HBAR"
+                    timestampSecondsLastListingChange: 0
+                    twitterHandle: "hedera"
+                    website: "https://hedera.com/"
+                  * tokenReserveA: "992100757055"
+                  * tokenReserveB: "30035046231642"
+                 */
                 let tmp = {}
                 tmp.icon = pair.tokenA.icon
                 tmp.first = pair.tokenA.symbol
@@ -99,16 +144,19 @@ const Pairs = () => {
             name: <span className='font-weight-bold fs-16'>Pair</span>,
             selector: row => {
                 return (
-                    <div className="d-flex">
-                        <TokenLogo path={row.icon} />
-                        <div className="d-flex flex-column" style={{ marginLeft: 4 }}>
-                            <div className="d-flex">
-                                <span className="text-pair-first text-white text-hover">{row.first}</span>
-                                <span className="text-pair-second text-grey">{'/' + row.second}</span>
+                    <Link to={'/pairs/' + row.pair_address}>
+                        <div className="d-flex">
+                            <TokenLogo path={row.icon} />
+                            <div className="d-flex flex-column" style={{ marginLeft: 4 }}>
+                                <div className="d-flex">
+                                    <span className="text-pair-first text-white text-hover">{row.first}</span>
+                                    <span className="text-pair-second text-grey">{'/' + row.second}</span>
+                                </div>
+                                <span className="text-white" style={{ textOverflow: "clip" }} onClick={() => handleCopyAddress()}>{row.pair_address}<i className="mdi mdi-content-copy"></i></span>
                             </div>
-                            <span className="text-white" style={{ textOverflow: "clip" }} onClick={() => handleCopyAddress()}>{row.pair_address}<i className="mdi mdi-content-copy"></i></span>
                         </div>
-                    </div>
+                    </Link>
+
                 )
             },
             sortable: true,
@@ -119,7 +167,9 @@ const Pairs = () => {
             sortable: true,
             selector: (row) => {
                 return (
-                    <span className="text-white">{row.price ? '$' + row.price : ''}</span>
+                    <Link to={'/pairs/' + _allPairs[_allPairs.findIndex((pair) => pair.contractId == row.pair_address)]}>
+                        <span className="text-white">{row.price ? '$' + row.price : ''}</span>
+                    </Link>
                 );
             },
             width: 120
@@ -129,9 +179,14 @@ const Pairs = () => {
             sortable: true,
             selector: (row) => {
                 if (row.percent >= 0) {
-                    return <span className="text-green"><i className="mdi mdi-arrow-top-right-thin"></i>{row.percent.toFixed(4) + '%'}</span>
+                    return <Link to={'/pairs/' + _allPairs[_allPairs.findIndex((pair) => pair.contractId == row.pair_address)]}>
+                        <span className="text-green"><i className="mdi mdi-arrow-top-right-thin"></i>{row.percent.toFixed(4) + '%'}</span>
+                    </Link>
+
                 } else {
-                    return <span className="text-red"><i className="mdi mdi-arrow-bottom-right-thin"></i>{row.percent.toFixed(4) + '%'}</span>
+                    return <Link to={'/pairs/' + _allPairs[_allPairs.findIndex((pair) => pair.contractId == row.pair_address)]}>
+                        <span className="text-red"><i className="mdi mdi-arrow-bottom-right-thin"></i>{row.percent.toFixed(4) + '%'}</span>
+                    </Link>
                 }
             },
             width: 150

@@ -50,9 +50,11 @@
 .text-grey {
     color: gray;
 }
+
 .text-hover {
     color: white;
 }
+
 .text-hover:hover {
     color: #1896b2 !important;
 }
@@ -127,4 +129,8 @@ body {
 
 .badge-bg {
     background: #23323c !important;
+}
+
+.flex-column {
+    flex-direction: column;
 }

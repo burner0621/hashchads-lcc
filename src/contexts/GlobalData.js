@@ -10,9 +10,18 @@ import * as env from "../env";
 import {
   getTimeframe,
   get2DayPercentChange,
-  getPercentChange
+  getPercentChange,
+  getBlockFromTimestamp
 } from '../utils'
-
+import {
+  GLOBAL_DATA,
+  GLOBAL_TXNS,
+  GLOBAL_CHART,
+  ETH_PRICE,
+  ALL_PAIRS,
+  ALL_TOKENS,
+  TOP_LPS_PER_PAIRS,
+} from '../apollo/queries'
 const UPDATE = 'UPDATE'
 const UPDATE_TXNS = 'UPDATE_TXNS'
 const UPDATE_CHART = 'UPDATE_CHART'
@@ -447,6 +456,24 @@ export function useTokenData(tokenId) {
   }, [tokenId, tokenData, updateTokenData])
   return tokenData || {}
 }
+
+export function useEthPrice() {
+  const [state, { updateEthPrice }] = useGlobalDataContext()
+  const ethPrice = state?.[ETH_PRICE_KEY]
+  const ethPriceOld = state?.['oneDayPrice']
+  useEffect(() => {
+    async function checkForEthPrice() {
+      if (!ethPrice) {
+        let [newPrice, oneDayPrice, priceChange] = await getEthPrice()
+        updateEthPrice(newPrice, oneDayPrice, priceChange)
+      }
+    }
+    checkForEthPrice()
+  }, [ethPrice, updateEthPrice])
+
+  return [ethPrice, ethPriceOld]
+}
+
 let isGettingPairs = false;
 export function useAllPairsInSaucerswap() {
   const [state, { updateAllPairsInSaucerswap }] = useGlobalDataContext()
@@ -736,6 +763,39 @@ async function getGlobalData(prices, hbarPrice) {
   }
   console.log('==================>', data)
   return data;
+}
+
+/**
+ * Gets the current price  of ETH, 24 hour price, and % change between them
+ */
+const getEthPrice = async () => {
+  const utcCurrentTime = dayjs()
+  const utcOneDayBack = utcCurrentTime.subtract(1, 'day').startOf('minute').unix()
+
+  let ethPrice = 0
+  let ethPriceOneDay = 0
+  let priceChangeETH = 0
+
+  try {
+    let oneDayBlock = await getBlockFromTimestamp(utcOneDayBack)
+    let result = await client.query({
+      query: ETH_PRICE(),
+      fetchPolicy: 'cache-first',
+    })
+    let resultOneDay = await client.query({
+      query: ETH_PRICE(oneDayBlock),
+      fetchPolicy: 'cache-first',
+    })
+    const currentPrice = result?.data?.bundles[0]?.ethPrice
+    const oneDayBackPrice = resultOneDay?.data?.bundles[0]?.ethPrice
+    priceChangeETH = getPercentChange(currentPrice, oneDayBackPrice)
+    ethPrice = currentPrice
+    ethPriceOneDay = oneDayBackPrice
+  } catch (e) {
+    console.log(e)
+  }
+
+  return [ethPrice, ethPriceOneDay, priceChangeETH]
 }
 
 const getChartData = async (oldestDateToFetch, prices) => {
