@@ -101,8 +101,8 @@ const Trending = () => {
     return (
         <React.Fragment>
             <Col xl={9}>
-                <Card>
-                    <CardHeader className="align-items-center d-flex">
+                <Card className='new-bg'>
+                    <CardHeader className="align-items-center d-flex new-bg">
                         <h4 className="card-title mb-0 flex-grow-1">Trending</h4>
                         <div className="flex-shrink-0">
                             <button className= {trendingType == TRENDING_TYPE.hot ? "btn btn-md button-border" : "btn btn-md"} style={{color: 'red'}} onClick={() => handleTrendingType(TRENDING_TYPE.hot)}>HOT</button>

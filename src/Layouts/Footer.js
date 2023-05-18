@@ -4,7 +4,7 @@ import { Col, Container, Row } from 'reactstrap';
 const Footer = () => {
     return (
         <React.Fragment>
-            <footer className="footer">
+            <footer className="footer new-bg">
                 <Container fluid>
                     <Row>
                         <Col sm={6}>

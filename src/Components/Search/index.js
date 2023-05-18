@@ -401,7 +401,7 @@ export const Search = ({ small = false, display }) => {
                 />
                 {!showMenu ? <SearchIconLarge /> : <CloseIcon onClick={() => { toggleMenu(false); }} />}
             </Wrapper>
-            <Menu hide={!showMenu} ref={menuRef} style={{ zIndex: "300", background: "#1a1d21" }}>
+            <Menu hide={!showMenu} ref={menuRef} style={{ zIndex: "300", background: "#0b1217" }}>
                 {
                     (display === "all" || display === "pair") &&
                     <>

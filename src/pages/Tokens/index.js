@@ -211,7 +211,7 @@ const Tokens = () => {
 
                                 <RowBetween>
                                     <Nav tabs className="nav nav-tabs nav-border-top nav-border-top-success">
-                                        <NavItem style={{ marginRight: '20px' }}>
+                                        <NavItem className="new-bg" style={{ marginRight: '20px' }}>
                                             <NavLink style={{ cursor: "pointer" }} className={classnames({ active: tokenType == TOKEN_TYPE.all || tokenType == TOKEN_TYPE.gainer, })} onClick={() => { handleTokenType(TOKEN_TYPE.gainer) }} >
                                                 <i className="mdi mdi-elevation-rise align-middle me-1"></i> Gainers
 
@@ -220,8 +220,8 @@ const Tokens = () => {
                                                     <span className="visually-hidden">Gainers</span></Badge>
                                             </NavLink>
                                         </NavItem>
-                                        <NavItem>
-                                            <NavLink style={{ cursor: "pointer" }} className={classnames({ active: tokenType == TOKEN_TYPE.loser || tokenType == TOKEN_TYPE.all, })} onClick={() => { handleTokenType(TOKEN_TYPE.loser) }} >
+                                        <NavItem className="new-bg">
+                                            <NavLink style={{ cursor: "pointer" }} className={classnames({ active: tokenType == TOKEN_TYPE.loser || tokenType == TOKEN_TYPE.all })} onClick={() => { handleTokenType(TOKEN_TYPE.loser) }} >
                                                 <i className="mdi mdi-elevation-decline me-1 align-middle"></i> Losers
                                                 {/* <Badge color="warning" className="ms-1">{loserTokens.length}</Badge> */}
                                                 <Badge pill color="danger" className="position-absolute top-0 start-100 translate-middle">{loserTokens.length}

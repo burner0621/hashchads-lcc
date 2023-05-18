@@ -229,7 +229,7 @@ const TokenInfo = ({ address, tokenPrice }) => {
                 toggle={() => {
                     tog_xlarge();
                 }}
-                style={{ background: '#1a1d21' }}
+                style={{ background: '#0b1217' }}
             >
                 <DataTable
                     style={{ textAlign: 'center' }}
@@ -248,7 +248,7 @@ const TokenInfo = ({ address, tokenPrice }) => {
             >
                 <div className="card-body">
                     <div className="table-responsive table-card">
-                        <table className="table table-hover table-borderless table-centered align-middle table-nowrap mb-0" style={{background: "#1a1d21"}}>
+                        <table className="table table-hover table-borderless table-centered align-middle table-nowrap mb-0" style={{background: "#0b1217"}}>
                             <thead className="text-muted bg-soft-light">
                                 <tr>
                                     <th style={{textAlign:"center"}}>RANK</th>
