@@ -82,7 +82,7 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1 }) => {
   console.log (hourlyChartData, ">>>>>>>>>>>>>>>>")
   // get data for pair, and rates
   const hourlyData = hourlyChartData
-  const hourlyRate0 = hourlyData.map((item, idx)=> {
+  const hourlyRate0 = hourlyData && hourlyData.length && hourlyData.map((item, idx)=> {
     return {
       open: 1/item.open,
       close: 1/item.close,
