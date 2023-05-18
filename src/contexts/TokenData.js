@@ -462,7 +462,6 @@ export function useTokenData(tokenAddress) {
 export function useTokenChartData(tokenAddress) {
   const [state, { updateChartData }] = useTokenDataContext()
   const chartData = state?.[tokenAddress]?.chartData
-  console.log(chartData, "BBBBBBBBBBBB")
   useEffect(() => {
     async function checkForChartData() {
       if (!chartData) {

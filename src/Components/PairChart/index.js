@@ -79,7 +79,6 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1 }) => {
     return () => window.removeEventListener('resize', handleResize)
   }, [height, isClient, width]) // Empty array ensures that effect is only run on mount and unmount
 
-  console.log (hourlyChartData, ">>>>>>>>>>>>>>>>")
   // get data for pair, and rates
   const hourlyData = hourlyChartData
   const hourlyRate0 = hourlyData && hourlyData.length && hourlyData.map((item, idx)=> {

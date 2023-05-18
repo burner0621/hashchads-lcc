@@ -110,7 +110,6 @@ const TokenChart = ({ address, color, base }) => {
     const aspect = below1080 ? 60 / 32 : below600 ? 60 / 42 : 60 / 22
 
     chartData = chartData?.filter((entry) => entry.timestampSeconds >= utcStartTime)
-    console.log(priceData, ">>>>>>>>>>>>>>>>>")
 
     // update the width on a window resize
     const ref = useRef()
@@ -126,7 +125,6 @@ const TokenChart = ({ address, color, base }) => {
         window.addEventListener('resize', handleResize)
         return () => window.removeEventListener('resize', handleResize)
     }, [isClient, width]) // Empty array ensures that effect is only run on mount and unmount
-
     return (
         <ChartWrapper>
             {below600 ? (
@@ -339,7 +337,7 @@ const TokenChart = ({ address, color, base }) => {
                             />
                         </AreaChart>
                     </ResponsiveContainer>
-                ) : priceData ? (
+                ) : priceData && priceData.length ? (
                     <ResponsiveContainer aspect={aspect} ref={ref}>
                         <CandleStickChart data={priceData} width={width} base={base} />
                     </ResponsiveContainer>
