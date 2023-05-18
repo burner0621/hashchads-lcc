@@ -46,9 +46,6 @@ const Pairs = () => {
     const _weeklyPairVolume = usePairWeeklyVolume()
     const _priceChanges = usePriceChanges()
 
-
-    console.log(_priceChanges, _allPairs.length, ">>>>>>>>>>>>>>>>>>>")
-
     useEffect(() => {
         if (_priceChanges && (Object.keys(_priceChanges)).length > 0) {
             let _data = []
@@ -168,7 +165,7 @@ const Pairs = () => {
             selector: (row) => {
                 return (
                     <Link to={'/pairs/' + _allPairs[_allPairs.findIndex((pair) => pair.contractId == row.pair_address)]}>
-                        <span className="text-white">{row.price ? '$' + row.price : ''}</span>
+                        <span className="text-white">{row.price ? '$' + row.price.toFixed(4) : ''}</span>
                     </Link>
                 );
             },
@@ -213,12 +210,12 @@ const Pairs = () => {
         {
             name: <span className='font-weight-bold fs-13'>Daily Fees</span>,
             sortable: true,
-            selector: row => (row.volume / 40)
+            selector: row => '$' + (row.volume / 400).toFixed(2)
         },
         {
             name: <span className='font-weight-bold fs-16'>Liquidity</span>,
             sortable: true,
-            selector: row => row.liquidity ? calcUnit(parseInt(row.liquidity)) : '',
+            selector: row => row.liquidity ? '$' + calcUnit(parseInt(row.liquidity)) : '',
             width: 150
         },
         {

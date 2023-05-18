@@ -34,16 +34,16 @@ const UPDATE_CHART_DATA = 'UPDATE_CHART_DATA'
 const UPDATE_TOP_PAIRS = 'UPDATE_TOP_PAIRS'
 const UPDATE_HOURLY_DATA = 'UPDATE_HOURLY_DATA'
 const ETH_PRICE_KEY = 'ETH_PRICE_KEY'
-const UPDATE_ETH_PRICE = 'UPDATE_ETH_PRICE'
+const UPDATE_PAIR_DATA = 'UPDATE_PAIR_DATA'
 
 dayjs.extend(utc)
 
 export function safeAccess(object, path) {
   return object
     ? path.reduce(
-        (accumulator, currentValue) => (accumulator && accumulator[currentValue] ? accumulator[currentValue] : null),
-        object
-      )
+      (accumulator, currentValue) => (accumulator && accumulator[currentValue] ? accumulator[currentValue] : null),
+      object
+    )
     : null
 }
 
@@ -62,6 +62,18 @@ function reducer(state, { type, payload }) {
         [pairAddress]: {
           ...state?.[pairAddress],
           ...data,
+        },
+      }
+    }
+
+    case UPDATE_PAIR_DATA: {
+      const { address, pairData } = payload
+
+      return {
+        ...state,
+        [address]: {
+          ...state?.[address],
+          pairData
         },
       }
     }
@@ -90,12 +102,13 @@ function reducer(state, { type, payload }) {
     // }
 
     case UPDATE_CHART_DATA: {
-      const { address, chartData } = payload
+      const { address, dailyChartData, hourlyChartData } = payload
       return {
         ...state,
         [address]: {
-          ...(safeAccess(state, [address]) || {}),
-          chartData,
+          ...state?.[address],
+          dailyChartData,
+          hourlyChartData
         },
       }
     }
@@ -134,6 +147,16 @@ export default function Provider({ children }) {
     })
   }, [])
 
+  const updatePairData = useCallback((address, pairData) => {
+    dispatch({
+      type: UPDATE_PAIR_DATA,
+      payload: {
+        address,
+        pairData
+      },
+    })
+  }, [])
+
   // const updateTopPairs = useCallback((topPairs) => {
   //   dispatch({
   //     type: UPDATE_TOP_PAIRS,
@@ -161,10 +184,10 @@ export default function Provider({ children }) {
   //   })
   // }, [])
 
-  const updateChartData = useCallback((address, chartData) => {
+  const updateChartData = useCallback((address, hourlyChartData, dailyChartData) => {
     dispatch({
       type: UPDATE_CHART_DATA,
-      payload: { address, chartData },
+      payload: { address, hourlyChartData, dailyChartData },
     })
   }, [])
 
@@ -182,13 +205,13 @@ export default function Provider({ children }) {
           state,
           {
             update,
-            // updatePairTxns,
+            updatePairData,
             updateChartData,
             // updateTopPairs,
             // updateHourlyData,
           },
         ],
-        [state, update, updateChartData]
+        [state, update, updatePairData, updateChartData]
       )}
     >
       {children}
@@ -357,10 +380,15 @@ const getPairChartData = async (pairAddress, pairId) => {
   let startTime = utcStartTime.unix() - 1
 
   try {
-    let response = await fetch (`https://api.saucerswap.finance/pools/conversionRates/${pairId}?interval=DAY&from=${startTime}&to=${Date.now()/1000}`)
+    let response = await fetch(`https://api.saucerswap.finance/pools/conversionRates/${pairId}?interval=DAY&from=${startTime}&to=${Date.now() / 1000}`)
     if (response.status === 200) {
-      const jsonData = await response.json ()
-      return jsonData || []
+      const dailyData = await response.json()
+      response = await fetch(`https://api.saucerswap.finance/pools/conversionRates/${pairId}?interval=HOUR&from=${startTime}&to=${Date.now() / 1000}`)
+      if (response.status === 200) {
+        const hourlyData = await response.json()
+        return [hourlyData, dailyData]
+      }
+      return [undefined, dailyData]
     }
   } catch (e) {
     return []
@@ -540,26 +568,42 @@ const getPairChartData = async (pairAddress, pairId) => {
 /**
  * Get all the current and 24hr changes for a pair
  */
-// export function usePairData(pairAddress) {
-//   const [state, { update }] = usePairDataContext()
-//   const [ethPrice] = useEthPrice()
-//   const pairData = state?.[pairAddress]
+export function usePairData(pairAddress) {
+  const [state, { updatePairData }] = usePairDataContext()
+  const pairData = state?.[pairAddress]?.pairData
+  const _allPairs = useAllPairsInSaucerswap()
+  let pairId = -1
+  let _pair = {}
 
-//   useEffect(() => {
-//     async function fetchData() {
-//       if (!pairData && pairAddress) {
-//         let data = await getBulkPairData([pairAddress], ethPrice)
-//         data && update(pairAddress, data[0])
-//       }
-//     }
-//     if (!pairData && pairAddress && ethPrice && isAddress(pairAddress)) {
-//       fetchData()
-//     }
-//   }, [pairAddress, pairData, update, ethPrice])
+  useEffect(() => {
+    async function fetchData() {
+      for (let pair of _allPairs) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        if (pair.contractId === pairAddress) { pairId = pair.id; _pair = pair; break }
+      }
+      if (Number(pairId) > -1) {
+        let data = await getPairData(pairId, _pair)
+        data && updatePairData(pairAddress, data)
+      }
+    }
+    if ((!pairData || pairData.length > 0) && pairAddress && _allPairs) {
+      fetchData()
+    }
+  }, [pairAddress, pairData, updatePairData, _allPairs])
 
-//   return pairData || {}
-// }
-
+  return pairData || {}
+}
+async function getPairData(pairId, pair) {
+  let res = await fetch(`https://api.saucerswap.finance/pools/conversionRates/latest/${pairId}?interval=DAY`)
+  if (res.status === 200) {
+    let jsonData = await res.json()
+    for (let key of Object.keys(pair)) {
+      jsonData[key] = pair[key]
+    }
+  return jsonData
+  }
+  return []
+}
 /**
  * Get most recent txns for a pair
  */
@@ -579,22 +623,23 @@ const getPairChartData = async (pairAddress, pairId) => {
 // }
 
 export function usePairChartData(poolId) {
-  const _allPairs = useAllPairsInSaucerswap ()
+  const _allPairs = useAllPairsInSaucerswap()
   const pairAddress = _allPairs[poolId]?.contractId
   const [state, { updateChartData }] = usePairDataContext()
-  const chartData = state?.[pairAddress]?.chartData
+  const dailyChartData = state?.[pairAddress]?.dailyChartData
+  const hourlyChartData = state?.[pairAddress]?.hourlyChartData
 
   useEffect(() => {
     async function checkForChartData() {
-      if (!chartData) {
-        let data = await getPairChartData(pairAddress, poolId)
-        updateChartData(pairAddress, data)
+      if (!dailyChartData || !hourlyChartData) {
+        const [hourlyData, dailyData] = await getPairChartData(pairAddress, poolId)
+        updateChartData(pairAddress, hourlyData, dailyData)
       }
     }
     checkForChartData()
-  }, [chartData, pairAddress, poolId])
-  
-  return chartData
+  }, [hourlyChartData, dailyChartData, pairAddress, poolId, updateChartData])
+
+  return [hourlyChartData, dailyChartData]
 }
 
 /**

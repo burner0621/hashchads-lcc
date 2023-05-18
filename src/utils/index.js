@@ -58,6 +58,13 @@ export const formattedNum = (number, usd = false, acceptNegatives = false) => {
   return Number(parseFloat(num).toFixed(0)).toString()
 }
 
+export const toNiceDateYear = (date) => dayjs.utc(dayjs.unix(date)).format('MMMM DD, YYYY')
+
+export const toNiceDate = (date) => {
+  let x = dayjs.utc(dayjs.unix(date)).format('MMM DD')
+  return x
+}
+
 export function formattedPercent(percent, useBrackets = false) {
   percent = parseFloat(percent)
   if (!percent || percent === 0) {

@@ -6,18 +6,31 @@ import { RowBetween, AutoRow } from '../Row'
 import { toK, toNiceDate, toNiceDateYear, formattedNum, getTimeframe } from '../../utils'
 import { OptionButton } from '../ButtonStyled'
 import { darken } from 'polished'
-import { usePairChartData, useHourlyRateData, usePairData } from '../../contexts/PairData'
+import { usePairChartData, usePairData } from '../../contexts/PairData'
 import { timeframeOptions } from '../../constants'
 import { useMedia } from 'react-use'
-import { EmptyCard } from '..'
 import DropdownSelect from '../DropdownSelect'
 import CandleStickChart from '../CandleChart'
 import LocalLoader from '../LocalLoader'
-import { useDarkModeManager } from '../../contexts/LocalStorage'
+// import CandleStickChart from '../CandleChart'
+// import LocalLoader from '../LocalLoader'
+// import { useDarkModeManager } from '../../contexts/LocalStorage'
+
+const EmptyCard = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  border-radius: 20px;
+  color: red;
+  height: ${({ height }) => height && height};
+`
 
 const ChartWrapper = styled.div`
   height: 100%;
   max-height: 340px;
+  padding: 20px;
+  border: solid 1px white;
 
   @media screen and (max-width: 600px) {
     min-height: 200px;
@@ -34,17 +47,20 @@ const OptionsRow = styled.div`
 const CHART_VIEW = {
   VOLUME: 'Volume',
   LIQUIDITY: 'Liquidity',
-  RATE0: 'Rate 0',
-  RATE1: 'Rate 1',
+  RATE0: 'RATE0',
+  RATE1: 'RATE1',
 }
 
-const PairChart = ({ address, color, base0, base1 }) => {
+const PairChart = ({ address, poolId, pairData, color, base0, base1 }) => {
   const [chartFilter, setChartFilter] = useState(CHART_VIEW.LIQUIDITY)
 
-  const [timeWindow, setTimeWindow] = useState(timeframeOptions.MONTH)
+  const [timeWindow, setTimeWindow] = useState(timeframeOptions.WEEK)
 
-  const [darkMode] = useDarkModeManager()
-  const textColor = darkMode ? 'white' : 'black'
+  const textColor = 'white'
+  
+  let hourlyChartData, dailyChartData;
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  if (poolId) [hourlyChartData, dailyChartData] = usePairChartData (poolId)
 
   // update the width on a window resize
   const ref = useRef()
@@ -63,27 +79,34 @@ const PairChart = ({ address, color, base0, base1 }) => {
     return () => window.removeEventListener('resize', handleResize)
   }, [height, isClient, width]) // Empty array ensures that effect is only run on mount and unmount
 
+  console.log (hourlyChartData, ">>>>>>>>>>>>>>>>")
   // get data for pair, and rates
-  const pairData = usePairData(address)
-  let chartData = usePairChartData(address)
-  const hourlyData = useHourlyRateData(address, timeWindow)
-  const hourlyRate0 = hourlyData && hourlyData[0]
-  const hourlyRate1 = hourlyData && hourlyData[1]
+  const hourlyData = hourlyChartData
+  const hourlyRate0 = hourlyData.map((item, idx)=> {
+    return {
+      open: 1/item.open,
+      close: 1/item.close,
+      low: 1/item.low,
+      high: 1/item.high,
+      timestampSeconds: item.timestampSeconds
+    }
+  })
+  const hourlyRate1 = hourlyData
 
   // formatted symbols for overflow
   const formattedSymbol0 =
-    pairData?.token0?.symbol.length > 6 ? pairData?.token0?.symbol.slice(0, 5) + '...' : pairData?.token0?.symbol
+    pairData?.tokenA?.symbol.length > 6 ? pairData?.tokenA?.symbol.slice(0, 5) + '...' : pairData?.tokenA?.symbol
   const formattedSymbol1 =
-    pairData?.token1?.symbol.length > 6 ? pairData?.token1?.symbol.slice(0, 5) + '...' : pairData?.token1?.symbol
+    pairData?.tokenB?.symbol.length > 6 ? pairData?.tokenB?.symbol.slice(0, 5) + '...' : pairData?.tokenB?.symbol
 
   const below1600 = useMedia('(max-width: 1600px)')
   const below1080 = useMedia('(max-width: 1080px)')
   const below600 = useMedia('(max-width: 600px)')
 
   let utcStartTime = getTimeframe(timeWindow)
-  chartData = chartData?.filter((entry) => entry.date >= utcStartTime)
+  dailyChartData = dailyChartData?.filter((entry) => entry.timestampSeconds >= utcStartTime)
 
-  if (chartData && chartData.length === 0) {
+  if (dailyChartData && dailyChartData.length === 0) {
     return (
       <ChartWrapper>
         <EmptyCard height="300px">No historical data yet.</EmptyCard>{' '}
@@ -148,7 +171,7 @@ const PairChart = ({ address, color, base0, base1 }) => {
                 setChartFilter(CHART_VIEW.RATE0)
               }}
             >
-              {pairData.token0 ? formattedSymbol1 + '/' + formattedSymbol0 : '-'}
+              {pairData.tokenA ? formattedSymbol1 + '/' + formattedSymbol0 : '-'}
             </OptionButton>
             <OptionButton
               active={chartFilter === CHART_VIEW.RATE1}
@@ -157,7 +180,7 @@ const PairChart = ({ address, color, base0, base1 }) => {
                 setChartFilter(CHART_VIEW.RATE1)
               }}
             >
-              {pairData.token0 ? formattedSymbol0 + '/' + formattedSymbol1 : '-'}
+              {pairData.tokenB ? formattedSymbol0 + '/' + formattedSymbol1 : '-'}
             </OptionButton>
           </AutoRow>
           <AutoRow justify="flex-end" gap="6px">
@@ -183,8 +206,8 @@ const PairChart = ({ address, color, base0, base1 }) => {
         </OptionsRow>
       )}
       {chartFilter === CHART_VIEW.LIQUIDITY && (
-        <ResponsiveContainer aspect={aspect}>
-          <AreaChart margin={{ top: 0, right: 10, bottom: 6, left: 0 }} barCategoryGap={1} data={chartData}>
+        <ResponsiveContainer aspect={aspect} style={{height: '100%'}}>
+          <AreaChart margin={{ top: 0, right: 10, bottom: 6, left: 0 }} barCategoryGap={1} data={dailyChartData}>
             <defs>
               <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor={color} stopOpacity={0.35} />
@@ -198,8 +221,8 @@ const PairChart = ({ address, color, base0, base1 }) => {
               tickMargin={14}
               minTickGap={80}
               tickFormatter={(tick) => toNiceDate(tick)}
-              dataKey="date"
-              tick={{ fill: textColor }}
+              dataKey="timestampSeconds"
+              tick={{ fill: 'white' }}
               type={'number'}
               domain={['dataMin', 'dataMax']}
             />
@@ -233,7 +256,7 @@ const PairChart = ({ address, color, base0, base1 }) => {
               dot={false}
               type="monotone"
               name={' (USD)'}
-              dataKey={'reserveUSD'}
+              dataKey={'liquidityUsd'}
               yAxisId={0}
               stroke={darken(0.12, color)}
               fill="url(#colorUv)"
@@ -277,7 +300,7 @@ const PairChart = ({ address, color, base0, base1 }) => {
           <BarChart
             margin={{ top: 0, right: 0, bottom: 6, left: below1080 ? 0 : 10 }}
             barCategoryGap={1}
-            data={chartData}
+            data={dailyChartData}
           >
             <XAxis
               tickLine={false}
@@ -286,7 +309,7 @@ const PairChart = ({ address, color, base0, base1 }) => {
               minTickGap={80}
               tickMargin={14}
               tickFormatter={(tick) => toNiceDate(tick)}
-              dataKey="date"
+              dataKey="timestampSeconds"
               tick={{ fill: textColor }}
               type={'number'}
               domain={['dataMin', 'dataMax']}
@@ -319,7 +342,7 @@ const PairChart = ({ address, color, base0, base1 }) => {
             <Bar
               type="monotone"
               name={'Volume'}
-              dataKey={'dailyVolumeUSD'}
+              dataKey={'volumeUsd'}
               fill={color}
               opacity={'0.4'}
               yAxisId={0}

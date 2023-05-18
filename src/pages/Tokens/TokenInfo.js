@@ -164,7 +164,6 @@ const TokenInfo = ({ address, tokenPrice }) => {
             setHolderInfo(rlt)
         }
     }, [decimals, holders, pairs])
-    console.log (tokenInfo?.custom_fees?.fractional_fees?.length, ">>>>>>>>>>>>>>")
     const columns = [
 
         {

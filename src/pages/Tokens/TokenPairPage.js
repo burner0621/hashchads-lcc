@@ -11,13 +11,14 @@ import { RowBetween, RowFixed, AutoRow } from '../../Components/Row'
 import Link, { BasicLink } from '../../Components/Link'
 import Search from '../../Components/Search'
 import { useParams } from 'react-router-dom'
-import { useAllPairsInSaucerswap } from '../../contexts/GlobalData'
+import { useAllPairsInSaucerswap, usePairWeeklyVolume, useHbarAndSaucePrice } from '../../contexts/GlobalData'
 import fetch from 'cross-fetch'
 
 import DoubleTokenLogo from "../../Components/DoubleLogo";
 import TokenLogo from "../../Components/TokenLogo";
-// import { useAllPairData, usePairData } from "../../contexts/PairData";
-// import { useAllPairData, usePairData, usePairTransactions } from '../../contexts/PairData'
+import PairChart from "../../Components/PairChart";
+import { usePairData } from "../../contexts/PairData";
+import { formattedNum } from "../../utils";
 
 const DashboardWrapper = styled.div`
   width: 100%;
@@ -98,57 +99,53 @@ const TIME_TYPE = {
     all: 'ALL'
 }
 const TokenPair = () => {
-    // const {
-    //     token0,
-    //     token1,
-    //     reserve0,
-    //     reserve1,
-    //     reserveUSD,
-    //     trackedReserveUSD,
-    //     oneDayVolumeUSD,
-    //     volumeChangeUSD,
-    //     oneDayVolumeUntracked,
-    //     volumeChangeUntracked,
-    //     liquidityChangeUSD,
-    //   } = usePairData(contractId)
 
     const { contractId } = useParams()
     const _allPairs = useAllPairsInSaucerswap()
     const [pairData, setPairData] = useState({});
-    // const backgroundColor = useColor(contractId)
-    
-
+    const [totalLiquidityUsd, setTotalLiquidityUsd] = useState(0)
+    const [totalLiquidityHbar, setTotalLiquidityHbar] = useState(0)
+    const [dailyUsd, setDailyUsd] = useState(0)
+    const [dailyHbar, setDailyHbar] = useState(0)
+    const [weeklyUsd, setWeeklyUsd] = useState(0)
+    const [weeklyHbar, setWeeklyHbar] = useState(0)
+    const [tokenAReserve, setTokenAReserve] = useState(0)
+    const [tokenBReserve, setTokenBReserve] = useState(0)
+    const [symbolA, setSymbolA] = useState('')
+    const [symbolB, setSymbolB] = useState('')
+    const [iconA, setIconA] = useState()
+    const [iconB, setIconB] = useState()
+    const [lpReward, setLpReward] = useState(0)
+    const _pairData = usePairData(contractId)
+    const weeklyData = usePairWeeklyVolume()
+    const [hbarPrice, saucePrice] = useHbarAndSaucePrice()
     useEffect(() => {
-        setPairData(_allPairs[_allPairs.findIndex((pair) => pair.contractId == contractId)])
-    }, [+_allPairs])
+        if (Object.keys(_pairData).length && Object.keys(weeklyData).length && hbarPrice) {
+            setTotalLiquidityUsd(_pairData.liquidityUsd)
+            setTotalLiquidityHbar(_pairData.liquidity / 100000000)
+            setDailyUsd(_pairData.volumeUsd)
+            setDailyHbar(_pairData.volume / 100000000)
+            setWeeklyHbar(weeklyData[_pairData.poolId])
+            setWeeklyUsd(weeklyData[_pairData.poolId] * hbarPrice)
+            setTokenAReserve(_pairData.tokenReserveA / Math.pow(10, _pairData.tokenA.decimals))
+            setTokenBReserve(_pairData.tokenReserveB / Math.pow(10, _pairData.tokenB.decimals))
+            setIconA(_pairData.tokenA.icon)
+            setIconB(_pairData.tokenB.icon)
+            setSymbolA(_pairData.tokenA.symbol)
+            setSymbolB(_pairData.tokenB.symbol)
+            setLpReward(_pairData.volumeUsd * 365 / 4 / _pairData.liquidityUsd)
+        }
+    }, [weeklyData, _pairData, hbarPrice])
 
-    console.log('pairData', pairData);
     const below1080 = useMedia('(max-width: 1080px)')
     const below600 = useMedia('(max-width: 600px)')
-
-    useEffect(() => {
-        async function fetchData() {
-            fetch("https://api.saucerswap.finance/pools/conversionRates/latest/180?interval=DAY").then((response) => {
-                if (response.status === 200) {
-                    response.json().then((jsonData) => {
-                        setTvlData(jsonData)
-                    })
-
-                }
-            });
-
-        }
-        fetchData()
-    }, [pairData])
 
     const handleCopyAddress = () => {
 
     }
 
-    const [tvlData, setTvlData] = useState()
-    const [timeType, setTimeType] = useState(TIME_TYPE.day)
-    const name = pairData?.tokenA?.name + ' - ' + pairData?.tokenB?.name;
-    const symbol = pairData?.tokenA?.symbol + ' - ' + pairData?.tokenB?.symbol;
+    const name = symbolA + ' / ' + symbolB;
+    const symbol = symbolA + ' / ' + symbolB;
 
     return (
         <React.Fragment>
@@ -184,7 +181,7 @@ const TokenPair = () => {
                                 >
                                     <RowFixed style={{ flexWrap: 'wrap' }}>
                                         <RowFixed style={{ alignItems: 'baseline' }}>
-                                            <   DoubleTokenLogo a0={pairData?.tokenA?.icon} a1={pairData?.tokenB?.icon} margin={true} />
+                                            <   DoubleTokenLogo a0={iconA} a1={iconB} margin={true} style={{ width: 20 }} />
                                             {/* <TokenLogo path={iconPath} size="32px" style={{ alignSelf: 'center' }} /> */}
                                             <div fontSize={below1080 ? '1.5rem' : '2rem'} fontWeight={500} style={{ margin: '0 1rem' }}>
                                                 <RowFixed gap="6px">
@@ -215,13 +212,13 @@ const TokenPair = () => {
                                                 <h2 className="mb-0">
                                                     $
                                                     <span className="counter-value" style={{ textOverflow: "ellipsis" }}>
-                                                        <CountUp start={0} end={tvlData?.liquidityUsd} duration={1} decimals={2} />
+                                                        <CountUp start={0} end={totalLiquidityUsd} duration={1} decimals={2} />
                                                     </span>
 
                                                 </h2>
                                                 <h2 className="mb-0">
                                                     <span className="counter-value" style={{ textOverflow: "ellipsis" }}>
-                                                        (<CountUp start={0} end={tvlData?.liquidity} duration={1} decimals={0} /> HBAR)
+                                                        (<CountUp start={0} end={totalLiquidityHbar} duration={1} decimals={2} /> HBAR)
                                                     </span>
                                                 </h2>
                                             </div>
@@ -238,12 +235,12 @@ const TokenPair = () => {
                                                 <h2 className="mb-0">
                                                     $
                                                     <span className="counter-value" style={{ textOverflow: "ellipsis" }}>
-                                                        <CountUp start={0} end={6252.67} duration={1} decimals={2} />
+                                                        <CountUp start={0} end={dailyUsd} duration={1} decimals={2} />
                                                     </span>
                                                 </h2>
                                                 <h2 className="mb-0">
                                                     <span className="counter-value" style={{ textOverflow: "ellipsis" }}>
-                                                        (<CountUp start={0} end={117755} duration={1} decimals={0} /> HBAR)
+                                                        (<CountUp start={0} end={dailyHbar} duration={1} decimals={2} /> HBAR)
                                                     </span>
                                                 </h2>
                                             </div>
@@ -260,12 +257,12 @@ const TokenPair = () => {
                                                 <h2 className="mb-0">
                                                     $
                                                     <span className="counter-value" style={{ textOverflow: "ellipsis" }}>
-                                                        <CountUp start={0} end={136050.97} duration={1} decimals={2} />
+                                                        <CountUp start={0} end={weeklyUsd} duration={1} decimals={2} />
                                                     </span>
                                                 </h2>
                                                 <h2 className="mb-0">
                                                     <span className="counter-value" style={{ textOverflow: "ellipsis" }}>
-                                                        (<CountUp start={0} end={2562117} duration={1} decimals={0} /> HBAR)
+                                                        (<CountUp start={0} end={weeklyHbar} duration={1} decimals={2} /> HBAR)
                                                     </span>
                                                 </h2>
                                             </div>
@@ -284,12 +281,12 @@ const TokenPair = () => {
                                                 <h2 className="mb-0">
                                                     $
                                                     <span className="counter-value" style={{ textOverflow: "ellipsis" }}>
-                                                        <CountUp start={0} end={18.76} duration={1} decimals={2} />
+                                                        <CountUp start={0} end={dailyUsd / 400} duration={1} decimals={4} />
                                                     </span>
                                                 </h2>
                                                 <h2>
                                                     <span className="counter-value" style={{ textOverflow: "ellipsis" }}>
-                                                        (<CountUp start={0} end={353} duration={1} decimals={0} /> HBAR)
+                                                        (<CountUp start={0} end={dailyHbar / 400} duration={1} decimals={4} /> HBAR)
                                                     </span>
                                                 </h2>
                                             </div>
@@ -305,7 +302,7 @@ const TokenPair = () => {
                                                 <h6 className="text-muted mb-3 text-white">LP Reward APR</h6>
                                                 <h2 className="mb-0">
                                                     <span className="counter-value" style={{ textOverflow: "ellipsis" }}>
-                                                        <CountUp start={0} end={0.1} duration={1} decimals={1} />%
+                                                        <CountUp start={0} end={lpReward} duration={1} decimals={4} />%
                                                     </span>
                                                 </h2>
                                                 <h2>
@@ -324,12 +321,12 @@ const TokenPair = () => {
                                                 <h6 className="text-muted mb-3 text-white">Pooled Tokens</h6>
                                                 <h2 className="mb-0 d-flex flex-column">
                                                     <span className="counter-value d-flex" style={{ textOverflow: "ellipsis" }}>
-                                                        <TokenLogo path={pairData?.tokenA?.icon} size="32px" style={{ alignSelf: 'center' }} ></TokenLogo>
-                                                        <CountUp start={0} end={55391466} duration={3} decimals={0} />HBAR
+                                                        <TokenLogo path={iconA} size="32px" style={{ alignSelf: 'center', marginRight: 5 }} ></TokenLogo>
+                                                        <CountUp start={0} end={tokenAReserve} duration={3} decimals={2} /><span style={{ fontSize: 12, alignSelf: 'flex-end', marginLeft: 8 }}>{' ' + symbolA}</span>
                                                     </span>
                                                     <span className="counter-value d-flex" style={{ textOverflow: "ellipsis" }}>
-                                                        <TokenLogo path={pairData?.tokenB?.icon} size="32px" style={{ alignSelf: 'center' }} ></TokenLogo>
-                                                        <CountUp start={0} end={55391466} duration={3} decimals={0} />HBARX
+                                                        <TokenLogo path={iconB} size="32px" style={{ alignSelf: 'center', marginRight: 5 }} ></TokenLogo>
+                                                        <CountUp start={0} end={tokenBReserve} duration={3} decimals={2} /><span style={{ fontSize: 12, alignSelf: 'flex-end', marginLeft: 8 }}>{' ' + symbolB}</span>
                                                     </span>
                                                 </h2>
                                             </div>
@@ -340,12 +337,16 @@ const TokenPair = () => {
                         </Row>
                         <Row>
                             <Col xl={8} sm={12}>
-                                {/* <PairChart
-                                    address={contractId}
-                                    color={backgroundColor}
-                                    base0={reserve1 / reserve0}
-                                    base1={reserve0 / reserve1}
-                                /> */}
+                                {
+                                    Object.keys(_pairData).length && Object.keys(weeklyData).length && hbarPrice &&
+                                    <PairChart
+                                        address={contractId}
+                                        poolId={_pairData.poolId}
+                                        pairData={_pairData}
+                                        color={'green'}
+                                        base0={tokenAReserve / tokenBReserve}
+                                        base1={tokenBReserve / tokenAReserve}
+                                    />}
                             </Col>
 
                             <Col xl={4} sm={12} >
