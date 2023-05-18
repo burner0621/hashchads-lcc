@@ -276,7 +276,7 @@ const TokenInfo = ({ address, tokenPrice }) => {
                     </div>
                 </div>
             </Modal>}
-            <Col xxl={3}>
+            <Col xxl={12}>
                 <Card className="card-height-100">
                     <CardHeader>
                         <Nav className="nav-tabs-custom rounded card-header-tabs nav-justified border-bottom-0 mx-n3" role="tablist">

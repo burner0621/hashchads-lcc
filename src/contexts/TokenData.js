@@ -17,6 +17,8 @@ import { useHbarAndSaucePrice } from './GlobalData'
 
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
+import { timeframeOptions } from '../constants'
+import fetch from 'cross-fetch'
 
 const UPDATE = 'UPDATE'
 const UPDATE_TOKEN_TXNS = 'UPDATE_TOKEN_TXNS'
@@ -90,19 +92,19 @@ function reducer(state, { type, payload }) {
       }
     }
 
-    // case UPDATE_PRICE_DATA: {
-    //   const { address, data, timeWindow, interval } = payload
-    //   return {
-    //     ...state,
-    //     [address]: {
-    //       ...state?.[address],
-    //       [timeWindow]: {
-    //         ...state?.[address]?.[timeWindow],
-    //         [interval]: data,
-    //       },
-    //     },
-    //   }
-    // }
+    case UPDATE_PRICE_DATA: {
+      const { address, data, timeWindow, interval } = payload
+      return {
+        ...state,
+        [address]: {
+          ...state?.[address],
+          [timeWindow]: {
+            ...state?.[address]?.[timeWindow],
+            [interval]: data,
+          },
+        },
+      }
+    }
 
     // case UPDATE_ALL_PAIRS: {
     //   const { address, allPairs } = payload
@@ -171,12 +173,12 @@ export default function Provider({ children }) {
   //   })
   // }, [])
 
-  // const updatePriceData = useCallback((address, data, timeWindow, interval) => {
-  //   dispatch({
-  //     type: UPDATE_PRICE_DATA,
-  //     payload: { address, data, timeWindow, interval },
-  //   })
-  // }, [])
+  const updatePriceData = useCallback((address, data, timeWindow, interval) => {
+    dispatch({
+      type: UPDATE_PRICE_DATA,
+      payload: { address, data, timeWindow, interval },
+    })
+  }, [])
 
   return (
     <TokenDataContext.Provider
@@ -189,7 +191,7 @@ export default function Provider({ children }) {
             updateChartData,
             // updateTopTokens,
             // updateAllPairs,
-            // updatePriceData,
+            updatePriceData,
             // updateCombinedVolume,
           },
         ],
@@ -201,7 +203,7 @@ export default function Provider({ children }) {
           updateChartData,
           // updateTopTokens,
           // updateAllPairs,
-          // updatePriceData,
+          updatePriceData,
         ]
       )}
     >
@@ -478,28 +480,27 @@ export function useTokenChartData(tokenAddress) {
  * @param {*} timeWindow // a preset time window from constant - how far back to look
  * @param {*} interval  // the chunk size in seconds - default is 1 hour of 3600s
  */
-// export function useTokenPriceData(tokenAddress, timeWindow, interval = 3600) {
-//   const [state, { updatePriceData }] = useTokenDataContext()
-//   const chartData = state?.[tokenAddress]?.[timeWindow]?.[interval]
-//   const [latestBlock] = useLatestBlocks()
+export function useTokenPriceData(tokenAddress, timeWindow, interval = 3600) {
+  const [state, { updatePriceData }] = useTokenDataContext()
+  const chartData = state?.[tokenAddress]?.[timeWindow]?.[interval]
 
-//   useEffect(() => {
-//     const currentTime = dayjs.utc()
-//     const windowSize = timeWindow === timeframeOptions.MONTH ? 'month' : 'week'
-//     const startTime =
-//       timeWindow === timeframeOptions.ALL_TIME ? 1589760000 : currentTime.subtract(1, windowSize).startOf('hour').unix()
+  useEffect(() => {
+    const currentTime = dayjs.utc()
+    const windowSize = timeWindow === timeframeOptions.MONTH ? 'month' : 'week'
+    const startTime =
+      timeWindow === timeframeOptions.ALL_TIME ? 1589760000 : currentTime.subtract(1, windowSize).startOf('hour').unix()
 
-//     async function fetch() {
-//       let data = await getIntervalTokenData(tokenAddress, startTime, interval, latestBlock)
-//       updatePriceData(tokenAddress, data, timeWindow, interval)
-//     }
-//     if (!chartData) {
-//       fetch()
-//     }
-//   }, [chartData, interval, timeWindow, tokenAddress, updatePriceData, latestBlock])
+    async function fetchData() {
+      let data = await fetch (`https://api.saucerswap.finance/tokens/prices/${tokenAddress}?interval=DAY&from=${startTime}&to=${Date.now()/1000}`)
+      updatePriceData(tokenAddress, data, timeWindow, interval)
+    }
+    if (!chartData) {
+      fetchData()
+    }
+  }, [chartData, interval, timeWindow, tokenAddress, updatePriceData])
 
-//   return chartData
-// }
+  return chartData
+}
 
 // export function useAllTokenData() {
 //   const [state] = useTokenDataContext()

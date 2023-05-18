@@ -6,7 +6,8 @@ import { Text } from 'rebass'
 import { PlusCircle, Bookmark, AlertCircle } from 'react-feather'
 
 import Widgets from './Widgets';
-import TokenChart from './TokenChart';
+// import TokenChart from './TokenChart';
+import TokenChart from '../../Components/TokenChart';
 import TokenInfo from './TokenInfo';
 
 import Panel from '../../Components/Panel'
@@ -312,8 +313,9 @@ const TokenPage = ({ address }) => {
                             <Widgets address={address} price={priceUSD} />
                         </Row>
                         <Row>
-                            <TokenChart dataColors='["--vz-success", "--vz-danger"]' tokenId={address} />
-                            <TokenInfo address={address}  tokenPrice={priceUSD}/>
+                            {/* <TokenChart dataColors='["--vz-success", "--vz-danger"]' tokenId={address} /> */}
+                            <Col sm={12} md={9}><TokenChart address={address} color={'red'} base={priceUSD} /></Col>
+                            <Col sm={12} md={3}><TokenInfo address={address}  tokenPrice={priceUSD}/></Col>
                         </Row>
                     </ContentWrapper>
                 </Container>
