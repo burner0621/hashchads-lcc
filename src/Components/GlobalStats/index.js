@@ -39,6 +39,7 @@ export default function GlobalStats() {
     const formattedTvlUSD = totalVolumeUSD ? formattedNum(totalVolumeUSD, true) : undefined
     const formattedTvlHBAR = totalVolumeHBAR ? formattedNum(totalVolumeHBAR, true) : undefined
     const formattedTodayVolume = todayVolumeUSD ? formattedNum(todayVolumeUSD, true) : undefined
+    const formattedTodayFees = todayVolumeUSD ? formattedNum(todayVolumeUSD/400, true) : undefined
 
     return (
         <Header id="globalStats">
@@ -88,7 +89,12 @@ export default function GlobalStats() {
                     )}
                     {!below1295 && (
                         <Text className='fs-6'>{'24hr Fees: '}
-                            <span className='badge rounded-pill badge-outline-light' style={{ fontSize: 13 }}>{' $1,340.63'}</span>
+                            {
+                                (todayVolumeUSD === undefined || formattedTodayFees === undefined) && <Spinner color="light" type="grow" style={{ verticalAlign: 'middle' }}></Spinner>
+                            }
+                            {
+                                todayVolumeUSD !== undefined && formattedTodayFees !== undefined && <span className='badge badge-outline-light' style={{ fontSize: 13 }}>{'$' + formattedNum(todayVolumeUSD * hBarPrice / 400)}</span>
+                            }
                         </Text>
                     )}
                 </RowFixed>
