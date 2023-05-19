@@ -11,7 +11,7 @@ import { RowBetween, RowFixed, AutoRow } from '../../Components/Row'
 import Link, { BasicLink } from '../../Components/Link'
 import Search from '../../Components/Search'
 import { useParams } from 'react-router-dom'
-import { useAllPairsInSaucerswap, usePairWeeklyVolume, useHbarAndSaucePrice } from '../../contexts/GlobalData'
+import { useAllPairsInSaucerswap, usePairWeeklyVolume, useHbarAndSaucePrice, usePairDailyVolume } from '../../contexts/GlobalData'
 import fetch from 'cross-fetch'
 
 import DoubleTokenLogo from "../../Components/DoubleLogo";
@@ -117,25 +117,37 @@ const TokenPair = () => {
     const [iconB, setIconB] = useState()
     const [lpReward, setLpReward] = useState(0)
     const _pairData = usePairData(contractId)
+    const dailyVolumes = usePairDailyVolume ()
+    const weeklyVolumes = usePairWeeklyVolume ()
     const weeklyData = usePairWeeklyVolume()
     const [hbarPrice, saucePrice] = useHbarAndSaucePrice()
     useEffect(() => {
         if (Object.keys(_pairData).length && Object.keys(weeklyData).length && hbarPrice) {
             setTotalLiquidityUsd(_pairData.liquidityUsd)
             setTotalLiquidityHbar(_pairData.liquidity / 100000000)
-            setDailyUsd(_pairData.volumeUsd)
-            setDailyHbar(_pairData.volume / 100000000)
-            setWeeklyHbar(weeklyData[_pairData.poolId])
-            setWeeklyUsd(weeklyData[_pairData.poolId] * hbarPrice)
             setTokenAReserve(_pairData.tokenReserveA / Math.pow(10, _pairData.tokenA.decimals))
             setTokenBReserve(_pairData.tokenReserveB / Math.pow(10, _pairData.tokenB.decimals))
             setIconA(_pairData.tokenA.icon)
             setIconB(_pairData.tokenB.icon)
             setSymbolA(_pairData.tokenA.symbol)
             setSymbolB(_pairData.tokenB.symbol)
-            setLpReward(_pairData.volumeUsd * 365 / 4 / _pairData.liquidityUsd)
         }
     }, [weeklyData, _pairData, hbarPrice])
+
+    useEffect(() => {
+        if (dailyVolumes && Object.keys(dailyVolumes).length && Object.keys(_pairData).length){
+            setDailyHbar(dailyVolumes[_pairData.poolId])
+            setDailyUsd(dailyVolumes[_pairData.poolId] * hbarPrice)
+            setLpReward(dailyVolumes[_pairData.poolId] * hbarPrice * 365 / 4 / _pairData.liquidityUsd)
+        }
+    }, [dailyVolumes, _pairData, hbarPrice])
+
+    useEffect(() => {
+        if (weeklyVolumes && Object.keys(weeklyVolumes).length && Object.keys(_pairData).length){
+            setWeeklyHbar(weeklyVolumes[_pairData.poolId])
+            setWeeklyUsd(weeklyVolumes[_pairData.poolId] * hbarPrice)
+        }
+    }, [weeklyVolumes, _pairData, hbarPrice])
 
     const below1080 = useMedia('(max-width: 1080px)')
     const below600 = useMedia('(max-width: 600px)')
