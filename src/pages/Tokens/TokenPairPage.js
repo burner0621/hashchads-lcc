@@ -161,7 +161,7 @@ const TokenPair = () => {
 
     return (
         <React.Fragment>
-            <div className="page-content">
+            <div className="page-content" style={{marginBottom:'20px'}}>
                 <Container fluid>
                     <ContentWrapper>
                         <RowBetween style={{ flexWrap: 'wrap', alingItems: 'start' }}>

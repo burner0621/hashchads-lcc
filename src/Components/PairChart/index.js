@@ -28,10 +28,10 @@ const EmptyCard = styled.div`
 
 const ChartWrapper = styled.div`
   height: 100%;
-  max-height: 380px;
-  padding: 20px;
+  max-height: 450px;
+  padding: 10px;
   border: solid 1px white;
-
+  border-radius: 10px;
   @media screen and (max-width: 600px) {
     min-height: 200px;
   }

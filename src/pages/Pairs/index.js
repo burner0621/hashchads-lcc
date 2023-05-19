@@ -212,7 +212,7 @@ const Pairs = () => {
             // selector: row => row.volume ? calcUnit(row.volume) : '-',
             selector: row => row.volume ? ' $' + calcUnit(parseInt(row.volume)) : '-',
             sortable: true,
-            width: 200
+            width: 120
         },
         {
             name: <span className='font-weight-bold fs-16'>Swaps</span>,
@@ -223,7 +223,8 @@ const Pairs = () => {
         {
             name: <span className='font-weight-bold fs-13'>Daily Fees</span>,
             sortable: true,
-            selector: row => '$' + (row.volume / 400).toFixed(2)
+            selector: row => '$' + (row.volume / 400).toFixed(2),
+            width: 100
         },
         {
             name: <span className='font-weight-bold fs-16'>Liquidity</span>,
@@ -238,14 +239,14 @@ const Pairs = () => {
             width: 60
         },
         {
-            name: <span className='font-weight-bold fs-24'>Actions</span>,
+            name: <span className='font-weight-bold fs-16'>Actions</span>,
             sortable: true,
             selector: row => {
                 return (
                     <div>
-                        <i className="mdi mdi-binoculars fs-16"></i>
-                        <i className="bx bxs-bar-chart-square fs-16" style={{ marginRight: 5, marginLeft: 5 }}></i>
-                        <i className="bx bx-star fs-16"></i>
+                        <i className="mdi mdi-binoculars fs-20"></i>
+                        <i className="bx bxs-bar-chart-square fs-20" style={{ marginRight: 5, marginLeft: 5 }}></i>
+                        <i className="bx bx-star fs-20"></i>
                     </div>
                 )
             }
