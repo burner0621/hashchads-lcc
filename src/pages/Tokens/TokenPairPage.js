@@ -204,7 +204,7 @@ const TokenPair = () => {
                         </WarningGrouping>
                         <Row>
                             <Col xl={4} sm={12} >
-                                <Card className="card-animate" style={{ border: '1px solid' }}>
+                                <Card className="card-animate mb-0" style={{ border: '1px solid' }}>
                                     <CardBody>
                                         <div className="d-flex">
                                             <div className="flex-grow-1 w-full">
@@ -227,7 +227,7 @@ const TokenPair = () => {
                                 </Card>
                             </Col>
                             <Col xl={4} sm={12} >
-                                <Card className="card-animate" style={{ border: '1px solid' }}>
+                                <Card className="card-animate mb-0" style={{ border: '1px solid', marginBottom:'0px !important' }}>
                                     <CardBody>
                                         <div className="d-flex">
                                             <div className="flex-grow-1 w-full">
@@ -249,7 +249,7 @@ const TokenPair = () => {
                                 </Card>
                             </Col>
                             <Col xl={4} sm={12} >
-                                <Card className="card-animate" style={{ border: '1px solid' }}>
+                                <Card className="card-animate mb-0" style={{ border: '1px solid', marginBottom:'0px !important' }}>
                                     <CardBody>
                                         <div className="d-flex">
                                             <div className="flex-grow-1 w-full">
@@ -273,7 +273,7 @@ const TokenPair = () => {
                         </Row>
                         <Row>
                             <Col xl={4} sm={12} >
-                                <Card className="card-animate" style={{ border: '1px solid' }}>
+                                <Card className="card-animate mb-0" style={{ border: '1px solid', marginBottom:'0px !important' }}>
                                     <CardBody>
                                         <div className="d-flex">
                                             <div className="flex-grow-1 w-full">
@@ -295,7 +295,7 @@ const TokenPair = () => {
                                 </Card>
                             </Col>
                             <Col xl={4} sm={12} >
-                                <Card className="card-animate" style={{ border: '1px solid' }}>
+                                <Card className="card-animate mb-0" style={{ border: '1px solid', marginBottom:'0px !important' }}>
                                     <CardBody>
                                         <div className="d-flex">
                                             <div className="flex-grow-1 w-full">
@@ -314,7 +314,7 @@ const TokenPair = () => {
                                 </Card>
                             </Col>
                             <Col xl={4} sm={12} >
-                                <Card className="card-animate" style={{ border: '1px solid' }}>
+                                <Card className="card-animate mb-0" style={{ border: '1px solid', marginBottom:'0px !important' }}>
                                     <CardBody>
                                         <div className="d-flex">
                                             <div className="flex-grow-1 w-full">

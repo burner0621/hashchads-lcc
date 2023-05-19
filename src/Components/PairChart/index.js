@@ -28,7 +28,7 @@ const EmptyCard = styled.div`
 
 const ChartWrapper = styled.div`
   height: 100%;
-  max-height: 340px;
+  max-height: 380px;
   padding: 20px;
   border: solid 1px white;
 
@@ -41,7 +41,7 @@ const OptionsRow = styled.div`
   display: flex;
   flex-direction: row;
   width: 100%;
-  margin-bottom: 40px;
+  margin-bottom: 0px;
 `
 
 const CHART_VIEW = {
@@ -152,6 +152,7 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1 }) => {
                 setTimeWindow(timeframeOptions.ALL_TIME)
                 setChartFilter(CHART_VIEW.LIQUIDITY)
               }}
+              style={chartFilter === CHART_VIEW.LIQUIDITY ? {background: "green"} : {}}
             >
               Liquidity
             </OptionButton>
@@ -161,6 +162,7 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1 }) => {
                 setTimeWindow(timeframeOptions.ALL_TIME)
                 setChartFilter(CHART_VIEW.VOLUME)
               }}
+              style={chartFilter === CHART_VIEW.VOLUME ? {background: "green"} : {}}
             >
               Volume
             </OptionButton>
@@ -170,6 +172,7 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1 }) => {
                 setTimeWindow(timeframeOptions.WEEK)
                 setChartFilter(CHART_VIEW.RATE0)
               }}
+              style={chartFilter === CHART_VIEW.RATE0 ? {background: "green"} : {}}
             >
               {pairData.tokenA ? formattedSymbol1 + '/' + formattedSymbol0 : '-'}
             </OptionButton>
@@ -179,6 +182,7 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1 }) => {
                 setTimeWindow(timeframeOptions.WEEK)
                 setChartFilter(CHART_VIEW.RATE1)
               }}
+              style={chartFilter === CHART_VIEW.RATE1 ? {background: "green"} : {}}
             >
               {pairData.tokenB ? formattedSymbol0 + '/' + formattedSymbol1 : '-'}
             </OptionButton>
@@ -187,18 +191,21 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1 }) => {
             <OptionButton
               active={timeWindow === timeframeOptions.WEEK}
               onClick={() => setTimeWindow(timeframeOptions.WEEK)}
+              style={timeWindow === timeframeOptions.WEEK ? {background: "green"} : {}}
             >
               1W
             </OptionButton>
             <OptionButton
               active={timeWindow === timeframeOptions.MONTH}
               onClick={() => setTimeWindow(timeframeOptions.MONTH)}
+              style={timeWindow === timeframeOptions.MONTH ? {background: "green"} : {}}
             >
               1M
             </OptionButton>
             <OptionButton
               active={timeWindow === timeframeOptions.ALL_TIME}
               onClick={() => setTimeWindow(timeframeOptions.ALL_TIME)}
+              style={timeWindow === timeframeOptions.ALL_TIME ? {background: "green"} : {}}
             >
               All
             </OptionButton>
