@@ -361,7 +361,7 @@ const TokenInfo = ({ address, tokenPrice }) => {
                                                 className='cursor'
                                                 onClick={() => tog_xlarge()}
                                             >
-                                                <span className="fs-24 text-white animate-ping lg:animate-ping md:animate-ping animate-none rounded-md blink"><i className='mdi mdi-hand-pointing-right'></i></span>
+                                                <span className="fs-24 animate-ping lg:animate-ping md:animate-ping animate-none rounded-md blink"><i className='mdi mdi-hand-pointing-right'></i></span>
                                             </div>
                                         </div>
                                         <div className="p-3">
@@ -452,7 +452,7 @@ const TokenInfo = ({ address, tokenPrice }) => {
                                         className='cursor'
                                         onClick={() => detail_tog_xlarge()}
                                     >
-                                        <span className="fs-24 text-white animate-ping lg:animate-ping md:animate-ping animate-none rounded-md blink"><i className='mdi mdi-hand-pointing-right'></i></span>
+                                        <span className="fs-24 animate-ping lg:animate-ping md:animate-ping animate-none rounded-md blink"><i className='mdi mdi-hand-pointing-right'></i></span>
                                     </div>
                                 </div>
                                 <div className="p-3">

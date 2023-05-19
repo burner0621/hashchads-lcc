@@ -355,7 +355,7 @@ const TokenPair = () => {
                                         address={contractId}
                                         poolId={_pairData.poolId}
                                         pairData={_pairData}
-                                        color={'green'}
+                                        color={'#ff007a'}
                                         base0={tokenAReserve / tokenBReserve}
                                         base1={tokenBReserve / tokenAReserve}
                                     />}

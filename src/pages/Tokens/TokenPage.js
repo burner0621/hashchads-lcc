@@ -314,7 +314,7 @@ const TokenPage = ({ address }) => {
                         </Row>
                         <Row>
                             {/* <TokenChart dataColors='["--vz-success", "--vz-danger"]' tokenId={address} /> */}
-                            <Col sm={12} md={9}><TokenChart address={address} color={'#ff007a'} base={priceUSD} /></Col>
+                            <Col sm={12} md={9} style={{marginBottom: '20px'}}><TokenChart address={address} color={'#ff007a'} base={priceUSD}  /></Col>
                             <Col sm={12} md={3}><TokenInfo address={address}  tokenPrice={priceUSD}/></Col>
                         </Row>
                     </ContentWrapper>

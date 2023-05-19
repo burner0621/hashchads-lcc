@@ -111,6 +111,7 @@ body {
 
 .blink {
     animation: blinker 1s linear infinite;
+    color: #ff007a;
 }
 
 @keyframes blinker {

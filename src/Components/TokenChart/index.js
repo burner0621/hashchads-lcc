@@ -19,6 +19,9 @@ const ChartWrapper = styled.div`
   height: 100%;
   min-height: 300px;
   margin-bottom: 20px;
+  border: 1px solid white;
+  padding: 10px;
+  border-radius: 10px;
   @media screen and (max-width: 600px) {
     min-height: 200px;
   }
@@ -145,7 +148,7 @@ const TokenChart = ({ address, color, base }) => {
                     }
                     align="flex-start"
                 >
-                    <AutoColumn gap="8px">
+                    <AutoColumn gap="8px" style={{width: "100%"}}>
                         <RowFixed>
                             <OptionButton
                                 active={chartFilter === CHART_VIEW.LIQUIDITY}
