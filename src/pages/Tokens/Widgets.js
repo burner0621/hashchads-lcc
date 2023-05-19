@@ -21,8 +21,7 @@ const Widgets = ({ address, price }) => {
       let response = await fetch(env.MIRROR_NODE_URL + "/api/v1/tokens/" + address);
       if (response.status === 200) {
         let jsonData = await response.json()
-        console.log(jsonData, price, ">>>>>")
-        setDecimal(jsonData?.decimals)
+        setDecimal (jsonData?.decimals)
         setTotalSupply(Number(jsonData?.total_supply) / Math.pow(10, Number(jsonData?.decimals)) * price)
         let response1 = await fetch(env.MIRROR_NODE_URL + `/api/v1/tokens/${address}/balances?account.id=${jsonData?.treasury_account_id}`);
         if (response1.status === 200) {

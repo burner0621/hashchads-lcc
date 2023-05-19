@@ -57,7 +57,7 @@ const CandleStickChart = ({
 
 
   // pointer to the chart object
-  const [chartCreated, setChartCreated] = useState(false)
+  const [chartCreated, setChartCreated] = useState(null)
   const dataPrev = usePrevious(data)
 
   const darkMode = true
@@ -65,16 +65,16 @@ const CandleStickChart = ({
   const previousTheme = usePrevious(darkMode)
 
   // reset the chart if theme switches
-  useEffect(() => {
-    if (chartCreated && previousTheme !== darkMode) {
-      // remove the tooltip element
-      let tooltip = document.getElementById('tooltip-id')
-      let node = document.getElementById('test-id')
-      node.removeChild(tooltip)
-      chartCreated.resize(0, 0)
-      setChartCreated()
-    }
-  }, [chartCreated, darkMode, previousTheme])
+  // useEffect(() => {
+  //   if (chartCreated && previousTheme !== darkMode) {
+  //     // remove the tooltip element
+  //     let tooltip = document.getElementById('tooltip-id')
+  //     let node = document.getElementById('test-id')
+  //     node.removeChild(tooltip)
+  //     chartCreated.resize(0, 0)
+  //     setChartCreated(null)
+  //   }
+  // }, [chartCreated, darkMode, previousTheme])
 
   useEffect(() => {
     if (data !== dataPrev && chartCreated) {
@@ -83,12 +83,13 @@ const CandleStickChart = ({
       let node = document.getElementById('test-id')
       node.removeChild(tooltip)
       chartCreated.resize(0, 0)
-      setChartCreated()
+      setChartCreated(null)
     }
   }, [chartCreated, data, dataPrev])
 
   // if no chart created yet, create one with options and add to DOM manually
   useEffect(() => {
+    console.log(!chartCreated, "?????????????????")
     if (!chartCreated) {
       const chart = createChart(ref.current, {
         width: width,
@@ -122,15 +123,17 @@ const CandleStickChart = ({
 
       var candleSeries = chart.addCandlestickSeries({
         upColor: 'green',
-        downColor: '#ff007a',
-        borderDownColor: '#ff007a',
+        downColor: 'red',
+        borderDownColor: 'red',
         borderUpColor: 'green',
-        wickDownColor: '#ff007a',
+        wickDownColor: 'red',
         wickUpColor: 'green',
       })
 
       candleSeries.setData(formattedData)
-
+      while (ref.current.childElementCount > 2) {
+        ref.current.removeChild(ref.current.firstElementChild);
+      }
       var toolTip = document.createElement('div')
       toolTip.setAttribute('id', 'tooltip-id')
       toolTip.className = 'three-line-legend'
@@ -150,7 +153,7 @@ const CandleStickChart = ({
       setLastBarText()
 
       // update the title when hovering on the chart
-      chart.subscribeCrosshairMove(function (param) { 
+      chart.subscribeCrosshairMove(function (param) {
         if (
           param === undefined ||
           param.timestampSeconds === undefined ||
@@ -176,6 +179,7 @@ const CandleStickChart = ({
 
       chart.timeScale().fitContent()
 
+      console.log(">>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<")
       setChartCreated(chart)
     }
   }, [chartCreated, formattedData, width, height, valueFormatter, base, margin, textColor])
