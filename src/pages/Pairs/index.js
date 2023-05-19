@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useMedia } from 'react-use'
 import { RowBetween } from '../../Components/Row'
 import classnames from "classnames";
-import styled from 'styled-components'
+import Search from '../../Components/Search'
 import DataTable from 'react-data-table-component';
 
 import { useAllPairsInSaucerswap, usePriceChanges, usePairDailyVolume, usePairWeeklyVolume } from "../../contexts/GlobalData";
@@ -48,6 +48,10 @@ const Pairs = () => {
     const _dailyPairVolume = usePairDailyVolume()
     const _weeklyPairVolume = usePairWeeklyVolume()
     const _priceChanges = usePriceChanges()
+    // const _allPairs = []
+    // const _dailyPairVolume = []
+    // const _weeklyPairVolume = []
+    // const _priceChanges = []
 
     useEffect(() => {
         if (_priceChanges && (Object.keys(_priceChanges)).length > 0) {
@@ -109,7 +113,7 @@ const Pairs = () => {
                 if (timeRangeType === TIME_RANGE_TYPE.week) tmp.volume = _weeklyPairVolume[pair.id]
                 tmp.liquidity = 2 * pair.tokenA.priceUsd * pair.tokenReserveA / Math.pow(10, pair.tokenA.decimals)
                 _data.push(tmp)
-                if (tmp.percent <= 0) tmpLosers.push(tmp)
+                if (Number(tmp.percent) <= 0) tmpLosers.push(tmp)
                 else tmpGainers.push(tmp)
             }
             setAllPairs(_data)
@@ -127,7 +131,8 @@ const Pairs = () => {
         if (pairsType === PAIRS_TYPE.pairs) setData (allPairs)
         else if (pairsType === PAIRS_TYPE.gainers) setData (gainers)
         else setData (losers)
-    }, [pairsType, allPairs, gainers, losers])
+        console.log (losers)
+    }, [allPairs, gainers, losers, pairsType])
     
     const handlePairsType = (type) => {
         if (pairsType !== type) setPairsType(type)
@@ -223,7 +228,7 @@ const Pairs = () => {
         {
             name: <span className='font-weight-bold fs-13'>Daily Fees</span>,
             sortable: true,
-            selector: row => '$' + (row.volume / 400).toFixed(2),
+            selector: row => '$' + row.volume,
             width: 100
         },
         {
@@ -259,6 +264,9 @@ const Pairs = () => {
                 <Container fluid>
                     <PageWrapper>
                         <FullWrapper>
+                        <RowBetween style={{display: 'flex', justifyContent: 'flex-end'}}>
+                        {!below600 && <Search display={"all"} small={true} />}
+                        </RowBetween>
                             <RowBetween>
                                 <Nav tabs className="nav nav-tabs nav-border-top nav-border-top-success">
                                     <NavItem>

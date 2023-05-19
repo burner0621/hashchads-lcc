@@ -108,7 +108,7 @@ const TokenPage = ({ address }) => {
     
     const [name, setName] = useState('')
     const [symbol, setSymbol] = useState('')
-    const [priceUSD, setPriceUSD] = useState('')
+    const [priceUSD, setPriceUSD] = useState()
     const [priceChange, setPriceChange] = useState('')
     const [priceChangeColor, setPriceChangeColor] = useState('green')
     const [iconPath, setIconPath] = useState('')
@@ -144,7 +144,6 @@ const TokenPage = ({ address }) => {
 
     const LENGTH = below1080 ? 10 : 16
     const formattedSymbol = symbol?.length > LENGTH ? symbol.slice(0, LENGTH) + '...' : symbol
-
     return (
         <React.Fragment>
             <div className="page-content">
@@ -166,7 +165,7 @@ const TokenPage = ({ address }) => {
                                     </Text>
                                 </Link>
                             </AutoRow>
-                            {!below600 && <Search display={"token"} small={true} />}
+                            {!below600 && <Search display={"all"} small={true} />}
                         </RowBetween>
                         <WarningGrouping disabled={false}>
                             <DashboardWrapper style={{ marginTop: below1080 ? '0' : '1rem' }}>

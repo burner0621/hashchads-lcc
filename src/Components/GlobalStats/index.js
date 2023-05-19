@@ -33,6 +33,7 @@ export default function GlobalStats() {
 
     const { totalVolumeUSD, totalVolumeHBAR, todayVolumeUSD } = useGlobalData()
     const [hBarPrice, saucePrice] = useHbarAndSaucePrice()
+    console.log (hBarPrice, saucePrice, "...................")
 
     const formattedHbarPrice = hBarPrice ? formattedNum(hBarPrice, true) : undefined
     const formattedSaucePrice = saucePrice ? formattedNum(saucePrice, true) : undefined

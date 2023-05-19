@@ -287,7 +287,6 @@ const getTokenChartData = async (tokenId) => {
     let response = await fetch(`https://api.saucerswap.finance/tokens/prices/${tokenId}?interval=DAY&from=${startTime}&to=${Date.now() / 1000}`)
     if (response.status === 200) {
       let jsonData = await response.json()
-      console.log(jsonData, "<<<<<<<<<<<<<<")
       return jsonData
     } else {
       return []

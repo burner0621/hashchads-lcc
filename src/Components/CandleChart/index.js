@@ -89,7 +89,6 @@ const CandleStickChart = ({
 
   // if no chart created yet, create one with options and add to DOM manually
   useEffect(() => {
-    console.log(!chartCreated, "?????????????????")
     if (!chartCreated) {
       const chart = createChart(ref.current, {
         width: width,
@@ -179,7 +178,6 @@ const CandleStickChart = ({
 
       chart.timeScale().fitContent()
 
-      console.log(">>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<")
       setChartCreated(chart)
     }
   }, [chartCreated, formattedData, width, height, valueFormatter, base, margin, textColor])
