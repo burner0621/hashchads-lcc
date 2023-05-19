@@ -38,10 +38,10 @@ const CandleStickChart = ({
   const formattedData = data?.map((entry) => {
     return {
       time: parseFloat(entry.timestampSeconds),
-      open: parseFloat(entry.open),
-      low: parseFloat(entry.low),
-      close: parseFloat(entry.close),
-      high: parseFloat(entry.high),
+      open: parseFloat(entry.openUsd),
+      low: parseFloat(entry.lowUsd),
+      close: parseFloat(entry.closeUsd),
+      high: parseFloat(entry.highUsd),
     }
   })
 
@@ -54,7 +54,6 @@ const CandleStickChart = ({
       high: Math.max(parseFloat(base), parseFloat(formattedData[formattedData.length - 1].close)),
     })
   }
-
 
   // pointer to the chart object
   const [chartCreated, setChartCreated] = useState(null)
@@ -153,7 +152,7 @@ const CandleStickChart = ({
 
       // update the title when hovering on the chart
       chart.subscribeCrosshairMove(function (param) {
-        if (
+      if (
           param === undefined ||
           param.timestampSeconds === undefined ||
           param.point.x < 0 ||

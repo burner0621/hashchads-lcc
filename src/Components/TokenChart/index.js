@@ -87,7 +87,6 @@ const TokenChart = ({ address, color, base }) => {
                 frequency === DATA_FREQUENCY.DAY
                     ? dailyAll
                     : hourlyAll
-
     // switch to hourly data when switched to week window
     useEffect(() => {
         if (timeWindow === timeframeOptions.WEEK && prevWindow && prevWindow !== timeframeOptions.WEEK) {
@@ -113,7 +112,7 @@ const TokenChart = ({ address, color, base }) => {
     const aspect = below1080 ? 60 / 32 : below600 ? 60 / 42 : 60 / 22
 
     chartData = chartData?.filter((entry) => entry.timestampSeconds >= utcStartTime)
-
+ 
     // update the width on a window resize
     const ref = useRef()
     const isClient = typeof window === 'object'

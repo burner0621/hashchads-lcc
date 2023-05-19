@@ -15,7 +15,7 @@ const Widgets = ({ address, price }) => {
   const [circulatingSupply, setCirculatingSupply] = useState(0)
   const [decimal, setDecimal] = useState(0)
   const [dilutedSupply, setDilutedSupply] = useState (0)
-  console.log (address, price, ">>>>>>>>>>>>>>>>>")
+
   useEffect(() => {
     async function fetchData() {
       if (Number(price) === 0) return
