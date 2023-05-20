@@ -84,7 +84,8 @@ const Ball = styled.div`
 ImpulseSpinner.defaultProps = {
     loading: true,
     size: 40,
-    frontColor: "#00ff89",
+    // frontColor: "#00ff89",
+    frontColor: "#ff00aa",
     backColor: "#4b4c56",
     sizeUnit: "px",
 };
