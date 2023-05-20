@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { Container, NavItem, Nav, NavLink } from "reactstrap";
+import { Container, NavItem, Nav, NavLink, FormGroup, Input, Label } from "reactstrap";
 import { Link } from 'react-router-dom';
 import { useMedia } from 'react-use'
 import { RowBetween } from '../../Components/Row'
@@ -43,6 +43,7 @@ const Pairs = () => {
     const [allPairs, setAllPairs] = useState([])
     const [gainers, setGainers] = useState([])
     const [losers, setLosers] = useState([])
+    const [showLiquidity, setShowLiquidity] = useState(true)
 
     const _allPairs = useAllPairsInSaucerswap()
     const _dailyPairVolume = usePairDailyVolume()
@@ -108,27 +109,36 @@ const Pairs = () => {
                 if (timeRangeType === TIME_RANGE_TYPE.day) tmp.volume = _dailyPairVolume[pair.id]
                 if (timeRangeType === TIME_RANGE_TYPE.week) tmp.volume = _weeklyPairVolume[pair.id]
                 tmp.liquidity = 2 * pair.tokenA.priceUsd * pair.tokenReserveA / Math.pow(10, pair.tokenA.decimals)
-                _data.push(tmp)
-                if (tmp.percent <= 0) tmpLosers.push(tmp)
-                else tmpGainers.push(tmp)
+                if (showLiquidity) {
+                    if (tmp.liquidity >= 500) {
+                        _data.push(tmp)
+                        if (tmp.percent <= 0) tmpLosers.push(tmp)
+                        else tmpGainers.push(tmp)
+                    }
+                } else {
+                    _data.push(tmp)
+                    if (tmp.percent <= 0) tmpLosers.push(tmp)
+                    else tmpGainers.push(tmp)
+                }
+
             }
             setAllPairs(_data)
             setGainers(tmpGainers)
             setLosers(tmpLosers)
         }
-    }, [_allPairs, _priceChanges, _dailyPairVolume, _weeklyPairVolume, timeRangeType])
+    }, [_allPairs, _priceChanges, _dailyPairVolume, _weeklyPairVolume, timeRangeType, showLiquidity])
 
     const below600 = useMedia('(max-width: 600px)')
     const below700 = useMedia('(max-width: 700px)')
     const below800 = useMedia('(max-width: 800px)')
     const below900 = useMedia('(max-width: 900px)')
 
-    useEffect (() => {
-        if (pairsType === PAIRS_TYPE.pairs) setData (allPairs)
-        else if (pairsType === PAIRS_TYPE.gainers) setData (gainers)
-        else setData (losers)
+    useEffect(() => {
+        if (pairsType === PAIRS_TYPE.pairs) setData(allPairs)
+        else if (pairsType === PAIRS_TYPE.gainers) setData(gainers)
+        else setData(losers)
     }, [pairsType, allPairs, gainers, losers])
-    
+
     const handlePairsType = (type) => {
         if (pairsType !== type) setPairsType(type)
     }
@@ -177,7 +187,7 @@ const Pairs = () => {
             sortable: true,
             selector: (row) => {
                 return (
-                    <Link to={'/pairs/' + _allPairs[_allPairs.findIndex((pair) => pair.contractId == row.pair_address)]}>
+                    <Link to={'/pairs/' + row.pair_address}>
                         <span className="text-white">{row.price ? '$' + row.price.toFixed(4) : ''}</span>
                     </Link>
                 );
@@ -189,13 +199,13 @@ const Pairs = () => {
             sortable: true,
             selector: (row) => {
                 if (row.percent >= 0) {
-                    return <Link to={'/pairs/' + _allPairs[_allPairs.findIndex((pair) => pair.contractId == row.pair_address)]}>
-                        <span className="text-green"><i className="mdi mdi-arrow-top-right-thin"></i>{row.percent.toFixed(4) + '%'}</span>
+                    return <Link to={'/pairs/' + row.pair_address}>
+                        <span className="text-green"><i className="mdi mdi-arrow-top-right-thin"></i>{row.percent ? row.percent.toFixed(4) + '%' : ''}</span>
                     </Link>
 
                 } else {
-                    return <Link to={'/pairs/' + _allPairs[_allPairs.findIndex((pair) => pair.contractId == row.pair_address)]}>
-                        <span className="text-red"><i className="mdi mdi-arrow-bottom-right-thin"></i>{row.percent.toFixed(4) + '%'}</span>
+                    return <Link to={'/pairs/' + row.pair_address}>
+                        <span className="text-red"><i className="mdi mdi-arrow-bottom-right-thin"></i>{row.percent ? row.percent.toFixed(4) + '%' : ''}</span>
                     </Link>
                 }
             },
@@ -223,7 +233,7 @@ const Pairs = () => {
         {
             name: <span className='font-weight-bold fs-13'>Daily Fees</span>,
             sortable: true,
-            selector: row => '$' + (row.volume / 400).toFixed(2),
+            selector: row => row.volume ? '$' + (row.volume / 400).toFixed(2) : '',
             width: 100
         },
         {
@@ -279,18 +289,31 @@ const Pairs = () => {
                                 </Nav>
 
                                 {!below600 &&
-                                    <Nav pills className="mb-3">
-                                        <NavItem>
-                                            <NavLink style={{ cursor: "pointer" }} className={classnames({ active: timeRangeType == TIME_RANGE_TYPE.day, })} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.day) }} >
-                                                <span className="badge">24h</span>
-                                            </NavLink>
-                                        </NavItem>
-                                        <NavItem>
-                                            <NavLink style={{ cursor: "pointer" }} className={classnames({ active: timeRangeType == TIME_RANGE_TYPE.week })} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.week) }} >
-                                                <span className="badge">1W</span>
-                                            </NavLink>
-                                        </NavItem>
-                                    </Nav>
+                                    <div className="d-flex items-center">
+                                        <FormGroup switch style={{ marginRight: '5px' }}>
+                                            <Input
+                                                type="switch"
+                                                style={{ height: "1.5rem", width: '3rem', marginRight: 5 }}
+                                                checked={showLiquidity}
+                                                onClick={() => {
+                                                    setShowLiquidity(!showLiquidity)
+                                                }}
+                                            />
+                                            <Label check style={{ fontSize: 18, fontWeight: 450 }}>$500+ Liquidity</Label>
+                                        </FormGroup>
+                                        <Nav pills className="">
+                                            <NavItem>
+                                                <NavLink style={{ cursor: "pointer" }} className={classnames({ active: timeRangeType == TIME_RANGE_TYPE.day, })} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.day) }} >
+                                                    <span className="badge">24h</span>
+                                                </NavLink>
+                                            </NavItem>
+                                            <NavItem>
+                                                <NavLink style={{ cursor: "pointer" }} className={classnames({ active: timeRangeType == TIME_RANGE_TYPE.week })} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.week) }} >
+                                                    <span className="badge">1W</span>
+                                                </NavLink>
+                                            </NavItem>
+                                        </Nav>
+                                    </div>
                                 }
                             </RowBetween>
                             {/* PAIRS DATA TABLE */}
