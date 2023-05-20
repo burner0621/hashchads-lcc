@@ -14,6 +14,7 @@ const Widgets = ({ address, price }) => {
   const [totalLiquidity, setTotalLiquidity] = useState(0)
   const [circulatingSupply, setCirculatingSupply] = useState(0)
   const [decimal, setDecimal] = useState(0)
+  const [dilutedSupply, setDilutedSupply] = useState (0)
 
   useEffect(() => {
     async function fetchData() {
@@ -21,7 +22,7 @@ const Widgets = ({ address, price }) => {
       let response = await fetch(env.MIRROR_NODE_URL + "/api/v1/tokens/" + address);
       if (response.status === 200) {
         let jsonData = await response.json()
-        setDecimal (jsonData?.decimals)
+        setDecimal(jsonData?.decimals)
         setTotalSupply(Number(jsonData?.total_supply) / Math.pow(10, Number(jsonData?.decimals)) * price)
         let response1 = await fetch(env.MIRROR_NODE_URL + `/api/v1/tokens/${address}/balances?account.id=${jsonData?.treasury_account_id}`);
         if (response1.status === 200) {
@@ -29,6 +30,8 @@ const Widgets = ({ address, price }) => {
           let balances = jsonData1?.balances
           let p = (Number(jsonData?.total_supply) - Number(balances[0]['balance'])) / Math.pow(10, Number(jsonData?.decimals)) * price
           setCirculatingSupply(p)
+          p = (Number(jsonData?.total_supply)) / Math.pow(10, Number(jsonData?.decimals)) * price
+          setDilutedSupply(p)
         }
       }
     }
@@ -45,8 +48,8 @@ const Widgets = ({ address, price }) => {
         liquidity += pair.tokenB.priceUsd * pair.tokenReserveB / Math.pow(10, pair.tokenB.decimals)
       }
     }
-    setTotalLiquidity(liquidity.toFixed(decimal))
-  }, [])
+    setTotalLiquidity(liquidity)
+  }, [address, allPairs])
 
   const buysellWidgets = [
     {
@@ -67,16 +70,16 @@ const Widgets = ({ address, price }) => {
     },
     {
       id: 3,
-      title: "Total Supply",
-      counter: `${totalSupply}`,
+      title: "Market Cap(Circulating)",
+      counter: `${circulatingSupply}`,
       changed: "85",
       icon: "ri-arrow-left-down-fill",
       iconClass: "warning",
     },
     {
       id: 4,
-      title: "Circulating Supply",
-      counter: `${circulatingSupply}`,
+      title: "Market Cap(Diluted)",
+      counter: `${dilutedSupply}`,
       changed: "35",
       icon: "ri-arrow-right-up-fill",
       iconClass: "success",
@@ -95,7 +98,7 @@ const Widgets = ({ address, price }) => {
                   <h2 className="mb-0">
                     $
                     <span className="counter-value" style={{ textOverflow: "ellipsis" }}>
-                      <CountUp start={0} end={item.counter} duration={3} decimals={decimal} />
+                      <CountUp start={0} end={item.counter} duration={3} decimals={2} />
                     </span>
 
                     {/* <small className="text-muted fs-13">.{item.decimal}k</small> */}

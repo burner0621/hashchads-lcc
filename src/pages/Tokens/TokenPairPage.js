@@ -39,70 +39,16 @@ const ContentWrapper = styled.div`
     padding: 0 1rem;
   }
 `
-const PageWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding-top: 36px;
-  padding-bottom: 80px;
-
-  @media screen and (max-width: 600px) {
-    & > * {
-      padding: 0 12px;
-    }
-  }
-`
 const WarningGrouping = styled.div`
   opacity: ${({ disabled }) => disabled && '0.4'};
   pointer-events: ${({ disabled }) => disabled && 'none'};
 `
-const Hover = styled.div`
-  :hover {
-    cursor: pointer;
-    opacity: ${({ fade }) => fade && '0.7'};
-  }
-`
-const StyledIcon = styled.div`
-  color: ${({ theme }) => theme.text1};
-`
-const WarningIcon = styled(AlertCircle)`
-  stroke: darkgreen;
-  height: 16px;
-  width: 16px;
-  opacity: 0.6;
-`
-const PanelWrapper = styled.div`
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: max-content;
-  gap: 6px;
-  display: inline-grid;
-  width: 100%;
-  align-items: start;
-  @media screen and (max-width: 1024px) {
-    grid-template-columns: 1fr;
-    align-items: stretch;
-    > * {
-      /* grid-column: 1 / 4; */
-    }
 
-    > * {
-      &:first-child {
-        width: 100%;
-      }
-    }
-  }
-`
-
-const TIME_TYPE = {
-    day: 'DAY',
-    week: 'WEEK',
-    month: 'MONTH',
-    all: 'ALL'
-}
 const TokenPair = () => {
 
     const { contractId } = useParams()
     const _allPairs = useAllPairsInSaucerswap()
-    const [pairData, setPairData] = useState({});
+    // const [pairData, setPairData] = useState({});
     const [totalLiquidityUsd, setTotalLiquidityUsd] = useState(0)
     const [totalLiquidityHbar, setTotalLiquidityHbar] = useState(0)
     const [dailyUsd, setDailyUsd] = useState(0)
@@ -116,13 +62,15 @@ const TokenPair = () => {
     const [iconA, setIconA] = useState()
     const [iconB, setIconB] = useState()
     const [lpReward, setLpReward] = useState(0)
+    const [tokenIdA, setTokenIdA] = useState('')
+    const [tokenIdB, setTokenIdB] = useState('')
     const _pairData = usePairData(contractId)
     const dailyVolumes = usePairDailyVolume ()
     const weeklyVolumes = usePairWeeklyVolume ()
     const weeklyData = usePairWeeklyVolume()
     const [hbarPrice, saucePrice] = useHbarAndSaucePrice()
     useEffect(() => {
-        if (Object.keys(_pairData).length && Object.keys(weeklyData).length && hbarPrice) {
+        if (Object.keys(_pairData).length) {
             setTotalLiquidityUsd(_pairData.liquidityUsd)
             setTotalLiquidityHbar(_pairData.liquidity / 100000000)
             setTokenAReserve(_pairData.tokenReserveA / Math.pow(10, _pairData.tokenA.decimals))
@@ -131,8 +79,10 @@ const TokenPair = () => {
             setIconB(_pairData.tokenB.icon)
             setSymbolA(_pairData.tokenA.symbol)
             setSymbolB(_pairData.tokenB.symbol)
+            setTokenIdA (_pairData.tokenA.id)
+            setTokenIdB (_pairData.tokenB.id)
         }
-    }, [weeklyData, _pairData, hbarPrice])
+    }, [_pairData])
 
     useEffect(() => {
         if (dailyVolumes && Object.keys(dailyVolumes).length && Object.keys(_pairData).length){
@@ -173,14 +123,14 @@ const TokenPair = () => {
                                     style={{ width: 'fit-content' }}
                                     color={'red'}
                                     external
-                                    href={'https://hashscan.io/mainnet/contract/' + pairData?.contractId}
+                                    href={'https://hashscan.io/mainnet/contract/' + contractId}
                                 >
                                     <Text style={{ marginLeft: '.15rem' }} fontSize={'14px'} fontWeight={400}>
-                                        {symbol}<span style={{ color: "green" }}>{"(" + pairData?.contractId + ")"}</span>
+                                        {symbol}<span style={{ color: "green" }}>{"(" + contractId + ")"}</span>
                                     </Text>
                                 </Link>
                             </AutoRow>
-                            {!below600 && <Search display={"pair"} small={true} />}
+                            {!below600 && <Search display={"all"} small={true} />}
                         </RowBetween>
                         <WarningGrouping disabled={false}>
                             <DashboardWrapper style={{ marginTop: below1080 ? '0' : '1rem' }}>
@@ -375,15 +325,15 @@ const TokenPair = () => {
                                                 </h2>
                                             </div>
                                             <div className="flex-grow-1 w-full">
-                                                <h4 className="text-muted mb-3 text-white">{pairData?.tokenA?.symbol} Address</h4>
+                                                <h4 className="text-muted mb-3 text-white">{symbolA} Address</h4>
                                                 <h2 className="mb-0 d-flex items-center" onClick={() => handleCopyAddress()}>
-                                                    {pairData?.tokenA?.id}<i className="mdi mdi-content-copy"></i>
+                                                    {tokenIdA}<i className="mdi mdi-content-copy"></i>
                                                 </h2>
                                             </div>
                                             <div className="flex-grow-1 w-full">
-                                                <h4 className="text-muted mb-3 text-white">{pairData?.tokenB?.symbol} Address</h4>
+                                                <h4 className="text-muted mb-3 text-white">{symbolB} Address</h4>
                                                 <h2 className="mb-0 d-flex items-center" onClick={() => handleCopyAddress()}>
-                                                    {pairData?.tokenB?.id}<i className="mdi mdi-content-copy"></i>
+                                                    {tokenIdB}<i className="mdi mdi-content-copy"></i>
                                                 </h2>
                                             </div>
                                         </div>
@@ -391,7 +341,7 @@ const TokenPair = () => {
                                             style={{ width: 'fit-content' }}
                                             color={'green'}
                                             external
-                                            href={'https://hashscan.io/mainnet/contract/' + pairData?.contractId}
+                                            href={'https://hashscan.io/mainnet/contract/' + contractId}
                                         >
                                             <Text className="text-green" style={{ marginLeft: '.15rem' }} fontSize={'24px'} fontWeight={400}>
                                                 View on Hashscan<i className="mdi mdi-arrow-top-right-thin"></i>

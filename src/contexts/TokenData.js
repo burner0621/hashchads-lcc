@@ -287,7 +287,6 @@ const getTokenChartData = async (tokenId) => {
     let response = await fetch(`https://api.saucerswap.finance/tokens/prices/${tokenId}?interval=DAY&from=${startTime}&to=${Date.now() / 1000}`)
     if (response.status === 200) {
       let jsonData = await response.json()
-      console.log(jsonData, "<<<<<<<<<<<<<<")
       return jsonData
     } else {
       return []
@@ -489,10 +488,10 @@ export function useTokenPriceData(tokenAddress, timeWindow, interval = 3600) {
     const currentTime = dayjs.utc()
     const windowSize = timeWindow === timeframeOptions.MONTH ? 'month' : 'week'
     const startTime =
-      timeWindow === timeframeOptions.ALL_TIME ? 1589760000 : currentTime.subtract(1, windowSize).startOf('hour').unix()
+      timeWindow === timeframeOptions.ALL_TIME ? 1589760000 : currentTime.subtract(1, windowSize).startOf('min').unix()
 
     async function fetchData() {
-      let res = await fetch(`https://api.saucerswap.finance/tokens/prices/${tokenAddress}?interval=DAY&from=${startTime}&to=${Date.now() / 1000}`)
+      let res = await fetch(`https://api.saucerswap.finance/tokens/prices/${tokenAddress}?interval=HOUR&from=${startTime}&to=${Date.now() / 1000}`)
       if (res.status === 200) {
         let data = await res.json()
         updatePriceData(tokenAddress, data, timeWindow, interval)

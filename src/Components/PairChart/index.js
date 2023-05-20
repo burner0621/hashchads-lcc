@@ -80,13 +80,21 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1 }) => {
   }, [height, isClient, width]) // Empty array ensures that effect is only run on mount and unmount
 
   // get data for pair, and rates
-  const hourlyData = hourlyChartData
+  const hourlyData = hourlyChartData && hourlyChartData.length && hourlyChartData.map((item, idx)=> {
+    return {
+      openUsd: item.open,
+      closeUsd: item.close,
+      lowUsd: item.low,
+      highUsd: item.high,
+      timestampSeconds: item.timestampSeconds
+    }
+  })
   const hourlyRate0 = hourlyData && hourlyData.length && hourlyData.map((item, idx)=> {
     return {
-      open: 1/item.open,
-      close: 1/item.close,
-      low: 1/item.low,
-      high: 1/item.high,
+      openUsd: 1/item.openUsd,
+      closeUsd: 1/item.closeUsd,
+      lowUsd: 1/item.lowUsd,
+      highUsd: 1/item.highUsd,
       timestampSeconds: item.timestampSeconds
     }
   })
@@ -112,7 +120,7 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1 }) => {
       </ChartWrapper>
     )
   }
-
+console.log (formattedNum(0.00034234), ">>>>>><<<<<<<<")
   /**
    * Used to format values on chart on scroll
    * Needs to be raw html for chart API to parse styles

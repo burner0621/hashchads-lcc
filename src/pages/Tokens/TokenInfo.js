@@ -26,14 +26,16 @@ const TokenInfo = ({ address, tokenPrice }) => {
     const [pauseKey, setPauseKey] = useState('')
     const [wipeKey, setWipeKey] = useState('')
     const [adminKey, setAdminKey] = useState('')
-    const [decimals, setDecimals] = useState(0)
+    const [decimals, setDecimals] = useState(undefined)
     const [holders, setHolders] = useState([])
     const [circulatingSupply, setCirculatingSupply] = useState(0)
+    const [totalSupply, setTotalSupply] = useState(undefined)
     const [dilutedSupply, setDilutedSupply] = useState(0)
     const [holderInfo, setHolderInfo] = useState([])
     const [pairs, setPairs] = useState([])
 
     let totalBalance = 0
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     let tmpPairs = []
 
     useEffect(() => {
@@ -59,7 +61,6 @@ const TokenInfo = ({ address, tokenPrice }) => {
     function detail_tog_xlarge() {
         setdetailmodal(!detail_modal_xlarge)
     }
-
     useEffect(() => {
         async function fetchData() {
             let response = await fetch(env.MIRROR_NODE_URL + "/api/v1/tokens/" + address);
@@ -74,6 +75,7 @@ const TokenInfo = ({ address, tokenPrice }) => {
                     setCirculatingSupply(p)
                     p = (Number(jsonData?.total_supply)) / Math.pow(10, Number(jsonData?.decimals)) * tokenPrice
                     setDilutedSupply(p)
+                    setTotalSupply(jsonData?.total_supply)
                 }
             }
         }
@@ -106,15 +108,30 @@ const TokenInfo = ({ address, tokenPrice }) => {
 
     useEffect(() => {
         async function fetchData() {
-            let response = await fetch(env.MIRROR_NODE_URL + `/api/v1/tokens/${address}/balances`);
-            if (response.status === 200) {
-                let jsonData = await response.json()
-                setHolders(jsonData['balances'])
+            let t = parseInt(totalSupply / 30 * Math.pow(10, Number(decimals))), limit = 30, e = totalSupply * Math.pow(10, Number(decimals)), s = 0
+            let l = 0
+            let jsonData = []
+            while (l < 25 || (jsonData.links && jsonData.links?.next !== null)) {
+                let response = await fetch(env.MIRROR_NODE_URL + `/api/v1/tokens/${address}/balances?account.balance=gt:${t}&order=desc&limit=${limit}`);
+                if (response.status === 200) {
+                    jsonData = await response.json()
+                    l = jsonData.balances.length
+                    if (l >= 25 && jsonData['links'].next === null) {
+                        break
+                    } else if (jsonData['links'].next) {
+                        s = t
+                        t = parseInt((s + e) / 2)
+                    } else {
+                        e = t
+                        t = parseInt((s + e) / 2)
+                    }
+                }
             }
+            setHolders(jsonData.balances)
         }
-        if (address)
+        if (address && totalSupply && decimals)
             fetchData()
-    }, [address])
+    }, [address, totalSupply, decimals])
 
     const calculateSwapImpactUsd = (amount) => {
         let maxSwapImpactUsd = 0
@@ -137,10 +154,7 @@ const TokenInfo = ({ address, tokenPrice }) => {
 
     useEffect(() => {
         if (holders && pairs.length > 0) {
-            for (let holder of holders) {
-                // eslint-disable-next-line react-hooks/exhaustive-deps
-                totalBalance += holder.balance / Math.pow(10, Number(decimals))
-            }
+            totalBalance = totalSupply / Math.pow(10, Number(decimals))
             let rlt = []
             for (let holder of holders) {
                 let tmp = {}
@@ -156,9 +170,9 @@ const TokenInfo = ({ address, tokenPrice }) => {
                 else tmp['impactPercent'] = "0"
                 tmp['actualUsd'] = tmp['usd'] - tmp['impactUsd']
                 if (tmp['actualUsd'] < 0) tmp['actualUsd'] = 0
-                rlt.push (tmp)
+                rlt.push(tmp)
             }
-            rlt.sort ((a, b) => {
+            rlt.sort((a, b) => {
                 return a.balance > b.balance ? -1 : 1
             })
             setHolderInfo(rlt)
@@ -247,10 +261,10 @@ const TokenInfo = ({ address, tokenPrice }) => {
             >
                 <div className="card-body">
                     <div className="table-responsive table-card">
-                        <table className="table table-hover table-borderless table-centered align-middle table-nowrap mb-0" style={{background: "#0b1217"}}>
+                        <table className="table table-hover table-borderless table-centered align-middle table-nowrap mb-0" style={{ background: "#0b1217" }}>
                             <thead className="text-muted bg-soft-light">
                                 <tr>
-                                    <th style={{textAlign:"center"}}>RANK</th>
+                                    <th style={{ textAlign: "center" }}>RANK</th>
                                     <th>ACCOUNT ID</th>
                                     <th>BALANCE</th>
                                     <th>PERCENT</th>
@@ -262,7 +276,7 @@ const TokenInfo = ({ address, tokenPrice }) => {
                             <tbody>
                                 {(holderInfo || []).map((item, key) => (
                                     <tr key={key}>
-                                        <td style={{textAlign:"center"}}>{`${key + 1}`}</td>
+                                        <td style={{ textAlign: "center" }}>{`${key + 1}`}</td>
                                         <td>{item.accountId}</td>
                                         <td>{formattedNum(item.balance, false)}</td>
                                         <td>{item.percent + '%'}</td>
@@ -322,7 +336,15 @@ const TokenInfo = ({ address, tokenPrice }) => {
                                                 <p className="fs-13 mb-0">Max Supply<span className="text-muted ms-1 fs-11"></span></p>
                                             </div>
                                             <div className="flex-shrink-0">
-                                                <h6 className="mb-0">{tokenInfo?.max_supply}</h6>
+                                                <h6 className="mb-0">{tokenInfo?.max_supply === '0' ? (tokenInfo?.total_supply/Math.pow(10, decimals)).toFixed(4): '0'}</h6>
+                                            </div>
+                                        </div>
+                                        <div className="d-flex">
+                                            <div className="flex-grow-1">
+                                                <p className="fs-13 mb-0">Total Supply<span className="text-muted ms-1 fs-11"></span></p>
+                                            </div>
+                                            <div className="flex-shrink-0">
+                                                <h6 className="mb-0">{(tokenInfo?.total_supply/Math.pow(10, decimals)).toFixed(4)}</h6>
                                             </div>
                                         </div>
                                         <div className="d-flex mb-2">
@@ -331,22 +353,6 @@ const TokenInfo = ({ address, tokenPrice }) => {
                                             </div>
                                             <div className="flex-shrink-0">
                                                 <h6 className="mb-0">{tokenInfo?.supply_type}</h6>
-                                            </div>
-                                        </div>
-                                        <div className="d-flex">
-                                            <div className="flex-grow-1">
-                                                <p className="fs-13 mb-0">Market Cap<span className="text-muted ms-1 fs-11">(Circulating)</span></p>
-                                            </div>
-                                            <div className="flex-shrink-0">
-                                                <h6 className="mb-0">{'$' + circulatingSupply.toFixed(decimals)}</h6>
-                                            </div>
-                                        </div>
-                                        <div className="d-flex">
-                                            <div className="flex-grow-1">
-                                                <p className="fs-13 mb-0">Market Cap<span className="text-muted ms-1 fs-11">(Diluted)</span></p>
-                                            </div>
-                                            <div className="flex-shrink-0">
-                                                <h6 className="mb-0">{'$' + dilutedSupply.toFixed(decimals)}</h6>
                                             </div>
                                         </div>
                                     </div>

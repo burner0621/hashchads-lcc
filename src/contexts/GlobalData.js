@@ -211,24 +211,6 @@ async function getHbarAndSaucePrice() {
   }
 }
 
-async function getTokenData(tokenId) {
-  let _tokenData = []
-  try {
-    let response = await fetch("https://api.saucerswap.finance/tokens")
-    if (response.status === 200) {
-      const jsonData = await response.json();
-      try {
-        return [Number(jsonData[0]['priceUsd']), Number(jsonData[2]['priceUsd'])];
-      } catch (error) {
-        return [0, 0]
-      }
-    }
-  } catch (e) {
-    return [0, 0]
-  }
-  return _tokenData
-}
-
 async function getAllPairsOnSaucerswap() {
   try {
     let pairs = []
@@ -442,21 +424,6 @@ export function usePrices() {
   return prices
 }
 
-export function useTokenData(tokenId) {
-  const [state, { updateTokenData }] = useGlobalDataContext()
-  let tokenData = state?.tokenData
-  useEffect(() => {
-    async function fetchData() {
-      let _tokenData = await getTokenData(tokenId)
-      updateTokenData(_tokenData)
-    }
-    if (tokenData === undefined || tokenData === {}) {
-      fetchData()
-    }
-  }, [tokenId, tokenData, updateTokenData])
-  return tokenData || {}
-}
-
 export function useEthPrice() {
   const [state, { updateEthPrice }] = useGlobalDataContext()
   const ethPrice = state?.[ETH_PRICE_KEY]
@@ -606,7 +573,7 @@ export function useAllTokensInSaucerswap() {
       let data = await getAllTokensOnSaucerswap(_allPairs, tokenDailyVolume, priceChanges, hbarPrice)
       updateAllTokensInSaucerswap(data)
     }
-    if (!allTokens && allTokens?.length > 0) fetchData()
+    if (allTokens === undefined || allTokens?.length === 0) fetchData()
   }, [allTokens, _allPairs, priceChanges, updateAllTokensInSaucerswap, tokenDailyVolume, hbarPrice])
   return allTokens || []
 }

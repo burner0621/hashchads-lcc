@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useMedia } from 'react-use'
 import { RowBetween } from '../../Components/Row'
 import classnames from "classnames";
-import styled from 'styled-components'
+import Search from '../../Components/Search'
 import DataTable from 'react-data-table-component';
 
 import { useAllPairsInSaucerswap, usePriceChanges, usePairDailyVolume, usePairWeeklyVolume } from "../../contexts/GlobalData";
@@ -49,6 +49,10 @@ const Pairs = () => {
     const _dailyPairVolume = usePairDailyVolume()
     const _weeklyPairVolume = usePairWeeklyVolume()
     const _priceChanges = usePriceChanges()
+    // const _allPairs = []
+    // const _dailyPairVolume = []
+    // const _weeklyPairVolume = []
+    // const _priceChanges = []
 
     useEffect(() => {
         if (_priceChanges && (Object.keys(_priceChanges)).length > 0) {
@@ -269,6 +273,9 @@ const Pairs = () => {
                 <Container fluid>
                     <PageWrapper>
                         <FullWrapper>
+                        <RowBetween style={{display: 'flex', justifyContent: 'flex-end'}}>
+                        {!below600 && <Search display={"all"} small={true} />}
+                        </RowBetween>
                             <RowBetween>
                                 <Nav tabs className="nav nav-tabs nav-border-top nav-border-top-success">
                                     <NavItem>
