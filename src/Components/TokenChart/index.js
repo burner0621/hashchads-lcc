@@ -12,6 +12,7 @@ import { useTokenChartData, useTokenPriceData } from '../../contexts/TokenData'
 import DropdownSelect from '../DropdownSelect'
 import CandleStickChart from '../CandleChart'
 import LocalLoader from '../LocalLoader'
+import { ImpulseSpinner } from '../Impulse'
 import { AutoColumn } from '../Column'
 import { Activity } from 'react-feather'
 
@@ -112,7 +113,7 @@ const TokenChart = ({ address, color, base }) => {
     const aspect = below1080 ? 60 / 32 : below600 ? 60 / 42 : 60 / 22
 
     chartData = chartData?.filter((entry) => entry.timestampSeconds >= utcStartTime)
- 
+
     // update the width on a window resize
     const ref = useRef()
     const isClient = typeof window === 'object'
@@ -145,7 +146,7 @@ const TokenChart = ({ address, color, base }) => {
                     }
                     align="flex-start"
                 >
-                    <AutoColumn gap="8px" style={{width: "100%"}}>
+                    <AutoColumn gap="8px" style={{ width: "100%" }}>
                         <RowFixed>
                             <OptionButton
                                 active={chartFilter === CHART_VIEW.LIQUIDITY}
@@ -182,21 +183,21 @@ const TokenChart = ({ address, color, base }) => {
                                         setTimeWindow(timeframeOptions.MONTH)
                                         setFrequency(DATA_FREQUENCY.DAY)
                                     }}
-                                    style={frequency === DATA_FREQUENCY.DAY ? {background: "green"} : {}}
+                                    style={frequency === DATA_FREQUENCY.DAY ? { background: "green" } : {}}
                                 >
                                     D
                                 </PriceOption>
                                 <PriceOption
                                     active={frequency === DATA_FREQUENCY.HOUR}
                                     onClick={() => setFrequency(DATA_FREQUENCY.HOUR)}
-                                    style={frequency === DATA_FREQUENCY.HOUR ? {background: "green"} : {}}
+                                    style={frequency === DATA_FREQUENCY.HOUR ? { background: "green" } : {}}
                                 >
                                     H
                                 </PriceOption>
                                 <PriceOption
                                     active={frequency === DATA_FREQUENCY.LINE}
                                     onClick={() => setFrequency(DATA_FREQUENCY.LINE)}
-                                    style={frequency === DATA_FREQUENCY.LINE ? {background: "green"} : {}}
+                                    style={frequency === DATA_FREQUENCY.LINE ? { background: "green" } : {}}
                                 >
                                     <Activity size={14} />
                                 </PriceOption>
@@ -353,7 +354,11 @@ const TokenChart = ({ address, color, base }) => {
                         <CandleStickChart data={priceData} width={width} base={base} />
                     </ResponsiveContainer>
                 ) : (
-                    <LocalLoader />
+                    // <LocalLoader />
+                    <div className='d-flex items-center justify-center' style={{width: '100%', height: '50%'}}>
+                        <ImpulseSpinner />
+                    </div>
+                    
                 ))}
 
             {chartFilter === CHART_VIEW.VOLUME && (
