@@ -9,6 +9,7 @@ import TradingViewChart, { CHART_TYPES } from '../TradingviewChart'
 import { RowFixed } from '../Row'
 import { OptionButton } from '../ButtonStyled'
 import { getTimeframe } from '../../utils'
+import { ImpulseSpinner } from '../Impulse'
 
 const CHART_VIEW = {
   VOLUME: 'Volume',
@@ -157,9 +158,11 @@ const GlobalChart = ({ display }) => {
   ) : (
     <div className='d-flex justify-center items-center'>
       {loading &&
-        <span className="d-flex align-items-center">
-          <Spinner className="flex-shrink-0"> Loading... </Spinner>
-        </span>}
+        <ImpulseSpinner></ImpulseSpinner>
+        // <span className="d-flex align-items-center">
+        //   <Spinner className="flex-shrink-0"> Loading... </Spinner>
+        // </span>
+      }
     </div>
   )
 }
