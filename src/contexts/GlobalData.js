@@ -214,7 +214,7 @@ async function getHbarAndSaucePrice() {
 async function getAllPairsOnSaucerswap() {
   try {
     let pairs = []
-    let response = await fetch("https://api.saucerswap.finance/pools")
+    let response = await fetch("https://api.saucerswap.finance/pools?known=true")
     if (response.status === 200) {
       const jsonData = await response.json();
       pairs = jsonData;

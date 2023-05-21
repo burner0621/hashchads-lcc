@@ -120,7 +120,6 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1 }) => {
       </ChartWrapper>
     )
   }
-console.log (formattedNum(0.00034234), ">>>>>><<<<<<<<")
   /**
    * Used to format values on chart on scroll
    * Needs to be raw html for chart API to parse styles
