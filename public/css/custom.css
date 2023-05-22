@@ -147,3 +147,11 @@ body {
 .green-bg {
     background: green;
 }
+
+.text-buy {
+    color: #cdffe7!important
+}
+
+.text-sell {
+    color: #ffacb1!important;
+}

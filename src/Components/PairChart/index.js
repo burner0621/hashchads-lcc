@@ -12,6 +12,7 @@ import { useMedia } from 'react-use'
 import DropdownSelect from '../DropdownSelect'
 import CandleStickChart from '../CandleChart'
 import LocalLoader from '../LocalLoader'
+import { ImpulseSpinner } from '../Impulse'
 // import CandleStickChart from '../CandleChart'
 // import LocalLoader from '../LocalLoader'
 // import { useDarkModeManager } from '../../contexts/LocalStorage'
@@ -57,10 +58,10 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1 }) => {
   const [timeWindow, setTimeWindow] = useState(timeframeOptions.WEEK)
 
   const textColor = 'white'
-  
+
   let hourlyChartData, dailyChartData;
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  if (poolId) [hourlyChartData, dailyChartData] = usePairChartData (poolId)
+  if (poolId) [hourlyChartData, dailyChartData] = usePairChartData(poolId)
 
   // update the width on a window resize
   const ref = useRef()
@@ -80,7 +81,7 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1 }) => {
   }, [height, isClient, width]) // Empty array ensures that effect is only run on mount and unmount
 
   // get data for pair, and rates
-  const hourlyData = hourlyChartData && hourlyChartData.length && hourlyChartData.map((item, idx)=> {
+  const hourlyData = hourlyChartData && hourlyChartData.length && hourlyChartData.map((item, idx) => {
     return {
       openUsd: item.open,
       closeUsd: item.close,
@@ -89,12 +90,12 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1 }) => {
       timestampSeconds: item.timestampSeconds
     }
   })
-  const hourlyRate0 = hourlyData && hourlyData.length && hourlyData.map((item, idx)=> {
+  const hourlyRate0 = hourlyData && hourlyData.length && hourlyData.map((item, idx) => {
     return {
-      openUsd: 1/item.openUsd,
-      closeUsd: 1/item.closeUsd,
-      lowUsd: 1/item.lowUsd,
-      highUsd: 1/item.highUsd,
+      openUsd: 1 / item.openUsd,
+      closeUsd: 1 / item.closeUsd,
+      lowUsd: 1 / item.lowUsd,
+      highUsd: 1 / item.highUsd,
       timestampSeconds: item.timestampSeconds
     }
   })
@@ -158,7 +159,7 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1 }) => {
                 setTimeWindow(timeframeOptions.ALL_TIME)
                 setChartFilter(CHART_VIEW.LIQUIDITY)
               }}
-              style={chartFilter === CHART_VIEW.LIQUIDITY ? {background: "green"} : {}}
+              style={chartFilter === CHART_VIEW.LIQUIDITY ? { background: "green" } : {}}
             >
               Liquidity
             </OptionButton>
@@ -168,7 +169,7 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1 }) => {
                 setTimeWindow(timeframeOptions.ALL_TIME)
                 setChartFilter(CHART_VIEW.VOLUME)
               }}
-              style={chartFilter === CHART_VIEW.VOLUME ? {background: "green"} : {}}
+              style={chartFilter === CHART_VIEW.VOLUME ? { background: "green" } : {}}
             >
               Volume
             </OptionButton>
@@ -178,7 +179,7 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1 }) => {
                 setTimeWindow(timeframeOptions.WEEK)
                 setChartFilter(CHART_VIEW.RATE0)
               }}
-              style={chartFilter === CHART_VIEW.RATE0 ? {background: "green"} : {}}
+              style={chartFilter === CHART_VIEW.RATE0 ? { background: "green" } : {}}
             >
               {pairData.tokenA ? formattedSymbol1 + '/' + formattedSymbol0 : '-'}
             </OptionButton>
@@ -188,7 +189,7 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1 }) => {
                 setTimeWindow(timeframeOptions.WEEK)
                 setChartFilter(CHART_VIEW.RATE1)
               }}
-              style={chartFilter === CHART_VIEW.RATE1 ? {background: "green"} : {}}
+              style={chartFilter === CHART_VIEW.RATE1 ? { background: "green" } : {}}
             >
               {pairData.tokenB ? formattedSymbol0 + '/' + formattedSymbol1 : '-'}
             </OptionButton>
@@ -197,21 +198,21 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1 }) => {
             <OptionButton
               active={timeWindow === timeframeOptions.WEEK}
               onClick={() => setTimeWindow(timeframeOptions.WEEK)}
-              style={timeWindow === timeframeOptions.WEEK ? {background: "green"} : {}}
+              style={timeWindow === timeframeOptions.WEEK ? { background: "green" } : {}}
             >
               1W
             </OptionButton>
             <OptionButton
               active={timeWindow === timeframeOptions.MONTH}
               onClick={() => setTimeWindow(timeframeOptions.MONTH)}
-              style={timeWindow === timeframeOptions.MONTH ? {background: "green"} : {}}
+              style={timeWindow === timeframeOptions.MONTH ? { background: "green" } : {}}
             >
               1M
             </OptionButton>
             <OptionButton
               active={timeWindow === timeframeOptions.ALL_TIME}
               onClick={() => setTimeWindow(timeframeOptions.ALL_TIME)}
-              style={timeWindow === timeframeOptions.ALL_TIME ? {background: "green"} : {}}
+              style={timeWindow === timeframeOptions.ALL_TIME ? { background: "green" } : {}}
             >
               All
             </OptionButton>
@@ -219,7 +220,7 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1 }) => {
         </OptionsRow>
       )}
       {chartFilter === CHART_VIEW.LIQUIDITY && (
-        <ResponsiveContainer aspect={aspect} style={{height: '100%'}}>
+        <ResponsiveContainer aspect={aspect} style={{ height: '100%' }}>
           <AreaChart margin={{ top: 0, right: 10, bottom: 6, left: 0 }} barCategoryGap={1} data={dailyChartData}>
             <defs>
               <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
@@ -290,7 +291,10 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1 }) => {
             />
           </ResponsiveContainer>
         ) : (
-          <LocalLoader />
+          // <LocalLoader />
+          <div className='d-flex items-center justify-center' style={{ width: '100%', height: '50%' }}>
+            <ImpulseSpinner />
+          </div>
         ))}
 
       {chartFilter === CHART_VIEW.RATE0 &&
@@ -305,7 +309,10 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1 }) => {
             />
           </ResponsiveContainer>
         ) : (
-          <LocalLoader />
+          // <LocalLoader />
+          <div className='d-flex items-center justify-center' style={{ width: '100%', height: '50%' }}>
+            <ImpulseSpinner />
+          </div>
         ))}
 
       {chartFilter === CHART_VIEW.VOLUME && (

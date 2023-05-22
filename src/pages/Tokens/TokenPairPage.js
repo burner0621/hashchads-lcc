@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from 'styled-components'
 import { Col, Container, Row, Card, CardBody, CardHeader, Button } from "reactstrap";
 // import PairChart from '../../components/PairChart'
@@ -19,7 +19,7 @@ import TokenLogo from "../../Components/TokenLogo";
 import PairChart from "../../Components/PairChart";
 import { usePairData } from "../../contexts/PairData";
 import { formattedNum } from "../../utils";
-
+import DataTable from 'react-data-table-component';
 const DashboardWrapper = styled.div`
   width: 100%;
 `
@@ -44,6 +44,11 @@ const WarningGrouping = styled.div`
   pointer-events: ${({ disabled }) => disabled && 'none'};
 `
 
+const TRADING_TYPE = {
+    sell: 'sell',
+    buy: 'buy'
+}
+
 const TokenPair = () => {
 
     const { contractId } = useParams()
@@ -65,10 +70,13 @@ const TokenPair = () => {
     const [tokenIdA, setTokenIdA] = useState('')
     const [tokenIdB, setTokenIdB] = useState('')
     const _pairData = usePairData(contractId)
-    const dailyVolumes = usePairDailyVolume ()
-    const weeklyVolumes = usePairWeeklyVolume ()
+    const dailyVolumes = usePairDailyVolume()
+    const weeklyVolumes = usePairWeeklyVolume()
     const weeklyData = usePairWeeklyVolume()
     const [hbarPrice, saucePrice] = useHbarAndSaucePrice()
+    const [data, setData] = useState([])
+    const [showCopyText, setShowCopyText] = useState(false)
+
     useEffect(() => {
         if (Object.keys(_pairData).length) {
             setTotalLiquidityUsd(_pairData.liquidityUsd)
@@ -79,13 +87,13 @@ const TokenPair = () => {
             setIconB(_pairData.tokenB.icon)
             setSymbolA(_pairData.tokenA.symbol)
             setSymbolB(_pairData.tokenB.symbol)
-            setTokenIdA (_pairData.tokenA.id)
-            setTokenIdB (_pairData.tokenB.id)
+            setTokenIdA(_pairData.tokenA.id)
+            setTokenIdB(_pairData.tokenB.id)
         }
     }, [_pairData])
 
     useEffect(() => {
-        if (dailyVolumes && Object.keys(dailyVolumes).length && Object.keys(_pairData).length){
+        if (dailyVolumes && Object.keys(dailyVolumes).length && Object.keys(_pairData).length) {
             setDailyHbar(dailyVolumes[_pairData.poolId])
             setDailyUsd(dailyVolumes[_pairData.poolId] * hbarPrice)
             setLpReward(dailyVolumes[_pairData.poolId] * hbarPrice * 365 / 4 / _pairData.liquidityUsd)
@@ -93,7 +101,7 @@ const TokenPair = () => {
     }, [dailyVolumes, _pairData, hbarPrice])
 
     useEffect(() => {
-        if (weeklyVolumes && Object.keys(weeklyVolumes).length && Object.keys(_pairData).length){
+        if (weeklyVolumes && Object.keys(weeklyVolumes).length && Object.keys(_pairData).length) {
             setWeeklyHbar(weeklyVolumes[_pairData.poolId])
             setWeeklyUsd(weeklyVolumes[_pairData.poolId] * hbarPrice)
         }
@@ -102,16 +110,72 @@ const TokenPair = () => {
     const below1080 = useMedia('(max-width: 1080px)')
     const below600 = useMedia('(max-width: 600px)')
 
-    const handleCopyAddress = () => {
-
+    const handleCopyAddress = (e) => {
+        
+        document.execCommand('copy');
     }
 
     const name = symbolA + ' / ' + symbolB;
     const symbol = symbolA + ' / ' + symbolB;
 
+    const calcUnit = (value) => {
+        if (value < 1000) return value;
+        else if (value < 1000000) return value / 1000 + 'K';
+        else if (value < 1000000000) return value / 1000000 + 'M';
+        else return value / 1000000000 + 'B'
+    }
+
+    const columns = [
+
+        {
+            name: <span className='font-weight-bold fs-16'>Date</span>,
+            selector: row => {
+                return (
+                    <span className={row.type == TRADING_TYPE.buy ? "text-buy" : "text-sell"}>{row.date}</span>
+                )
+            },
+            sortable: true,
+            width: 180
+        },
+        {
+            name: <span className='font-weight-bold fs-16'>Type</span>,
+            sortable: true,
+            selector: (row) => {
+                return (
+                    <span className={row.type == TRADING_TYPE.buy ? 'text-green' : 'text-red'}>{row.type}</span>
+                );
+            },
+            width: 100
+        },
+        {
+            name: <span className='font-weight-bold fs-16'>Price USD</span>,
+            sortable: true,
+            selector: row => row.price ? '$' + calcUnit(parseInt(row.price)) : '0',
+            width: 150
+        },
+        {
+            name: <span className='font-weight-bold fs-16'>Total</span>,
+            sortable: true,
+            selector: row => row.total ? '$' + calcUnit(parseInt(row.total)) : '0',
+            width: 150
+        },
+        {
+            name: <span className='font-weight-bold fs-16'>Price HBAR</span>,
+            sortable: true,
+            selector: row => row.hbar ? calcUnit(parseInt(row.hbar)) : '0',
+            width: 150
+        },
+        {
+            name: <span className='font-weight-bold fs-16'>Amount {_pairData?.tokenA?.symbol}</span>,
+            sortable: true,
+            selector: row => row.amount ? '$' + calcUnit(parseInt(row.amount)) : '0',
+            width: 150
+        },
+    ];
+
     return (
         <React.Fragment>
-            <div className="page-content" style={{marginBottom:'20px'}}>
+            <div className="page-content" style={{ marginBottom: '20px' }}>
                 <Container fluid>
                     <ContentWrapper>
                         <RowBetween style={{ flexWrap: 'wrap', alingItems: 'start' }}>
@@ -137,7 +201,7 @@ const TokenPair = () => {
                                 <RowBetween
                                     style={{
                                         flexWrap: 'wrap',
-                                        marginBottom: '2rem',
+                                        // marginBottom: '2rem',
                                         alignItems: 'flex-start',
                                     }}
                                 >
@@ -162,8 +226,20 @@ const TokenPair = () => {
                                         </RowFixed>
                                     </RowFixed>
                                 </RowBetween>
+                                <AutoRow align="flex-end" style={{ width: 'fit-content' }}>
+                                    <Link
+                                        style={{ width: 'fit-content' }}
+                                        color={'grey'}
+                                        external
+                                    >
+                                        <Text style={{ marginLeft: '.15rem' }} fontSize={'14px'} fontWeight={400}>
+                                            Token:{_pairData?.tokenA?.id}   Pair:{_pairData?.tokenB?.id}
+                                        </Text>
+                                    </Link>
+                                </AutoRow>
                             </DashboardWrapper>
                         </WarningGrouping>
+                        
                         <Row>
                             <Col xl={4} sm={12} >
                                 <Card className="card-animate mb-0" style={{ border: '1px solid' }}>
@@ -189,7 +265,7 @@ const TokenPair = () => {
                                 </Card>
                             </Col>
                             <Col xl={4} sm={12} >
-                                <Card className="card-animate mb-0" style={{ border: '1px solid', marginBottom:'0px !important' }}>
+                                <Card className="card-animate mb-0" style={{ border: '1px solid', marginBottom: '0px !important' }}>
                                     <CardBody>
                                         <div className="d-flex">
                                             <div className="flex-grow-1 w-full">
@@ -211,7 +287,7 @@ const TokenPair = () => {
                                 </Card>
                             </Col>
                             <Col xl={4} sm={12} >
-                                <Card className="card-animate mb-0" style={{ border: '1px solid', marginBottom:'0px !important' }}>
+                                <Card className="card-animate mb-0" style={{ border: '1px solid', marginBottom: '0px !important' }}>
                                     <CardBody>
                                         <div className="d-flex">
                                             <div className="flex-grow-1 w-full">
@@ -235,7 +311,7 @@ const TokenPair = () => {
                         </Row>
                         <Row>
                             <Col xl={4} sm={12} >
-                                <Card className="card-animate mb-0" style={{ border: '1px solid', marginBottom:'0px !important' }}>
+                                <Card className="card-animate mb-0" style={{ border: '1px solid', marginBottom: '0px !important' }}>
                                     <CardBody>
                                         <div className="d-flex">
                                             <div className="flex-grow-1 w-full">
@@ -257,7 +333,7 @@ const TokenPair = () => {
                                 </Card>
                             </Col>
                             <Col xl={4} sm={12} >
-                                <Card className="card-animate mb-0" style={{ border: '1px solid', marginBottom:'0px !important' }}>
+                                <Card className="card-animate mb-0" style={{ border: '1px solid', marginBottom: '0px !important' }}>
                                     <CardBody>
                                         <div className="d-flex">
                                             <div className="flex-grow-1 w-full">
@@ -276,7 +352,7 @@ const TokenPair = () => {
                                 </Card>
                             </Col>
                             <Col xl={4} sm={12} >
-                                <Card className="card-animate mb-0" style={{ border: '1px solid', marginBottom:'0px !important' }}>
+                                <Card className="card-animate mb-0" style={{ border: '1px solid', marginBottom: '0px !important' }}>
                                     <CardBody>
                                         <div className="d-flex">
                                             <div className="flex-grow-1 w-full">
@@ -326,13 +402,13 @@ const TokenPair = () => {
                                             </div>
                                             <div className="flex-grow-1 w-full">
                                                 <h4 className="text-muted mb-3 text-white">{symbolA} Address</h4>
-                                                <h2 className="mb-0 d-flex items-center" onClick={() => handleCopyAddress()}>
+                                                <h2 className="mb-0 d-flex items-center" onClick={(e) => handleCopyAddress(e)}>
                                                     {tokenIdA}<i className="mdi mdi-content-copy"></i>
                                                 </h2>
                                             </div>
                                             <div className="flex-grow-1 w-full">
                                                 <h4 className="text-muted mb-3 text-white">{symbolB} Address</h4>
-                                                <h2 className="mb-0 d-flex items-center" onClick={() => handleCopyAddress()}>
+                                                <h2 className="mb-0 d-flex items-center" onClick={(e) => handleCopyAddress(e)}>
                                                     {tokenIdB}<i className="mdi mdi-content-copy"></i>
                                                 </h2>
                                             </div>
@@ -350,6 +426,55 @@ const TokenPair = () => {
                                     </CardBody>
                                 </Card>
                             </Col>
+                        </Row>
+                        <Row>
+                            <DataTable
+                                customStyles={{
+                                    headRow: {
+                                        style: {
+                                            background: "#142028",
+                                            color: "white"
+                                        }
+                                    },
+                                    table: {
+                                        style: {
+                                            background: "#142028",
+                                            color: "white"
+                                        }
+                                    },
+                                    rows: {
+                                        style: {
+                                            background: "#142028",
+                                            color: "white"
+                                        }
+                                    },
+                                    pagination: {
+                                        style: {
+                                            background: "#142028",
+                                            color: "white"
+                                        },
+                                        pageButtonsStyle: {
+                                            color: "white",
+                                            fill: "white"
+                                        }
+                                    },
+                                    noData: {
+                                        style: {
+                                            background: "#142028",
+                                            color: "white"
+                                        }
+                                    },
+                                    cells: {
+                                        style: {
+                                            paddingRight: "0px",
+                                            color: "white"
+                                        }
+                                    }
+                                }}
+                                columns={columns}
+                                data={data || []}
+                                pagination
+                            />
                         </Row>
                     </ContentWrapper>
                 </Container>
