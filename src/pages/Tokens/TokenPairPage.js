@@ -344,7 +344,7 @@ const TokenPair = () => {
                                                     <OptionButton
                                                         active={chartFilter === CHART_VIEW.LIQUIDITY}
                                                         onClick={() => {
-                                                            setTimeWindow(timeframeOptions.ALL_TIME)
+                                                            setTimeWindow(timeframeOptions.WEEK)
                                                             setChartFilter(CHART_VIEW.LIQUIDITY)
                                                         }}
                                                         style={chartFilter === CHART_VIEW.LIQUIDITY ? { background: "green" } : {}}
@@ -354,7 +354,7 @@ const TokenPair = () => {
                                                     <OptionButton
                                                         active={chartFilter === CHART_VIEW.VOLUME}
                                                         onClick={() => {
-                                                            setTimeWindow(timeframeOptions.ALL_TIME)
+                                                            setTimeWindow(timeframeOptions.WEEK)
                                                             setChartFilter(CHART_VIEW.VOLUME)
                                                         }}
                                                         style={chartFilter === CHART_VIEW.VOLUME ? { background: "green" } : {}}
