@@ -1,3 +1,4 @@
+/* button css */
 .btn-download:hover {
     border: 1px solid white !important
 }
@@ -6,23 +7,11 @@
     background-color: #37a26a !important;
 }
 
-/* .btn-success:focus {
-    background-color: #37a26a !important;
-    border-color: #37a26a !important;
+.button-border {
+    border: 1px solid white !important;
 }
 
-.btn-success:hover {
-    border-color: #37a26a !important;
-}
-
-.btn-success:checked {
-    border-color: #37a26a !important;
-}
-
-.btn-success:active {
-    border-color: #37a26a !important;
-} */
-
+/* flex css */
 .justify-center {
     justify-content: center !important;
 }
@@ -31,10 +20,23 @@
     justify-content: space-between;
 }
 
+.justify-end {
+    justify-content: flex-end;
+}
+
 .items-center {
     align-items: center;
 }
 
+.items-end {
+    align-items: flex-end;
+}
+
+.flex-column {
+    flex-direction: column;
+}
+
+/* text css */
 .text-green {
     color: green;
 }
@@ -59,6 +61,27 @@
     color: #1896b2 !important;
 }
 
+.text-buy {
+    color: #cdffe7 !important
+}
+
+.text-sell {
+    color: #ffacb1 !important;
+}
+
+.text-badge {
+    color: #818ea3 !important
+}
+
+.text-symbol {
+    color: #1896b2;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* font css */
 .fs-20 {
     font-size: 24px;
 }
@@ -71,10 +94,7 @@
     font-weight: 450;
 }
 
-.mt-30 {
-    margin-top: 30px;
-}
-
+/* background css */
 .normal-background {
     background-color: blueviolet;
 }
@@ -84,40 +104,13 @@ body {
     background-color: #0b1217 !important;
 }
 
-.text-symbol {
-    color: #1896b2;
+.green-bg {
+    background: green;
 }
 
-.cursor:hover {
-    cursor: pointer;
-}
-
-.button-border {
-    border: 1px solid white !important;
-}
-
-.w-full {
-    width: 100%;
-}
-
-.border-expand {
-    outline: 1px solid #333;
-    outline-offset: -1px;
-
-    &:hover {
-        outline: none;
-    }
-}
-
-.blink {
-    animation: blinker 1s linear infinite;
-    color: #ff007a;
-}
-
-@keyframes blinker {
-    50% {
-        opacity: 0;
-    }
+.badge-active-bg {
+    background: #0b1217;
+    border-radius: 5px;
 }
 
 .new-bg {
@@ -129,29 +122,70 @@ body {
 }
 
 .badge-bg {
+    border-radius: 5px;
     background: #23323c !important;
+    min-height: 2rem;
 }
 
-.flex-column {
-    flex-direction: column;
+/* border css */
+.border-green {
+    border: 1px solid green !important;
+}
+
+.border-expand {
+    outline: 1px solid #333;
+    outline-offset: -1px;
+
+    &:hover {
+        outline: none;
+    }
 }
 
 .border-red {
     border: 1px solid red;
 }
 
-.border-green {
-    border: 1px solid green !important;
+/* margin padding css */
+.mr-0 {
+    margin-right: 0px !important;
 }
 
-.green-bg {
-    background: green;
+.ml-0 {
+    margin-left: 0px !important;
 }
 
-.text-buy {
-    color: #cdffe7!important
+.pl-0 {
+    padding-left: 0px !important;
 }
 
-.text-sell {
-    color: #ffacb1!important;
+.pr-0 {
+    padding-right: 0px !important;
+}
+
+.mt-30 {
+    margin-top: 30px;
+}
+
+/* other css */
+.cursor:hover {
+    cursor: pointer;
+}
+
+.w-full {
+    width: 100%;
+}
+
+.w-auth {
+    width: auto;
+}
+
+.blink {
+    animation: blinker 1s linear infinite;
+    color: #ff007a;
+}
+
+@keyframes blinker {
+    50% {
+        opacity: 0;
+    }
 }

@@ -302,14 +302,14 @@ const TokenInfo = ({ address, tokenPrice }) => {
                                 >
                                     Basic Info</NavLink>
                             </NavItem>
-                            <NavItem>
+                            {/* <NavItem>
                                 <NavLink
                                     href="#"
                                     className={classnames({ active: activeTab === '2' })}
                                     onClick={() => { toggleTab('2'); }}
                                 >
                                     Keys & Holders</NavLink>
-                            </NavItem>
+                            </NavItem> */}
                         </Nav>
                     </CardHeader>
                     <CardBody className="p-0">
@@ -353,6 +353,50 @@ const TokenInfo = ({ address, tokenPrice }) => {
                                             </div>
                                             <div className="flex-shrink-0">
                                                 <h6 className="mb-0">{tokenInfo?.supply_type}</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="p-3">
+                                    <div className="mt-2">
+                                        <div className="d-flex mb-2">
+                                            <div className="flex-grow-1">
+                                                <p className="fs-13 mb-0">Supply Key<span className="text-muted ms-1 fs-11"></span></p>
+                                            </div>
+                                            <div className="flex-shrink-0">
+                                                <h6 className="mb-0">{supplyKey}</h6>
+                                            </div>
+                                        </div>
+                                        <div className="d-flex mb-2">
+                                            <div className="flex-grow-1">
+                                                <p className="fs-13 mb-0">Freeze Key<span className="text-muted ms-1 fs-11"></span></p>
+                                            </div>
+                                            <div className="flex-shrink-0">
+                                                <h6 className="mb-0">{freezeKey}</h6>
+                                            </div>
+                                        </div>
+                                        <div className="d-flex mb-2">
+                                            <div className="flex-grow-1">
+                                                <p className="fs-13 mb-0">Pause Key<span className="text-muted ms-1 fs-11"></span></p>
+                                            </div>
+                                            <div className="flex-shrink-0">
+                                                <h6 className="mb-0">{pauseKey}</h6>
+                                            </div>
+                                        </div>
+                                        <div className="d-flex mb-2">
+                                            <div className="flex-grow-1">
+                                                <p className="fs-13 mb-0">Wipe Key<span className="text-muted ms-1 fs-11"></span></p>
+                                            </div>
+                                            <div className="flex-shrink-0">
+                                                <h6 className="mb-0">{wipeKey}</h6>
+                                            </div>
+                                        </div>
+                                        <div className="d-flex mb-2">
+                                            <div className="flex-grow-1">
+                                                <p className="fs-13 mb-0">Admin Key<span className="text-muted ms-1 fs-11"></span></p>
+                                            </div>
+                                            <div className="flex-shrink-0">
+                                                <h6 className="mb-0">{adminKey}</h6>
                                             </div>
                                         </div>
                                     </div>

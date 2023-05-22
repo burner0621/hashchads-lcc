@@ -8,16 +8,17 @@ import { Play } from 'react-feather'
 // import { useDarkModeManager } from '../../contexts/LocalStorage'
 
 const IconWrapper = styled.div`
-  position: absolute;
-  right: 10px;
+  // position: absolute;
+  // right: 10px;
   color: green;
   border-radius: 3px;
   height: 16px;
   width: 16px;
   padding: 0px;
-  bottom: 10px;
+  // bottom: 10px;
   display: flex;
   align-items: center;
+  margin-right: 30px;
   justify-content: center;
   :hover {
     cursor: pointer;
@@ -152,7 +153,7 @@ const CandleStickChart = ({
 
       // update the title when hovering on the chart
       chart.subscribeCrosshairMove(function (param) {
-      if (
+        if (
           param === undefined ||
           param.timestampSeconds === undefined ||
           param.point.x < 0 ||
@@ -190,15 +191,18 @@ const CandleStickChart = ({
   }, [chartCreated, height, width])
 
   return (
-    <div>
+    <div className='d-flex flex-column'>
       <div ref={ref} id="test-id" />
-      <IconWrapper>
-        <Play
-          onClick={() => {
-            chartCreated && chartCreated.timeScale().fitContent()
-          }}
-        />
-      </IconWrapper>
+      <div className='d-flex justify-end' style={{marginTop: "20px"}}>
+        <IconWrapper>
+          <Play
+            onClick={() => {
+              chartCreated && chartCreated.timeScale().fitContent()
+            }}
+          />
+        </IconWrapper>
+      </div>
+
     </div>
   )
 }

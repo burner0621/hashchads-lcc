@@ -45,65 +45,21 @@ const DATA_FREQUENCY = {
     LINE: 'LINE',
 }
 
-const TokenChart = ({ address, color, base }) => {
+const TokenChart = ({ address, color, base, priceData, chartFilter, timeWindow, frequency }) => {
     // settings for the window and candle width
-    const [chartFilter, setChartFilter] = useState(CHART_VIEW.PRICE)
-    const [frequency, setFrequency] = useState(DATA_FREQUENCY.HOUR)
+    
 
     const textColor = 'white'
 
     // reset view on new address
-    const addressPrev = usePrevious(address)
-    useEffect(() => {
-        if (address !== addressPrev && addressPrev) {
-            setChartFilter(CHART_VIEW.LIQUIDITY)
-        }
-    }, [address, addressPrev])
+    // const addressPrev = usePrevious(address)
+    // useEffect(() => {
+    //     if (address !== addressPrev && addressPrev) {
+    //         setChartFilter(CHART_VIEW.LIQUIDITY)
+    //     }
+    // }, [address, addressPrev])
 
     let chartData = useTokenChartData(address)
-
-    const [timeWindow, setTimeWindow] = useState(timeframeOptions.WEEK)
-    const prevWindow = usePrevious(timeWindow)
-
-    // hourly and daily price data based on the current time window
-    const hourlyWeek = useTokenPriceData(address, timeframeOptions.WEEK, 3600)
-    const hourlyMonth = useTokenPriceData(address, timeframeOptions.MONTH, 3600)
-    const hourlyAll = useTokenPriceData(address, timeframeOptions.ALL_TIME, 3600)
-    const dailyWeek = useTokenPriceData(address, timeframeOptions.WEEK, 86400)
-    const dailyMonth = useTokenPriceData(address, timeframeOptions.MONTH, 86400)
-    const dailyAll = useTokenPriceData(address, timeframeOptions.ALL_TIME, 86400)
-
-    const priceData =
-        timeWindow === timeframeOptions.MONTH
-            ? // monthly selected
-            frequency === DATA_FREQUENCY.DAY
-                ? dailyMonth
-                : hourlyMonth
-            : // weekly selected
-            timeWindow === timeframeOptions.WEEK
-                ? frequency === DATA_FREQUENCY.DAY
-                    ? dailyWeek
-                    : hourlyWeek
-                : // all time selected
-                frequency === DATA_FREQUENCY.DAY
-                    ? dailyAll
-                    : hourlyAll
-    // switch to hourly data when switched to week window
-    useEffect(() => {
-        if (timeWindow === timeframeOptions.WEEK && prevWindow && prevWindow !== timeframeOptions.WEEK) {
-            setFrequency(DATA_FREQUENCY.HOUR)
-        }
-    }, [prevWindow, timeWindow])
-
-    // switch to daily data if switche to month or all time view
-    useEffect(() => {
-        if (timeWindow === timeframeOptions.MONTH && prevWindow && prevWindow !== timeframeOptions.MONTH) {
-            setFrequency(DATA_FREQUENCY.DAY)
-        }
-        if (timeWindow === timeframeOptions.ALL_TIME && prevWindow && prevWindow !== timeframeOptions.ALL_TIME) {
-            setFrequency(DATA_FREQUENCY.DAY)
-        }
-    }, [prevWindow, timeWindow])
 
     const below1080 = useMedia('(max-width: 1080px)')
     const below600 = useMedia('(max-width: 600px)')
@@ -130,105 +86,6 @@ const TokenChart = ({ address, color, base }) => {
     }, [isClient, width]) // Empty array ensures that effect is only run on mount and unmount
     return (
         <ChartWrapper>
-            {below600 ? (
-                <RowBetween mb={40}>
-                    <DropdownSelect options={CHART_VIEW} active={chartFilter} setActive={setChartFilter} color={color} />
-                    <DropdownSelect options={timeframeOptions} active={timeWindow} setActive={setTimeWindow} color={color} />
-                </RowBetween>
-            ) : (
-                <RowBetween
-                    mb={
-                        chartFilter === CHART_VIEW.LIQUIDITY ||
-                            chartFilter === CHART_VIEW.VOLUME ||
-                            (chartFilter === CHART_VIEW.PRICE && frequency === DATA_FREQUENCY.LINE)
-                            ? 40
-                            : 0
-                    }
-                    align="flex-start"
-                >
-                    <AutoColumn gap="8px" style={{ width: "100%" }}>
-                        <RowFixed>
-                            <OptionButton
-                                active={chartFilter === CHART_VIEW.LIQUIDITY}
-                                onClick={() => setChartFilter(CHART_VIEW.LIQUIDITY)}
-                                style={{ marginRight: '6px' }}
-                                className={chartFilter === CHART_VIEW.LIQUIDITY ? "green-bg" : ""}
-                            >
-                                Liquidity
-                            </OptionButton>
-                            <OptionButton
-                                active={chartFilter === CHART_VIEW.VOLUME}
-                                onClick={() => setChartFilter(CHART_VIEW.VOLUME)}
-                                style={{ marginRight: '6px' }}
-                                className={chartFilter === CHART_VIEW.VOLUME ? "green-bg" : ""}
-                            >
-                                Volume
-                            </OptionButton>
-                            <OptionButton
-                                style={{ cursor: 'pointer' }}
-                                active={chartFilter === CHART_VIEW.PRICE}
-                                onClick={() => {
-                                    setChartFilter(CHART_VIEW.PRICE)
-                                }}
-                                className={chartFilter === CHART_VIEW.PRICE ? "green-bg" : ""}
-                            >
-                                Price
-                            </OptionButton>
-                        </RowFixed>
-                        {chartFilter === CHART_VIEW.PRICE && (
-                            <AutoRow gap="4px" style={{ width: 200 }}>
-                                <PriceOption
-                                    active={frequency === DATA_FREQUENCY.DAY}
-                                    onClick={() => {
-                                        setTimeWindow(timeframeOptions.MONTH)
-                                        setFrequency(DATA_FREQUENCY.DAY)
-                                    }}
-                                    style={frequency === DATA_FREQUENCY.DAY ? { background: "green" } : {}}
-                                >
-                                    D
-                                </PriceOption>
-                                <PriceOption
-                                    active={frequency === DATA_FREQUENCY.HOUR}
-                                    onClick={() => setFrequency(DATA_FREQUENCY.HOUR)}
-                                    style={frequency === DATA_FREQUENCY.HOUR ? { background: "green" } : {}}
-                                >
-                                    H
-                                </PriceOption>
-                                <PriceOption
-                                    active={frequency === DATA_FREQUENCY.LINE}
-                                    onClick={() => setFrequency(DATA_FREQUENCY.LINE)}
-                                    style={frequency === DATA_FREQUENCY.LINE ? { background: "green" } : {}}
-                                >
-                                    <Activity size={14} />
-                                </PriceOption>
-                            </AutoRow>
-                        )}
-                    </AutoColumn>
-                    <AutoRow justify="flex-end" gap="6px" align="flex-start">
-                        <OptionButton
-                            active={timeWindow === timeframeOptions.WEEK}
-                            onClick={() => setTimeWindow(timeframeOptions.WEEK)}
-                            className={timeWindow === timeframeOptions.WEEK ? "green-bg" : ""}
-                        >
-                            1W
-                        </OptionButton>
-                        <OptionButton
-                            active={timeWindow === timeframeOptions.MONTH}
-                            onClick={() => setTimeWindow(timeframeOptions.MONTH)}
-                            className={timeWindow === timeframeOptions.MONTH ? "green-bg" : ""}
-                        >
-                            1M
-                        </OptionButton>
-                        <OptionButton
-                            active={timeWindow === timeframeOptions.ALL_TIME}
-                            onClick={() => setTimeWindow(timeframeOptions.ALL_TIME)}
-                            className={timeWindow === timeframeOptions.ALL_TIME ? "green-bg" : ""}
-                        >
-                            All
-                        </OptionButton>
-                    </AutoRow>
-                </RowBetween>
-            )}
             {chartFilter === CHART_VIEW.LIQUIDITY && chartData && chartData.length && (
                 <ResponsiveContainer aspect={aspect}>
                     <AreaChart margin={{ top: 0, right: 10, bottom: 6, left: 0 }} barCategoryGap={1} data={chartData}>
@@ -355,10 +212,9 @@ const TokenChart = ({ address, color, base }) => {
                     </ResponsiveContainer>
                 ) : (
                     // <LocalLoader />
-                    <div className='d-flex items-center justify-center' style={{width: '100%', height: '50%'}}>
+                    <div className='d-flex items-center justify-center items-center'>
                         <ImpulseSpinner />
                     </div>
-                    
                 ))}
 
             {chartFilter === CHART_VIEW.VOLUME && (
