@@ -13,6 +13,8 @@ import DropdownSelect from '../DropdownSelect'
 import CandleStickChart from '../CandleChart'
 import LocalLoader from '../LocalLoader'
 import { ImpulseSpinner } from '../Impulse'
+import { timeframeOptions } from '../../constants'
+import { time } from 'echarts'
 // import CandleStickChart from '../CandleChart'
 // import LocalLoader from '../LocalLoader'
 // import { useDarkModeManager } from '../../contexts/LocalStorage'
@@ -48,7 +50,7 @@ const CHART_VIEW = {
 }
 
 const PairChart = ({ address, poolId, pairData, color, base0, base1, chartFilter, timeWindow }) => {
-  
+
   const textColor = 'white'
 
   let hourlyChartData, dailyChartData;
@@ -60,6 +62,8 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1, chartFilter
   const isClient = typeof window === 'object'
   const [width, setWidth] = useState(ref?.current?.container?.clientWidth)
   const [height, setHeight] = useState(ref?.current?.container?.clientHeight)
+  const [chartData, setChartData] = useState([])
+
   useEffect(() => {
     if (!isClient) {
       return false
@@ -71,6 +75,50 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1, chartFilter
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [height, isClient, width]) // Empty array ensures that effect is only run on mount and unmount
+console.log (chartData, timeWindow, timeWindow === timeframeOptions.WEEK, ">>>>>>>>>>>>><<<<<<<<<<<<<<<")
+  useEffect(() => {
+    if (timeWindow === timeframeOptions.WEEK) {
+      let t = Date.now() / 1000 - 86400 * 7
+      // eslint-disable-next-line array-callback-return
+      let tmpData = hourlyChartData.map((item) => {
+        console.log (item.timestampSeconds, "LLLLLLLLLLLLLL")
+        if (item.timestampSeconds > t)
+          return {
+            openUsd: item.open,
+            closeUsd: item.close,
+            lowUsd: item.low,
+            highUsd: item.high,
+            timestampSeconds: item.timestampSeconds
+          }
+      })
+      setChartData(tmpData)
+    } else if (timeWindow === timeframeOptions.MONTH) {
+      let t = Date.now() / 1000 - 86400 * 30
+      // eslint-disable-next-line array-callback-return
+      let tmpData = dailyChartData.map((item, idx) => {
+        if (item.timestampSeconds > t)
+          return ({
+            openUsd: item.open,
+            closeUsd: item.close,
+            lowUsd: item.low,
+            highUsd: item.high,
+            timestampSeconds: item.timestampSeconds
+          })
+      })
+      setChartData(tmpData)
+    } else if (timeWindow === timeframeOptions.ALL_TIME) {
+      let tmpData = dailyChartData.map((item, idx) => {
+        return {
+          openUsd: item.open,
+          closeUsd: item.close,
+          lowUsd: item.low,
+          highUsd: item.high,
+          timestampSeconds: item.timestampSeconds
+        }
+      })
+      setChartData(tmpData)
+    }
+  }, [timeWindow])
 
   // get data for pair, and rates
   const hourlyData = hourlyChartData && hourlyChartData.length && hourlyChartData.map((item, idx) => {
@@ -137,10 +185,10 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1, chartFilter
 
   return (
     <ChartWrapper>
-      
+
       {chartFilter === CHART_VIEW.LIQUIDITY && (
         <ResponsiveContainer aspect={aspect} style={{ height: '100%' }}>
-          <AreaChart margin={{ top: 0, right: 10, bottom: 6, left: 0 }} barCategoryGap={1} data={dailyChartData}>
+          <AreaChart margin={{ top: 0, right: 10, bottom: 6, left: 0 }} barCategoryGap={1} data={chartData}>
             <defs>
               <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor={color} stopOpacity={0.35} />

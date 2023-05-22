@@ -213,3 +213,14 @@ body {
 .fc-white {
     color: #fff;
 }
+
+.fs-20 {
+    font-size: 20px;
+}
+.fs-16 {
+    font-size: 16px;
+}
+
+.ml-15 {
+    margin-left: 15px;
+}
