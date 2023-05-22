@@ -58,8 +58,8 @@ const TokenChart = ({ address, color, base, priceData, chartFilter, timeWindow, 
     //         setChartFilter(CHART_VIEW.LIQUIDITY)
     //     }
     // }, [address, addressPrev])
-
-    let chartData = useTokenChartData(address)
+    const [chartData, setChartData] = useState ([])
+    let [dailyData, hourlyData] = useTokenChartData(address)
 
     const below1080 = useMedia('(max-width: 1080px)')
     const below600 = useMedia('(max-width: 600px)')
@@ -68,8 +68,22 @@ const TokenChart = ({ address, color, base, priceData, chartFilter, timeWindow, 
     const domain = [(dataMin) => (dataMin > utcStartTime ? dataMin : utcStartTime), 'dataMax']
     const aspect = below1080 ? 60 / 32 : below600 ? 60 / 42 : 60 / 22
 
-    chartData = chartData?.filter((entry) => entry.timestampSeconds >= utcStartTime)
+    // chartData = chartData?.filter((entry) => entry.timestampSeconds >= utcStartTime)
 
+    useEffect (() => {
+        if (chartFilter === CHART_VIEW.LIQUIDITY || chartFilter === CHART_VIEW.VOLUME) {
+            let tmpData = dailyData?.filter((entry) => entry.timestampSeconds >= utcStartTime)
+            setChartData (tmpData)
+        } else if (chartFilter === CHART_VIEW.PRICE || chartFilter === CHART_VIEW.LINE_PRICE) {
+            if (frequency === DATA_FREQUENCY.DAY) {
+                let tmpData = dailyData?.filter((entry) => entry.timestampSeconds >= utcStartTime)
+                setChartData (tmpData)
+            } else if (frequency === DATA_FREQUENCY.HOUR) {
+                let tmpData = hourlyData?.filter((entry) => entry.timestampSeconds >= utcStartTime)
+                setChartData (tmpData)
+            } 
+        }
+    }, [timeWindow, hourlyData])
     // update the width on a window resize
     const ref = useRef()
     const isClient = typeof window === 'object'
@@ -84,6 +98,7 @@ const TokenChart = ({ address, color, base, priceData, chartFilter, timeWindow, 
         window.addEventListener('resize', handleResize)
         return () => window.removeEventListener('resize', handleResize)
     }, [isClient, width]) // Empty array ensures that effect is only run on mount and unmount
+
     return (
         <ChartWrapper>
             {chartFilter === CHART_VIEW.LIQUIDITY && chartData && chartData.length && (
@@ -117,6 +132,7 @@ const TokenChart = ({ address, color, base, priceData, chartFilter, timeWindow, 
                             minTickGap={80}
                             yAxisId={0}
                             tick={{ fill: textColor }}
+                            domain="auto"
                         />
                         <Tooltip
                             cursor={true}

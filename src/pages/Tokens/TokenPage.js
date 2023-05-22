@@ -733,7 +733,7 @@ const TokenPage = ({ address }) => {
                             {/* <TokenChart dataColors='["--vz-success", "--vz-danger"]' tokenId={address} /> */}
                             <Col sm={12} md={3}>
                                 <div className="d-flex flex-column">
-                                    <Card className="card-animate bg-blue-black border-radius-10">
+                                    <Card className="card-animate bg-blue-black border-radius-10" style={{maxWidth: 300}}>
                                         <CardBody>
                                             <div className="d-flex flex-column">
                                                 <Row className="d-flex justify-between mb-10" >
