@@ -166,7 +166,8 @@ const Pairs = () => {
 
         {
             name: <span className='font-weight-bold fs-16'>Pair</span>,
-            selector: row => {
+            selector: 'first',
+            cell: row => {
                 return (
                     <Link to={'/pairs/' + row.pair_address}>
                         <div className="d-flex">
@@ -189,7 +190,8 @@ const Pairs = () => {
         {
             name: <span className='font-weight-bold fs-16'>Price</span>,
             sortable: true,
-            selector: (row) => {
+            selector: 'price',
+            cell: (row) => {
                 return (
                     <Link to={'/pairs/' + row.pair_address}>
                         <span className="text-white">{row.price ? '$' + row.price.toFixed(4) : ''}</span>
@@ -201,7 +203,8 @@ const Pairs = () => {
         {
             name: <span className='font-weight-bold fs-16'>{'% ' + TIME_RANGE_TYPE_NAME[timeRangeType]}</span>,
             sortable: true,
-            selector: (row) => {
+            selector: 'percent',
+            cell: (row) => {
                 if (row.percent >= 0) {
                     return <Link to={'/pairs/' + row.pair_address}>
                         <span className="text-green"><i className="mdi mdi-arrow-top-right-thin"></i>{row.percent ? row.percent.toFixed(4) + '%' : ''}</span>
@@ -217,45 +220,51 @@ const Pairs = () => {
         },
         {
             name: <span className='font-weight-bold fs-16'>Created</span>,
-            selector: row => row.createdAt,
+            cell: row => row.createdAt,
             sortable: true,
+            selector: 'createdAt',
             width: 100
         },
         {
             name: <span className='font-weight-bold fs-16'>Volume</span>,
             // selector: row => row.volume ? calcUnit(row.volume) : '-',
-            selector: row => row.volume ? ' $' + calcUnit(parseInt(row.volume)) : '-',
+            cell: row => row.volume ? ' $' + calcUnit(parseInt(row.volume)) : '-',
             sortable: true,
+            selector: 'volume',
             width: 120
         },
         {
             name: <span className='font-weight-bold fs-16'>Swaps</span>,
             sortable: true,
-            selector: row => row.swaps ? ' $' + calcUnit(parseInt(row.swaps)) : '-',
+            selector: 'swaps',
+            cell: row => row.swaps ? ' $' + calcUnit(parseInt(row.swaps)) : '-',
             width: 100
         },
         {
             name: <span className='font-weight-bold fs-13'>Daily Fees</span>,
             sortable: true,
-            selector: row => row.volume ? '$' + (row.volume / 400).toFixed(2) : '',
+            selector: 'volume',
+            cell: row => row.volume ? '$' + (row.volume / 400).toFixed(2) : '',
             width: 100
         },
         {
             name: <span className='font-weight-bold fs-16'>Liquidity</span>,
             sortable: true,
-            selector: row => row.liquidity ? '$' + calcUnit(parseInt(row.liquidity)) : '',
+            selector: 'liquidity',
+            cell: row => row.liquidity ? '$' + calcUnit(parseInt(row.liquidity)) : '',
             width: 150
         },
         {
             name: <span className='font-weight-bold fs-16'>T.M.Cap.</span>,
             sortable: true,
-            selector: row => row.cap ? ' $' + calcUnit(parseInt(row.cap)) : '-',
+            selector: 'cap',
+            cell: row => row.cap ? ' $' + calcUnit(parseInt(row.cap)) : '-',
             width: 60
         },
         {
             name: <span className='font-weight-bold fs-16'>Actions</span>,
             sortable: true,
-            selector: row => {
+            cell: row => {
                 return (
                     <div>
                         <i className="mdi mdi-binoculars fs-20"></i>

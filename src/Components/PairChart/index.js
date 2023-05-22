@@ -245,6 +245,7 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1, chartFilter
               yAxisId={0}
               tickMargin={16}
               tick={{ fill: textColor }}
+              domain="auto"
             />
             <Tooltip
               cursor={true}
