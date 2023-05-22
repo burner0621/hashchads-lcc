@@ -319,8 +319,8 @@ const TokenPage = ({ address }) => {
             .then(
                 (result) => {
                     console.log(result, ">>>>>>>>>>>>><<<<<<<<<<<<<<")
-                    setData(result);
-                    setTotalRows(result.total);
+                    setData(result.data);
+                    setTotalRows(result.count);
                 },
                 (error) => {
                     setData([]);
