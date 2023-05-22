@@ -46,7 +46,6 @@ export const formattedNum = (number, usd = false, acceptNegatives = false) => {
   if (num > 1000) {
     return usd ? formatDollarAmount(num, 2) : Number(parseFloat(num).toFixed(0)).toLocaleString()
   }
-  console.log (num, num < 0.1, formatDollarAmount(num, 4), ">>>>>>>><<<<<<<1")
   if (usd) {
     if (num < 0.1) {
       return formatDollarAmount(num, 4)

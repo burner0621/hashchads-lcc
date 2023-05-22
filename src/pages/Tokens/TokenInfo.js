@@ -28,9 +28,7 @@ const TokenInfo = ({ address, tokenPrice }) => {
     const [adminKey, setAdminKey] = useState('')
     const [decimals, setDecimals] = useState(undefined)
     const [holders, setHolders] = useState([])
-    const [circulatingSupply, setCirculatingSupply] = useState(0)
     const [totalSupply, setTotalSupply] = useState(undefined)
-    const [dilutedSupply, setDilutedSupply] = useState(0)
     const [holderInfo, setHolderInfo] = useState([])
     const [pairs, setPairs] = useState([])
 
@@ -67,21 +65,12 @@ const TokenInfo = ({ address, tokenPrice }) => {
             if (response.status === 200) {
                 let jsonData = await response.json()
                 setTokenInfo(jsonData)
-                let response1 = await fetch(env.MIRROR_NODE_URL + `/api/v1/tokens/${address}/balances?account.id=${jsonData?.treasury_account_id}`);
-                if (response1.status === 200) {
-                    let jsonData1 = await response1.json()
-                    let balances = jsonData1?.balances
-                    let p = (Number(jsonData?.total_supply) - Number(balances[0]['balance'])) / Math.pow(10, Number(jsonData?.decimals)) * tokenPrice
-                    setCirculatingSupply(p)
-                    p = (Number(jsonData?.total_supply)) / Math.pow(10, Number(jsonData?.decimals)) * tokenPrice
-                    setDilutedSupply(p)
-                    setTotalSupply(jsonData?.total_supply)
-                }
+                setTotalSupply(jsonData?.total_supply)
             }
         }
-        if (address && tokenPrice && tokenPrice > 0)
+        if (address && (tokenInfo === undefined || totalSupply === undefined))
             fetchData()
-    }, [address, tokenPrice])
+    }, [address, tokenInfo, totalSupply])
 
     const formatString = (str) => {
         if (str === undefined) return ''

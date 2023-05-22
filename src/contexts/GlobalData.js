@@ -206,6 +206,7 @@ async function getHbarAndSaucePrice() {
         return [0, 0]
       }
     }
+    return [0, 0]
   } catch (e) {
     return [0, 0]
   }

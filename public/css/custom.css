@@ -189,3 +189,23 @@ body {
         opacity: 0;
     }
 }
+
+.self-end {
+    align-self: self-end;
+}
+
+.mb-10 {
+    margin-bottom: 10px;
+}
+
+.bg-blue-black {
+    background-color: #142028!important;
+}
+
+.border-radius-10 {
+    border-radius: 10px!important;
+}
+
+.fc-white {
+    color: #fff;
+}

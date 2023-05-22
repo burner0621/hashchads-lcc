@@ -18,7 +18,7 @@ import Search from '../../Components/Search'
 import TokenLogo from '../../Components/TokenLogo'
 // import { ButtonLight, ButtonDark } from '../../Components/ButtonStyled'
 
-import { localNumber } from '../../utils'
+import { localNumber, formattedNum } from '../../utils'
 
 import { useAllTokensInSaucerswap, usePriceChanges, useTokenDailyVolume } from '../../contexts/GlobalData'
 import { useTokenPriceData } from '../../contexts/TokenData'
@@ -151,7 +151,8 @@ const TokenPage = ({ address }) => {
 
     const [name, setName] = useState('')
     const [symbol, setSymbol] = useState('')
-    const [priceUSD, setPriceUSD] = useState()
+    const [priceUSD, setPriceUSD] = useState(0)
+    const [hbarPrice, setHbarPrice] = useState()
     const [priceChange, setPriceChange] = useState('')
     const [priceChangeColor, setPriceChangeColor] = useState('green')
     const [iconPath, setIconPath] = useState('')
@@ -163,18 +164,20 @@ const TokenPage = ({ address }) => {
     const [perPage, setPerPage] = useState(10);
     const [timeRangeType, setTimeRangeType] = useState(TIME_RANGE_TYPE.week)
     const [tableType, setTableType] = useState(TABLE_TYPE.trade)
-    const [holders, setHolder] = useState([])
+    const [holders, setHolders] = useState([])
+    const [holderInfo, setHolderInfo] = useState([])
+    const [pairs, setPairs] = useState([])
 
     const [totalLiquidity, setTotalLiquidity] = useState(0)
+    const [dailyVolume, setDailyVolume] = useState(0)
     const [circulatingSupply, setCirculatingSupply] = useState(0)
     const [dilutedSupply, setDilutedSupply] = useState(0)
+    const [tokenInfo, setTokenInfo] = useState(undefined)
 
     const [chartFilter, setChartFilter] = useState(CHART_VIEW.PRICE)
     const [frequency, setFrequency] = useState(DATA_FREQUENCY.HOUR)
     const [timeWindow, setTimeWindow] = useState(timeframeOptions.WEEK)
     const prevWindow = usePrevious(timeWindow)
-
-    const dailyVolume = tokenDailyVolume !== undefined ? (tokenDailyVolume[address] !== undefined ? tokenDailyVolume[address] : 0) : 0
 
     // hourly and daily price data based on the current time window
     const hourlyWeek = useTokenPriceData(address, timeframeOptions.WEEK, 3600)
@@ -217,23 +220,115 @@ const TokenPage = ({ address }) => {
         fetchData(1, perPage);
     }, [perPage])
 
-    const fetchData = async (page, per_page) => {
-        fetch(`https://www.mecallapi.com/api/attractions?page=${page}&per_page=${per_page}`)
+    const calculateSwapImpactUsd = (amount) => {
+        let maxSwapImpactUsd = 0
+        for (let pair of pairs) {
+            let deltaYUsd = 0
+            let reserveA = Number(pair.tokenReserveA) / Math.pow(10, Number(pair.tokenA.decimals))
+            let reserveB = Number(pair.tokenReserveB) / Math.pow(10, Number(pair.tokenB.decimals))
+
+            if (address === pair.tokenA.id) {
+                deltaYUsd = reserveB * (1 - reserveA / (reserveA + amount)) * pair.tokenB.priceUsd
+            }
+            if (address === pair.tokenB.id) {
+                deltaYUsd = reserveA * (1 - reserveB / (reserveB + amount)) * pair.tokenA.priceUsd
+            }
+            if (maxSwapImpactUsd < deltaYUsd) maxSwapImpactUsd = deltaYUsd
+        }
+
+        return maxSwapImpactUsd
+    }
+
+    useEffect(() => {
+        const fetchTotalData = async () => {
+            const response = await fetch(`https://api.saucerswap.finance/pools`)
+            if (response.status === 200) {
+                const jsonData = await response.json()
+                setPairs(jsonData)
+            }
+        }
+        if (pairs.length === 0) fetchTotalData();
+    }, [pairs])
+
+    useEffect(() => {
+        async function fetchHolderData() {
+            let t = parseInt(tokenInfo.total_supply / 30 * Math.pow(10, Number(tokenInfo.decimals))), limit = 30, e = tokenInfo.total_supply * Math.pow(10, Number(tokenInfo.decimals)), s = 0
+            let l = 0
+            let jsonData = []
+            while (l < 25 || (jsonData.links && jsonData.links?.next !== null)) {
+                let response = await fetch(env.MIRROR_NODE_URL + `/api/v1/tokens/${address}/balances?account.balance=gt:${t}&order=desc&limit=${limit}`);
+                if (response.status === 200) {
+                    jsonData = await response.json()
+                    l = jsonData.balances.length
+                    if (l >= 25 && jsonData['links'].next === null) {
+                        break
+                    } else if (jsonData['links'].next) {
+                        s = t
+                        t = parseInt((s + e) / 2)
+                    } else {
+                        e = t
+                        t = parseInt((s + e) / 2)
+                    }
+                }
+            }
+            setHolders(jsonData.balances)
+        }
+        if (address && tokenInfo && holders.length === 0)
+            fetchHolderData()
+    }, [address, tokenInfo, holders])
+
+    useEffect (() => {
+        setIsLoaded(false)
+    }, [data])
+
+    useEffect(() => {
+        if (holders.length > 0 && pairs.length > 0 && tokenInfo) {
+            let totalBalance = tokenInfo.total_supply / Math.pow(10, Number(tokenInfo.decimals))
+            let rlt = [], i = 1
+            for (let holder of holders) {
+                let tmp = {}
+                tmp['accountId'] = holder.account
+                tmp['balance'] = holder.balance / Math.pow(10, Number(tokenInfo.decimals))
+                tmp['percent'] = (tmp['balance'] / totalBalance * 100).toFixed(2)
+                tmp['usd'] = (tmp['balance'] * priceUSD).toFixed(tokenInfo.decimals)
+                tmp['impactUsd'] = calculateSwapImpactUsd(tmp['balance'])
+                if (tmp['impactUsd'] > 0) {
+                    tmp['impactPercent'] = (tmp['impactUsd'] / tmp['usd'] * 100).toFixed(2)
+                    if (tmp['impactPercent'] > 100) tmp['impactPercent'] = 100
+                }
+                else tmp['impactPercent'] = "0"
+                tmp['actualUsd'] = tmp['usd'] - tmp['impactUsd']
+                if (tmp['actualUsd'] < 0) tmp['actualUsd'] = 0
+                rlt.push(tmp)
+            }
+            rlt = rlt.sort((a, b) => {
+                return a.balance > b.balance ? -1 : 1
+            }).map((item, idx) => {
+                item['no'] = idx + 1;
+                return item
+            })
+            setHolderInfo(rlt)
+        }
+    }, [holders, pairs, tokenInfo, priceUSD])
+
+    const fetchData = async (pageNum, per_page) => {
+        setIsLoaded(true);
+        fetch(`${env.BASE_URL}/api/transaction/get?tokenId=${address}&pageNum=${pageNum}&pageSize=${per_page}`)
             .then(res => res.json())
             .then(
                 (result) => {
-                    setIsLoaded(true);
-                    setData(result.data);
+                    console.log(result, ">>>>>>>>>>>>><<<<<<<<<<<<<<")
+                    setData(result);
                     setTotalRows(result.total);
                 },
                 (error) => {
-                    setIsLoaded(true);
+                    setData([]);
                     setError(error);
                 }
             )
     }
 
-    const handlePageChange = page => {
+    const handlePageChange = (page, totalRows) => {
         fetchData(page, perPage);
     }
 
@@ -242,51 +337,72 @@ const TokenPage = ({ address }) => {
     }
 
     useEffect(() => {
-        let price = 0;
-        let setPrice = false
-        for (let token of allTokens) {
-            if (token.id === address) {
-                setPriceUSD(Number(token?.priceUsd))
-                setIconPath(token?.icon)
-                price = token?.priceUSD
-                setPrice = true
+        let tmpDailyVolue = tokenDailyVolume !== undefined ? (tokenDailyVolume[address] !== undefined ? tokenDailyVolume[address] : 0) : 0
+        setDailyVolume(tmpDailyVolue * hbarPrice)
+    }, [address, tokenDailyVolume, hbarPrice])
+
+    useEffect(() => {
+        const fetchTotalData = async () => {
+            try {
+                const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=hedera-hashgraph&vs_currencies=usd`)
+                if (response.status === 200) {
+                    const jsonData = await response.json()
+                    setHbarPrice(jsonData["hedera-hashgraph"]["usd"])
+                }
+            } catch (e) {
+                console.log(e)
             }
         }
-        let liquidity = 0
-        // for (let pair of allTokens) {
-        //     if (address === pair.tokenA.id) {
-        //         liquidity += pair.tokenA.priceUsd * pair.tokenReserveA / Math.pow(10, pair.tokenA.decimals)
-        //     }
-        //     if (address === pair.tokenB.id) {
-        //         liquidity += pair.tokenB.priceUsd * pair.tokenReserveB / Math.pow(10, pair.tokenB.decimals)
-        //     }
-        // }
+        if (hbarPrice === undefined || hbarPrice === 0) fetchTotalData()
+    })
 
-        // async function fetchData() {
+    useEffect(() => {
+        const fetchTotalData = async () => {
+            const response = await fetch(`https://api.saucerswap.finance/tokens/prices/latest/${address}?interval=DAY`)
+            if (response.status === 200) {
+                const jsonData = await response.json()
+                setTotalLiquidity(jsonData.liquidityUsd)
+                setPriceUSD(jsonData.closeUsd)
+            }
+        }
+        if (totalLiquidity === undefined || totalLiquidity === 0) fetchTotalData()
+        if (priceUSD === undefined || priceUSD === 0) fetchTotalData()
+    }, [address, totalLiquidity, priceUSD])
 
-        //     if (Number(price) === 0) return
-        //     let response = await fetch(env.MIRROR_NODE_URL + "/api/v1/tokens/" + address);
-        //     if (response.status === 200) {
-        //       let jsonData = await response.json()
-        //       let response1 = await fetch(env.MIRROR_NODE_URL + `/api/v1/tokens/${address}/balances?account.id=${jsonData?.treasury_account_id}`);
-        //       if (response1.status === 200) {
-        //         let jsonData1 = await response1.json()
-        //         let balances = jsonData1?.balances
-        //         let p = (Number(jsonData?.total_supply) - Number(balances[0]['balance'])) / Math.pow(10, Number(jsonData?.decimals)) * price
-        //         setCirculatingSupply(p)
-        //         p = (Number(jsonData?.total_supply)) / Math.pow(10, Number(jsonData?.decimals)) * price
-        //         setDilutedSupply(p)
-        //       }
-        //     }
-        //   }
+    useEffect(() => {
+        async function fetchTokenData() {
+            let response = await fetch(env.MIRROR_NODE_URL + "/api/v1/tokens/" + address);
+            if (response.status === 200) {
+                let jsonData = await response.json()
+                let response1 = await fetch(env.MIRROR_NODE_URL + `/api/v1/tokens/${address}/balances?account.id=${jsonData?.treasury_account_id}`);
+                if (response1.status === 200) {
+                    setTokenInfo(jsonData)
+                    let jsonData1 = await response1.json()
+                    let balances = jsonData1?.balances
+                    let p = (Number(jsonData?.total_supply) - Number(balances[0]['balance'])) / Math.pow(10, Number(jsonData?.decimals)) * priceUSD
+                    setCirculatingSupply(p)
+                    p = (Number(jsonData?.total_supply)) / Math.pow(10, Number(jsonData?.decimals)) * priceUSD
+                    setDilutedSupply(p)
+                }
+            }
+        }
+        if (priceUSD > 0 && (circulatingSupply === 0 || dilutedSupply === 0 || tokenInfo === undefined)) fetchTokenData()
+    }, [address, priceUSD])
+
+    useEffect(() => {
+        for (let token of allTokens) {
+            if (token.id === address) {
+                setIconPath(token?.icon)
+            }
+        }
         //   if(setPrice)
         //     fetchData()
     }, [address, allTokens])
 
     useEffect(() => {
         try {
-            if (Number(priceChanges[address]) > 0) { setPriceChange('+' + Number(priceChanges[address]).toFixed(4) + '%'); setPriceChangeColor('green') }
-            else { setPriceChange(Number(priceChanges[address]) + '%'); setPriceChangeColor('red') }
+            if (Number(priceChanges[address]) > 0) { setPriceChange('+' + Math.abs(Number(priceChanges[address])).toFixed(4) + '%'); setPriceChangeColor('green') }
+            else { setPriceChange(Math.abs(Number(priceChanges[address])).toFixed(4) + '%'); setPriceChangeColor('red') }
         } catch (e) {
             console.log(e)
         }
@@ -334,159 +450,141 @@ const TokenPage = ({ address }) => {
     const columns = [
 
         {
-            name: <span className='font-weight-bold fs-16'>Pair</span>,
+            name: <span className='font-weight-bold fs-16'>Date</span>,
             selector: row => {
                 return (
-                    <Link to={'/pairs/' + row.pair_address}>
-                        <div className="d-flex">
-                            <TokenLogo path={row.icon} />
-                            <div className="d-flex flex-column" style={{ marginLeft: 4 }}>
-                                <div className="d-flex">
-                                    <span className="text-pair-first text-white text-hover">{row.first}</span>
-                                    <span className="text-pair-second text-grey">{'/' + row.second}</span>
-                                </div>
-                                <span className="text-white" style={{ textOverflow: "clip" }} onClick={() => handleCopyAddress()}>{row.pair_address}<i className="mdi mdi-content-copy"></i></span>
-                            </div>
-                        </div>
-                    </Link>
-
+                    <span>{(new Date(row.timestamp * 1000)).toLocaleString()}</span>
                 )
             },
             sortable: true,
             width: 180
         },
         {
-            name: <span className='font-weight-bold fs-16'>Price</span>,
+            name: <span className='font-weight-bold fs-16'>Type</span>,
             sortable: true,
             selector: (row) => {
                 return (
-                    <Link to={'/pairs/' + row.pair_address}>
-                        <span className="text-white">{row.price ? '$' + row.price.toFixed(4) : ''}</span>
-                    </Link>
+                    <span>{row.state}</span>
                 );
             },
             width: 120
-        },
-        {
-            name: <span className='font-weight-bold fs-16'>{'% ' + TIME_RANGE_TYPE_NAME[timeRangeType]}</span>,
-            sortable: true,
-            selector: (row) => {
-                if (row.percent >= 0) {
-                    return <Link to={'/pairs/' + row.pair_address}>
-                        <span className="text-green"><i className="mdi mdi-arrow-top-right-thin"></i>{row.percent ? row.percent.toFixed(4) + '%' : ''}</span>
-                    </Link>
-
-                } else {
-                    return <Link to={'/pairs/' + row.pair_address}>
-                        <span className="text-red"><i className="mdi mdi-arrow-bottom-right-thin"></i>{row.percent ? row.percent.toFixed(4) + '%' : ''}</span>
-                    </Link>
-                }
-            },
-            width: 150
-        },
-        {
-            name: <span className='font-weight-bold fs-16'>Created</span>,
-            selector: row => row.createdAt,
-            sortable: true,
-            width: 100
-        },
-        {
-            name: <span className='font-weight-bold fs-16'>Volume</span>,
-            // selector: row => row.volume ? calcUnit(row.volume) : '-',
-            selector: row => row.volume ? ' $' + calcUnit(parseInt(row.volume)) : '-',
-            sortable: true,
-            width: 120
-        },
-        {
-            name: <span className='font-weight-bold fs-16'>Swaps</span>,
-            sortable: true,
-            selector: row => row.swaps ? ' $' + calcUnit(parseInt(row.swaps)) : '-',
-            width: 100
-        },
-        {
-            name: <span className='font-weight-bold fs-13'>Daily Fees</span>,
-            sortable: true,
-            selector: row => row.volume ? '$' + (row.volume / 400).toFixed(2) : '',
-            width: 100
-        },
-        {
-            name: <span className='font-weight-bold fs-16'>Liquidity</span>,
-            sortable: true,
-            selector: row => row.liquidity ? '$' + calcUnit(parseInt(row.liquidity)) : '',
-            width: 150
-        },
-        {
-            name: <span className='font-weight-bold fs-16'>T.M.Cap.</span>,
-            sortable: true,
-            selector: row => row.cap ? ' $' + calcUnit(parseInt(row.cap)) : '-',
-            width: 60
-        },
-        {
-            name: <span className='font-weight-bold fs-16'>Actions</span>,
-            sortable: true,
-            selector: row => {
-                return (
-                    <div>
-                        <i className="mdi mdi-binoculars fs-20"></i>
-                        <i className="bx bxs-bar-chart-square fs-20" style={{ marginRight: 5, marginLeft: 5 }}></i>
-                        <i className="bx bx-star fs-20"></i>
-                    </div>
-                )
-            }
-        },
-    ];
-
-    const holder_columns = [
-        {
-            name: <span className='font-weight-bold fs-16'>Address</span>,
-            sortable: true,
-            selector: (row) => {
-                return (
-                    <span>{row.address}</span>
-                );
-            },
-            width: 120
-        },
-        {
-            name: <span className='font-weight-bold fs-16'>Supply</span>,
-            sortable: true,
-            selector: (row) => {
-                return (
-                    <span>{row.supply}</span>
-                );
-            },
-            width: 100
-        },
-        {
-            name: <span className='font-weight-bold fs-16'></span>,
-            sortable: true,
-            selector: (row) => {
-                return (
-                    <div style={{width: '100%', height:'2px', background:'white'}}></div>
-                );
-            },
-            width: 250
         },
         {
             name: <span className='font-weight-bold fs-16'>Amount</span>,
             sortable: true,
             selector: (row) => {
                 return (
-                    <span>{row.amount}</span>
+                    <span>{Math.abs(row.amount)}</span>
+                )
+            },
+            width: 150
+        },
+        {
+            name: <span className='font-weight-bold fs-16'>Maker</span>,
+            selector: row => row.accountId,
+            sortable: true,
+            width: 100
+        },
+        {
+            name: <span className='font-weight-bold fs-16'>Pool</span>,
+            // selector: row => row.volume ? calcUnit(row.volume) : '-',
+            selector: row => row.poolId,
+            sortable: true,
+            width: 120
+        },
+        {
+            name: <span className='font-weight-bold fs-16'>TXID</span>,
+            sortable: true,
+            selector: (row) => {
+                return (
+                    <Link
+                        style={{ width: 'fit-content' }}
+                        color={'red'}
+                        external
+                        href={'https://hashscan.io/mainnet/transactionsById/' + row.transactionId}
+                    >
+                        <Text style={{ marginLeft: '.15rem' }} fontSize={'14px'} fontWeight={400}>
+                            ({row.transactionId})
+                        </Text>
+                    </Link>
+                )
+            },
+            width: 100
+        },
+    ];
+
+    const holder_columns = [
+        {
+            name: <span className='font-weight-bold fs-16'>RANK</span>,
+            sortable: true,
+            selector: (row) => {
+                return (
+                    <span>{row.no}</span>
+                );
+            },
+            width: 120
+        },
+        {
+            name: <span className='font-weight-bold fs-16'>Account ID</span>,
+            sortable: true,
+            selector: (row) => {
+                return (
+                    <span>{row.accountId}</span>
+                );
+            },
+            width: 120
+        },
+        {
+            name: <span className='font-weight-bold fs-16'>BALANCE</span>,
+            sortable: true,
+            selector: (row) => {
+                return (
+                    <span>{formattedNum(row.balance, false)}</span>
                 );
             },
             width: 100
         },
         {
-            name: <span className='font-weight-bold fs-16'>Value</span>,
+            name: <span className='font-weight-bold fs-16'>PERCENT</span>,
             sortable: true,
             selector: (row) => {
                 return (
-                    <span>{row.value}</span>
+                    // <div style={{ width: '100%', height: '2px', background: 'white' }}>{row.percent + '%'}</div>
+                    <span>{row.percent + '%'}</span>
+                );
+            },
+            width: 250
+        },
+        {
+            name: <span className='font-weight-bold fs-16'>USD</span>,
+            sortable: true,
+            selector: (row) => {
+                return (
+                    <span>{formattedNum(row.usd, true)}</span>
                 );
             },
             width: 100
-        },        
+        },
+        {
+            name: <span className='font-weight-bold fs-16'>SWAP IMPACT</span>,
+            sortable: true,
+            selector: (row) => {
+                return (
+                    <span>{row.impactPercent + '%'}</span>
+                );
+            },
+            width: 100
+        },
+        {
+            name: <span className='font-weight-bold fs-16'>ACTUAL USD</span>,
+            sortable: true,
+            selector: (row) => {
+                return (
+                    <span>{formattedNum(row.actualUsd, true)}</span>
+                );
+            },
+            width: 100
+        },
     ]
 
     // useEffect(() => {
@@ -534,23 +632,37 @@ const TokenPage = ({ address }) => {
                                         <div className="d-flex flex-column items-end">
                                             <div className="d-flex items-center">
                                                 <span style={{ marginRight: '1rem', fontSize: '32px', fontWeight: '500' }}>
-                                                    {`$` + priceUSD}
+                                                    {`$` + priceUSD.toFixed(8)}
                                                 </span>
-                                                <div className="d-flex flex-column justify-around">
-                                                    <span style={{ color: priceChangeColor }}>{priceChange}</span>
-                                                    <span style={{ color: priceChangeColor }}>{priceChange}</span>
+                                                <div className="d-flex flex-column self-end mb-10">
+                                                    {/* <span style={{ color: priceChangeColor }}>{priceChange}</span> */}
+                                                    <span style={{ color: priceChangeColor }}>
+                                                        {
+                                                            priceChangeColor === 'green' &&
+                                                            <app-icon _ngcontent-qmb-c89="" name="arrowUp" class="ng-tns-c89-8" _nghost-qmb-c2="">
+                                                                <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true" viewBox="0 0 20 15" width="14" transform=""><path d="M16.0312 2.49999H13.75C13.109 2.49999 12.5806 2.01745 12.5084 1.39577L12.5 1.25C12.5 0.608954 12.9826 0.0806158 13.6042 0.0084096L13.75 0H18.75L18.793 0.000692605C18.8251 0.00177866 18.8573 0.00410228 18.8894 0.00766991L18.75 0C18.8172 0 18.8832 0.0053031 18.9475 0.0155139C18.9722 0.0194401 18.9972 0.0241854 19.022 0.0297021L19.0366 0.0330132L19.0962 0.0485783C19.1212 0.0557812 19.1461 0.0637897 19.1708 0.0726061C19.3111 0.122685 19.4402 0.19745 19.5525 0.291591C19.5562 0.294733 19.5599 0.297819 19.5635 0.300929L19.5816 0.316754C19.6116 0.343469 19.6402 0.371604 19.6675 0.401055L19.5635 0.300929C19.6084 0.339449 19.65 0.380466 19.688 0.423601C19.7132 0.452273 19.7373 0.482345 19.7601 0.51351C19.7675 0.523392 19.7747 0.533435 19.7816 0.543562C19.8012 0.57242 19.8197 0.601934 19.8369 0.632241C19.8454 0.646939 19.8536 0.662048 19.8614 0.677292C19.874 0.70181 19.8859 0.726766 19.8969 0.75216C19.9053 0.77163 19.9131 0.791011 19.9204 0.810547C19.9323 0.841821 19.9429 0.873831 19.9522 0.906383C19.9554 0.918355 19.9585 0.930116 19.9615 0.941916C19.9751 0.994628 19.9852 1.04887 19.9916 1.10422L20 1.25V6.24999C20 6.94034 19.4403 7.49998 18.75 7.49998C18.1089 7.49998 17.5806 7.01743 17.5084 6.39576L17.5 6.24999L17.5 4.62749L12.1991 10.8135C11.7591 11.3268 10.9997 11.3914 10.4812 10.9858L10.3661 10.8839L7.58377 8.10248L2.2103 14.5502C1.80235 15.0397 1.09936 15.1385 0.57649 14.8031L0.4498 14.7102C-0.0397492 14.3023 -0.138462 13.5993 0.196857 13.0764L0.289754 12.9497L6.53974 5.44976C6.97669 4.92542 7.74412 4.85457 8.26767 5.26327L8.3839 5.36611L11.1788 8.15998L16.0312 2.49999Z" fill="currentColor"></path></svg>
+                                                            </app-icon>
+                                                        }
+                                                        {
+                                                            priceChangeColor === 'red' &&
+                                                            <app-icon _ngcontent-qmb-c89="" name="arrowDown" class="ng-tns-c89-8" >
+                                                                <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true" viewBox="0 0 20 15" width="14" transform=""><path d="M16.0312 12.5H13.75C13.109 12.5 12.5806 12.9826 12.5084 13.6042L12.5 13.75C12.5 14.391 12.9826 14.9194 13.6042 14.9916L13.75 15H18.75L18.793 14.9993C18.8251 14.9982 18.8573 14.9959 18.8894 14.9923L18.75 15C18.8172 15 18.8832 14.9947 18.9475 14.9845C18.9722 14.9806 18.9972 14.9758 19.022 14.9703L19.0366 14.967L19.0962 14.9514C19.1212 14.9442 19.1461 14.9362 19.1708 14.9274C19.3111 14.8773 19.4402 14.8025 19.5525 14.7084C19.5562 14.7053 19.5599 14.7022 19.5635 14.6991L19.5816 14.6832C19.6116 14.6565 19.6402 14.6284 19.6675 14.5989L19.5635 14.6991C19.6084 14.6606 19.65 14.6195 19.688 14.5764C19.7132 14.5477 19.7373 14.5177 19.7601 14.4865C19.7675 14.4766 19.7747 14.4666 19.7816 14.4564C19.8012 14.4276 19.8197 14.3981 19.8369 14.3678C19.8454 14.3531 19.8536 14.338 19.8614 14.3227C19.874 14.2982 19.8859 14.2732 19.8969 14.2478C19.9053 14.2284 19.9131 14.209 19.9204 14.1895C19.9323 14.1582 19.9429 14.1262 19.9522 14.0936C19.9554 14.0816 19.9585 14.0699 19.9615 14.0581C19.9751 14.0054 19.9852 13.9511 19.9916 13.8958L20 13.75V8.75001C20 8.05966 19.4403 7.50002 18.75 7.50002C18.1089 7.50002 17.5806 7.98257 17.5084 8.60424L17.5 8.75001L17.5 10.3725L12.1991 4.18653C11.7591 3.67318 10.9997 3.60856 10.4812 4.01418L10.3661 4.11614L7.58377 6.89752L2.2103 0.4498C1.80235 -0.0397492 1.09936 -0.138462 0.57649 0.196858L0.4498 0.289755C-0.0397492 0.697713 -0.138462 1.4007 0.196857 1.92357L0.289754 2.05026L6.53974 9.55024C6.97669 10.0746 7.74412 10.1454 8.26767 9.73673L8.3839 9.63389L11.1788 6.84002L16.0312 12.5Z" fill="currentColor"></path></svg>
+                                                            </app-icon>
+                                                        }
+                                                        {priceChange}
+                                                    </span>
                                                 </div>
 
                                             </div>
                                             <Nav pills className="badge-bg">
                                                 <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
                                                     <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.five ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.five) }} >
-                                                        <span className={timeRangeType == TIME_RANGE_TYPE.five ? "text-white badge" : "text-badge badge"}>5m</span>
+                                                        <span className={timeRangeType === TIME_RANGE_TYPE.five ? "text-white badge" : "text-badge badge"}>5m</span>
                                                     </div>
                                                 </NavItem>
                                                 <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
                                                     <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.hour ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.hour) }} >
-                                                        <span className={timeRangeType == TIME_RANGE_TYPE.hour ? "text-white badge" : "text-badge badge"}>1h</span>
+                                                        <span className={timeRangeType === TIME_RANGE_TYPE.hour ? "text-white badge" : "text-badge badge"}>1h</span>
                                                     </div>
                                                 </NavItem>
                                                 <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
@@ -604,29 +716,86 @@ const TokenPage = ({ address }) => {
                             {/* <TokenChart dataColors='["--vz-success", "--vz-danger"]' tokenId={address} /> */}
                             <Col sm={12} md={3}>
                                 <div className="d-flex flex-column">
-                                    <Card className="card-animate" style={{ border: '1px solid' }}>
+                                    <Card className="card-animate bg-blue-black border-radius-10">
                                         <CardBody>
                                             <div className="d-flex flex-column">
-                                                <Row className="d-flex justify-between" >
-                                                    <span className="w-auto">Total Liquidity:</span>
-                                                    <span className="w-auto">{dailyVolume ? parseFloat(dailyVolume).toFixed(2) : 0}</span>
+                                                <Row className="d-flex justify-between mb-10" >
+                                                    <span className="w-auto fw-450 fc-white">Total Liquidity:</span>
+                                                    <span className="w-auto fw-450 fc-white">{formattedNum(totalLiquidity ? parseFloat(totalLiquidity).toFixed(2) : 0, true)}</span>
                                                 </Row>
-                                                <Row className="d-flex justify-between">
-                                                    <span className="w-auto">24hr Volume:</span>
-                                                    <span className="w-auto">{dailyVolume ? parseFloat(dailyVolume).toFixed(2) : 0}</span>
+                                                <Row className="d-flex justify-between mb-10">
+                                                    <span className="w-auto fw-450 fc-white">24hr Volume:</span>
+                                                    <span className="w-auto fw-450 fc-white">{formattedNum(dailyVolume ? parseFloat(dailyVolume).toFixed(2) : 0, true)}</span>
                                                 </Row>
-                                                <Row className="d-flex justify-between">
-                                                    <span className="w-auto">Market Cap(Circulating):</span>
-                                                    <span className="w-auto">{dailyVolume ? parseFloat(dailyVolume).toFixed(2) : 0}</span>
+                                                <Row className="d-flex justify-between mb-10">
+                                                    <span className="w-auto fw-450 fc-white">Market Cap(Circulating):</span>
+                                                    <span className="w-auto fw-450 fc-white">{formattedNum(circulatingSupply ? parseFloat(circulatingSupply).toFixed(2) : 0, true)}</span>
                                                 </Row>
-                                                <Row className="d-flex justify-between">
-                                                    <span className="w-auto">Market Cap(Diluted):</span>
-                                                    <span className="w-auto">{dailyVolume ? parseFloat(dailyVolume).toFixed(2) : 0}</span>
+                                                <Row className="d-flex justify-between mb-10">
+                                                    <span className="w-auto fw-450 fc-white">Market Cap(Diluted):</span>
+                                                    <span className="w-auto fw-450 fc-white">{formattedNum(dilutedSupply ? parseFloat(dilutedSupply).toFixed(2) : 0, true)}</span>
                                                 </Row>
+                                                <Row className="d-flex justify-between mb-10">
+                                                    <span className="w-auto fw-450 fc-white">Treasury:</span>
+                                                    <span className="w-auto fw-450 fc-white">{tokenInfo ? tokenInfo?.treasury_account_id : ''}</span>
+                                                </Row>
+                                                <Row className="d-flex justify-between mb-10">
+                                                    <span className="w-auto fw-450 fc-white">Max Supply:</span>
+                                                    <span className="w-auto fw-450 fc-white">{formattedNum(tokenInfo ? (tokenInfo?.total_supply / Math.pow(10, tokenInfo?.decimals)).toFixed(4) : '0')}</span>
+                                                </Row>
+                                                <Row className="d-flex justify-between mb-10">
+                                                    <span className="w-auto fw-450 fc-white">Total Supply:</span>
+                                                    <span className="w-auto fw-450 fc-white">{formattedNum(tokenInfo ? (tokenInfo?.total_supply / Math.pow(10, tokenInfo?.decimals)).toFixed(4) : '0')}</span>
+                                                </Row>
+                                                <Row className="d-flex justify-between mb-10">
+                                                    <span className="w-auto fw-450 fc-white">Supply Type:</span>
+                                                    <span className="w-auto fw-450 fc-white">{tokenInfo ? tokenInfo?.supply_type : ''}</span>
+                                                </Row>
+                                                {
+                                                    tokenInfo && tokenInfo.supply_key && tokenInfo.supply_key.key &&
+                                                    <Row className="d-flex justify-between mb-10">
+                                                        <span className="w-auto fw-450 fc-white">Supply Key:</span>
+                                                        <span className="w-auto fw-450 fc-white">{tokenInfo?.supply_key?.key}</span>
+                                                    </Row>
+                                                }
+                                                {
+                                                    tokenInfo && tokenInfo.freeze_key && tokenInfo.freeze_key.key &&
+                                                    <Row className="d-flex justify-between mb-10">
+                                                        <span className="w-auto fw-450 fc-white">Freeze Key:</span>
+                                                        <span className="w-auto fw-450 fc-white">{tokenInfo?.freeze_key?.key}</span>
+                                                    </Row>
+                                                }
+                                                {
+                                                    tokenInfo && tokenInfo.pause_key && tokenInfo.pause_key.key &&
+                                                    <Row className="d-flex justify-between mb-10">
+                                                        <span className="w-auto fw-450 fc-white">Pause Key:</span>
+                                                        <span className="w-auto fw-450 fc-white">{tokenInfo?.pause_key?.key}</span>
+                                                    </Row>
+                                                }
+                                                {
+                                                    tokenInfo && tokenInfo.wipe_key && tokenInfo.wipe_key.key &&
+                                                    <Row className="d-flex justify-between mb-10">
+                                                        <span className="w-auto fw-450 fc-white">Wipe Key:</span>
+                                                        <span className="w-auto fw-450 fc-white">{tokenInfo?.wipe_key?.key}</span>
+                                                    </Row>
+                                                }
+                                                {
+                                                    tokenInfo && tokenInfo.admin_key && tokenInfo.admin_key.key &&
+                                                    <Row className="d-flex justify-between mb-10">
+                                                        <span className="w-auto fw-450 fc-white">Admin Key:</span>
+                                                        <span className="w-auto fw-450 fc-white">{tokenInfo?.admin_key?.key}</span>
+                                                    </Row>
+                                                }
+                                                {
+                                                    tokenInfo &&
+                                                    <Row className="d-flex justify-between mb-10">
+                                                        <span className="w-auto fw-450 fc-white">Created:</span>
+                                                        <span className="w-auto fw-450 fc-white">{(new Date(Number(tokenInfo?.created_timestamp) * 1000)).toLocaleString("en-US")}</span>
+                                                    </Row>
+                                                }
                                             </div>
                                         </CardBody>
                                     </Card>
-                                    <TokenInfo address={address} tokenPrice={priceUSD} />
                                 </div>
 
                             </Col>
@@ -747,7 +916,7 @@ const TokenPage = ({ address }) => {
                                             </NavItem>
                                         </Nav>
                                     </div>
-                                    {tableType == TABLE_TYPE.trade && (error ? (<div>Error:{error.message}</div>) : (
+                                    {tableType === TABLE_TYPE.trade && (error ? (<div>Error:{error.message}</div>) : (
                                         isLoaded ? (<div>Loading...</div>) : (
 
                                             <DataTable
@@ -803,7 +972,7 @@ const TokenPage = ({ address }) => {
                                             />
                                         )
                                     ))}
-                                    {tableType == TABLE_TYPE.holder && (
+                                    {tableType === TABLE_TYPE.holder && (
                                         <DataTable
                                             customStyles={{
                                                 headRow: {
@@ -848,7 +1017,7 @@ const TokenPage = ({ address }) => {
                                                 }
                                             }}
                                             columns={holder_columns}
-                                            data={holders || []}
+                                            data={holderInfo || []}
                                             pagination>
 
                                         </DataTable>
