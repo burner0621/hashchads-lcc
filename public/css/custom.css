@@ -145,6 +145,10 @@ body {
     border: 1px solid red;
 }
 
+.br-10 {
+    border-radius: 10px !important;
+}
+
 /* margin padding css */
 .mr-0 {
     margin-right: 0px !important;
