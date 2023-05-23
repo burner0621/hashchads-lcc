@@ -208,7 +208,9 @@ const TokenPair = () => {
                                             external
                                         >
                                             <Text style={{ marginLeft: '.15rem' }} className="text-badge" fontSize={'14px'} fontWeight={400}>
-                                                Token:{_pairData?.tokenA?.id}   Pair:{_pairData?.tokenB?.id}
+                                                <span className="fc-white">Token:</span>&nbsp;&nbsp;{_pairData?.tokenA?.id}
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <span className="fc-white">Pair:</span>&nbsp;&nbsp;{_pairData?.tokenB?.id}
                                             </Text>
                                         </Link>
                                     </AutoRow>
@@ -223,7 +225,7 @@ const TokenPair = () => {
                                     <CardBody>
                                         <div className="d-flex flex-column">
                                             <Row className="d-flex justify-between" >
-                                                <span className="w-auto">Pair Name:</span>
+                                                <span className="w-auto fc-white fw-450">Pair Name:</span>
 
                                                 <span className="counter-value w-auto text-badge" style={{ textOverflow: "ellipsis" }}>
                                                     {symbol}
@@ -232,7 +234,7 @@ const TokenPair = () => {
                                         </div>
                                         <div className="d-flex flex-column">
                                             <Row className="d-flex justify-between" >
-                                                <span className="w-auto">{symbolA} Address:</span>
+                                                <span className="w-auto fc-white fw-450">{symbolA} Address:</span>
                                                 <span className="counter-value w-auto text-badge" style={{ textOverflow: "ellipsis" }}>
                                                     {tokenIdA}<i className="mdi mdi-content-copy"></i>
                                                 </span>
@@ -240,7 +242,7 @@ const TokenPair = () => {
                                         </div>
                                         <div className="d-flex flex-column">
                                             <Row className="d-flex justify-between" >
-                                                <span className="w-auto">{symbolB} Address:</span>
+                                                <span className="w-auto fc-white fw-450">{symbolB} Address:</span>
 
                                                 <span className="counter-value w-auto text-badge" style={{ textOverflow: "ellipsis" }}>
                                                     {tokenIdB}<i className="mdi mdi-content-copy"></i>
@@ -267,13 +269,13 @@ const TokenPair = () => {
                                                 <h6 className="mb-0 d-flex flex-column justify-around">
                                                     <span className="counter-value d-flex items-center mb-2" style={{ textOverflow: "ellipsis" }}>
                                                         <TokenLogo path={iconA} size="32px" style={{ alignSelf: 'center', marginRight: 5 }} ></TokenLogo>
-                                                        <CountUp start={0} end={tokenAReserve} duration={3} decimals={2} />
-                                                        <span style={{ fontSize: 12, alignSelf: 'center', marginLeft: 8 }}>{' ' + symbolA}</span>
+                                                        <CountUp className="fc-white fw-450 fs-20 ml-15" start={0} end={tokenAReserve} duration={3} decimals={2} />
+                                                        <span className="fc-white fw-450 fs-16" style={{ alignSelf: 'center', marginLeft: 8 }}>{' ' + symbolA}</span>
                                                     </span>
                                                     <span className="counter-value d-flex items-center" style={{ textOverflow: "ellipsis" }}>
                                                         <TokenLogo path={iconB} size="32px" style={{ alignSelf: 'center', marginRight: 5 }} ></TokenLogo>
-                                                        <CountUp start={0} end={tokenBReserve} duration={3} decimals={2} />
-                                                        <span style={{ fontSize: 12, alignSelf: 'center', marginLeft: 8 }}>{' ' + symbolB}</span>
+                                                        <CountUp className="fc-white fw-450 fs-20 ml-15" start={0} end={tokenBReserve} duration={3} decimals={2} />
+                                                        <span className="fc-white fw-450 fs-16" style={{ alignSelf: 'center', marginLeft: 8 }}>{' ' + symbolB}</span>
                                                     </span>
                                                 </h6>
                                             </div>
@@ -284,44 +286,44 @@ const TokenPair = () => {
                                     <CardBody>
                                         <div className="d-flex flex-column">
                                             <Row className="d-flex justify-between" >
-                                                <span className="w-auto">TVL:</span>
+                                                <span className="w-auto fc-white fw-450">TVL:</span>
 
-                                                <span className="counter-value w-auto text-badge" style={{ textOverflow: "ellipsis" }}>
+                                                <span className="counter-value w-auto fc-white" style={{ textOverflow: "ellipsis" }}>
                                                     $
-                                                    <CountUp start={0} end={totalLiquidityUsd} duration={1} decimals={2} />
-                                                    (<CountUp start={0} end={totalLiquidityHbar} duration={1} decimals={2} /> HBAR)
+                                                    <CountUp className="fc-white" start={0} end={totalLiquidityUsd} duration={1} decimals={2} />
+                                                    (<CountUp className="fc-white" start={0} end={totalLiquidityHbar} duration={1} decimals={2} /> HBAR)
                                                 </span>
                                             </Row>
                                             <Row className="d-flex justify-between">
-                                                <span className="w-auto">24hr Volume:</span>
-                                                <span className="counter-value w-auto text-badge">
+                                                <span className="w-auto fc-white fw-450">24hr Volume:</span>
+                                                <span className="counter-value w-auto fc-white">
                                                     $
-                                                    <CountUp start={0} end={dailyUsd} duration={1} decimals={2} />
-                                                    (<CountUp start={0} end={dailyHbar} duration={1} decimals={2} /> HBAR)
+                                                    <CountUp className="fc-white" start={0} end={dailyUsd} duration={1} decimals={2} />
+                                                    (<CountUp className="fc-white" start={0} end={dailyHbar} duration={1} decimals={2} /> HBAR)
                                                 </span>
                                             </Row>
                                             <Row className="d-flex justify-between">
-                                                <span className="w-auto">7D Volume:</span>
-                                                <span className="counter-value w-auto text-badge">
+                                                <span className="w-auto fc-white fw-450">7D Volume:</span>
+                                                <span className="counter-value w-auto fc-white">
                                                     $
-                                                    <CountUp start={0} end={weeklyUsd} duration={1} decimals={2} />
-                                                    (<CountUp start={0} end={weeklyHbar} duration={1} decimals={2} /> HBAR)
+                                                    <CountUp className="fc-white" start={0} end={weeklyUsd} duration={1} decimals={2} />
+                                                    (<CountUp className="fc-white" start={0} end={weeklyHbar} duration={1} decimals={2} /> HBAR)
                                                 </span>
                                             </Row>
                                             <Row className="d-flex justify-between">
-                                                <span className="w-auto">Fees(25hrs):</span>
-                                                <span className="counter-value w-auto text-badge">
+                                                <span className="w-auto fc-white fw-450">Fees (24hrs):</span>
+                                                <span className="counter-value w-auto fc-white">
                                                     $
-                                                    <CountUp start={0} end={dailyUsd / 400} duration={1} decimals={4} />
-                                                    (<CountUp start={0} end={dailyHbar / 400} duration={1} decimals={4} /> HBAR)
+                                                    <CountUp className="fc-white" start={0} end={dailyUsd / 400} duration={1} decimals={4} />
+                                                    (<CountUp className="fc-white" start={0} end={dailyHbar / 400} duration={1} decimals={4} /> HBAR)
                                                 </span>
                                             </Row>
                                             <Row className="d-flex justify-between">
-                                                <span className="w-auto">LP Reward APR:</span>
-                                                <span className="counter-value w-auto text-badge">
-                                                    $
-                                                    <CountUp start={0} end={weeklyUsd} duration={1} decimals={2} />
-                                                    (<CountUp start={0} end={weeklyHbar} duration={1} decimals={2} /> HBAR)
+                                                <span className="w-auto fc-white fw-450">LP Reward APR:</span>
+                                                <span className="counter-value w-auto fc-white">
+                                                    {(dailyUsd * 365 / (4 * totalLiquidityUsd)).toFixed(4) + '%'}
+                                                    {/* <CountUp start={0} end={weeklyUsd} duration={1} decimals={2} />
+                                                    (<CountUp start={0} end={weeklyHbar} duration={1} decimals={2} /> HBAR) */}
                                                 </span>
                                             </Row>
                                         </div>
@@ -342,7 +344,7 @@ const TokenPair = () => {
                                                     <OptionButton
                                                         active={chartFilter === CHART_VIEW.LIQUIDITY}
                                                         onClick={() => {
-                                                            setTimeWindow(timeframeOptions.ALL_TIME)
+                                                            setTimeWindow(timeframeOptions.WEEK)
                                                             setChartFilter(CHART_VIEW.LIQUIDITY)
                                                         }}
                                                         style={chartFilter === CHART_VIEW.LIQUIDITY ? { background: "green" } : {}}
@@ -352,7 +354,7 @@ const TokenPair = () => {
                                                     <OptionButton
                                                         active={chartFilter === CHART_VIEW.VOLUME}
                                                         onClick={() => {
-                                                            setTimeWindow(timeframeOptions.ALL_TIME)
+                                                            setTimeWindow(timeframeOptions.WEEK)
                                                             setChartFilter(CHART_VIEW.VOLUME)
                                                         }}
                                                         style={chartFilter === CHART_VIEW.VOLUME ? { background: "green" } : {}}
