@@ -82,12 +82,13 @@ function reducer(state, { type, payload }) {
     //   }
     // }
     case UPDATE_CHART_DATA: {
-      const { address, chartData } = payload
+      const { address, dailyData, hourlyData } = payload
       return {
         ...state,
         [address]: {
           ...state?.[address],
-          chartData,
+          dailyData,
+          hourlyData,
         },
       }
     }
@@ -159,10 +160,10 @@ export default function Provider({ children }) {
   //   })
   // }, [])
 
-  const updateChartData = useCallback((address, chartData) => {
+  const updateChartData = useCallback((address, dailyData, hourlyData) => {
     dispatch({
       type: UPDATE_CHART_DATA,
-      payload: { address, chartData },
+      payload: { address, dailyData, hourlyData},
     })
   }, [])
 
@@ -287,12 +288,17 @@ const getTokenChartData = async (tokenId) => {
     let response = await fetch(`https://api.saucerswap.finance/tokens/prices/${tokenId}?interval=DAY&from=${startTime}&to=${Date.now() / 1000}`)
     if (response.status === 200) {
       let jsonData = await response.json()
-      return jsonData
+      let res = await fetch(`https://api.saucerswap.finance/tokens/prices/${tokenId}?interval=HOUR&from=${startTime}&to=${Date.now() / 1000}`)
+      if (res.status === 200) {
+        let jsonData1 = await res.json ()
+        return [jsonData, jsonData1]
+      }
+      return [jsonData, undefined]
     } else {
-      return []
+      return [undefined, undefined]
     }
   } catch (e) {
-    return []
+    return [undefined, undefined]
   }
 }
 
@@ -460,17 +466,18 @@ export function useTokenData(tokenAddress) {
 
 export function useTokenChartData(tokenAddress) {
   const [state, { updateChartData }] = useTokenDataContext()
-  const chartData = state?.[tokenAddress]?.chartData
+  const dailyData = state?.[tokenAddress]?.dailyData
+  const hourlyData = state?.[tokenAddress]?.hourlyData
   useEffect(() => {
     async function checkForChartData() {
-      if (!chartData) {
-        let data = await getTokenChartData(tokenAddress)
-        updateChartData(tokenAddress, data)
+      if (!dailyData || !hourlyData) {
+        let [dailyData, hourlyData] = await getTokenChartData(tokenAddress)
+        updateChartData(tokenAddress, dailyData, hourlyData)
       }
     }
-    if (!chartData || chartData.length === 0) checkForChartData()
-  }, [chartData, tokenAddress, updateChartData])
-  return chartData
+    if (!dailyData || dailyData.length === 0 || !hourlyData || hourlyData.length === 0) checkForChartData()
+  }, [dailyData, hourlyData, tokenAddress, updateChartData])
+  return [dailyData, hourlyData]
 }
 
 /**
