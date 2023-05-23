@@ -152,44 +152,45 @@ const TokenPair = () => {
             <div className="page-content" style={{ marginBottom: '20px' }}>
                 <Container fluid>
                     <ContentWrapper>
-                        <RowBetween style={{ flexWrap: 'wrap', alingItems: 'start' }}>
-                            <AutoRow align="flex-end" style={{ width: 'fit-content' }}>
-                                <div style={{ fontWeight: 400, fontSize: 14, color: 'white' }}>
-                                    {/* <BasicLink to="/pairs">{'Pairs '}</BasicLink>/ <BasicLink href={"https://hashscan.io/mainnet/contract/" + pairData.contractId}>{symbol}<span style={{color: "green"}}>{"(" + pairData.contractId + ")"}</span></BasicLink> */}
-                                </div>
-                                <Link
-                                    style={{ width: 'fit-content' }}
-                                    color={'red'}
-                                    external
-                                    href={'https://hashscan.io/mainnet/contract/' + contractId}
-                                >
-                                    <Text style={{ marginLeft: '.15rem' }} fontSize={'14px'} fontWeight={400}>
-                                        {symbol}<span style={{ color: "green" }}>{"(" + contractId + ")"}</span>
-                                    </Text>
-                                </Link>
-                            </AutoRow>
-                            {!below600 && <Search display={"all"} small={true} />}
-                        </RowBetween>
-                        <WarningGrouping disabled={false}>
-                            <DashboardWrapper style={{ marginTop: below1080 ? '0' : '1rem' }}>
-                                <RowBetween
-                                    style={{
-                                        flexWrap: 'wrap',
-                                        // marginBottom: '2rem',
-                                        alignItems: 'flex-start',
-                                    }}
-                                >
-                                    <RowFixed style={{ flexWrap: 'wrap' }}>
-                                        <RowFixed style={{ alignItems: 'baseline' }}>
-                                            <   DoubleTokenLogo a0={iconA} a1={iconB} margin={true} style={{ width: 20 }} />
-                                            {/* <TokenLogo path={iconPath} size="32px" style={{ alignSelf: 'center' }} /> */}
-                                            <div fontSize={below1080 ? '1.5rem' : '2rem'} fontWeight={500} style={{ margin: '0 1rem' }}>
-                                                <RowFixed gap="6px">
-                                                    <div style={{ marginRight: '6px', fontSize: 32, color: 'white' }} >{name}</div>{' '}
-                                                    <span style={{ fontSize: 32 }} className="text-badge">{symbol ? `(${symbol})` : ''}</span>
-                                                </RowFixed>
-                                            </div>
-                                            {/* {!below1080 && (
+                        <div className="d-flex flex-column new-bg br-10" style={{padding:'15px'}}>
+                            <RowBetween style={{ flexWrap: 'wrap', alingItems: 'start' }}>
+                                <AutoRow align="flex-end" style={{ width: 'fit-content' }}>
+                                    <div style={{ fontWeight: 400, fontSize: 14, color: 'white' }}>
+                                        {/* <BasicLink to="/pairs">{'Pairs '}</BasicLink>/ <BasicLink href={"https://hashscan.io/mainnet/contract/" + pairData.contractId}>{symbol}<span style={{color: "green"}}>{"(" + pairData.contractId + ")"}</span></BasicLink> */}
+                                    </div>
+                                    <Link
+                                        style={{ width: 'fit-content' }}
+                                        color={'red'}
+                                        external
+                                        href={'https://hashscan.io/mainnet/contract/' + contractId}
+                                    >
+                                        <Text style={{ marginLeft: '.15rem' }} fontSize={'14px'} fontWeight={400}>
+                                            {symbol}<span style={{ color: "green" }}>{"(" + contractId + ")"}</span>
+                                        </Text>
+                                    </Link>
+                                </AutoRow>
+                                {!below600 && <Search display={"all"} small={true} />}
+                            </RowBetween>
+                            <WarningGrouping disabled={false}>
+                                <DashboardWrapper style={{ marginTop: below1080 ? '0' : '1rem' }}>
+                                    <RowBetween
+                                        style={{
+                                            flexWrap: 'wrap',
+                                            // marginBottom: '2rem',
+                                            alignItems: 'flex-start',
+                                        }}
+                                    >
+                                        <RowFixed style={{ flexWrap: 'wrap' }}>
+                                            <RowFixed style={{ alignItems: 'baseline' }}>
+                                                <   DoubleTokenLogo a0={iconA} a1={iconB} margin={true} style={{ width: 20 }} />
+                                                {/* <TokenLogo path={iconPath} size="32px" style={{ alignSelf: 'center' }} /> */}
+                                                <div fontSize={below1080 ? '1.5rem' : '2rem'} fontWeight={500} style={{ margin: '0 1rem' }}>
+                                                    <RowFixed gap="6px">
+                                                        <div style={{ marginRight: '6px', fontSize: 32, color: 'white' }} >{name}</div>{' '}
+                                                        <span style={{ fontSize: 32 }} className="text-badge">{symbol ? `(${symbol})` : ''}</span>
+                                                    </RowFixed>
+                                                </div>
+                                                {/* {!below1080 && (
                                                 <>
                                                     <div fontSize={'1.5rem'} fontWeight={500} style={{ marginRight: '1rem' }}>
                                                         {`$` + priceUSD}
@@ -197,26 +198,28 @@ const TokenPair = () => {
                                                     <span style={{ color: priceChangeColor }}>{priceChange}</span>
                                                 </>
                                             )} */}
+                                            </RowFixed>
                                         </RowFixed>
-                                    </RowFixed>
-                                </RowBetween>
-                                <AutoRow align="flex-end" style={{ width: 'fit-content' }}>
-                                    <Link
-                                        style={{ width: 'fit-content' }}
-                                        color={'grey'}
-                                        external
-                                    >
-                                        <Text style={{ marginLeft: '.15rem' }} className="text-badge" fontSize={'14px'} fontWeight={400}>
-                                            Token:{_pairData?.tokenA?.id}   Pair:{_pairData?.tokenB?.id}
-                                        </Text>
-                                    </Link>
-                                </AutoRow>
-                            </DashboardWrapper>
-                        </WarningGrouping>
+                                    </RowBetween>
+                                    <AutoRow align="flex-end" style={{ width: 'fit-content' }}>
+                                        <Link
+                                            style={{ width: 'fit-content' }}
+                                            color={'grey'}
+                                            external
+                                        >
+                                            <Text style={{ marginLeft: '.15rem' }} className="text-badge" fontSize={'14px'} fontWeight={400}>
+                                                Token:{_pairData?.tokenA?.id}   Pair:{_pairData?.tokenB?.id}
+                                            </Text>
+                                        </Link>
+                                    </AutoRow>
+                                </DashboardWrapper>
+                            </WarningGrouping>
+                        </div>
+
                         <Row>
                             <Col xl={4} sm={12} >
                                 <h5 className="text-badge">Pool Information</h5>
-                                <Card className="card-animate" style={{ border: '1px solid' }}>
+                                <Card className="card-animate new-bg br-10">
                                     <CardBody>
                                         <div className="d-flex flex-column">
                                             <Row className="d-flex justify-between" >
@@ -257,7 +260,7 @@ const TokenPair = () => {
                                     </CardBody>
                                 </Card>
                                 <h5 className="text-badge">Pooled Tokens</h5>
-                                <Card className="card-animate mb-2" style={{ border: '1px solid', marginBottom: '0px !important' }}>
+                                <Card className="card-animate mb-3 new-bg br-10" style={{ marginBottom: '0px !important' }}>
                                     <CardBody>
                                         <div className="d-flex">
                                             <div className="flex-grow-1 w-full">
@@ -277,7 +280,7 @@ const TokenPair = () => {
                                         </div>
                                     </CardBody>
                                 </Card>
-                                <Card className="card-animate mb-0" style={{ border: '1px solid' }}>
+                                <Card className="card-animate mb-0 new-bg br-10">
                                     <CardBody>
                                         <div className="d-flex flex-column">
                                             <Row className="d-flex justify-between" >
@@ -327,7 +330,7 @@ const TokenPair = () => {
                             </Col>
                             <Col xl={8} sm={12}>
                                 {
-                                    <div className="d-flex flex-column">
+                                    <div className="d-flex flex-column new-bg br-10" style={{padding:'15px'}}>
                                         {below600 ? (
                                             <RowBetween mb={40}>
                                                 <DropdownSelect options={CHART_VIEW} active={chartFilter} setActive={setChartFilter} color={'#ff007a'} />
