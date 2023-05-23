@@ -217,6 +217,7 @@ const TokenPage = ({ address }) => {
     }, [address])
 
     useEffect(() => {
+
         fetchData(1, perPage);
     }, [perPage])
 
@@ -277,7 +278,7 @@ const TokenPage = ({ address }) => {
             fetchHolderData()
     }, [address, tokenInfo, holders])
 
-    useEffect (() => {
+    useEffect(() => {
         setIsLoaded(false)
     }, [data])
 
@@ -452,8 +453,10 @@ const TokenPage = ({ address }) => {
         {
             name: <span className='font-weight-bold fs-16'>Date</span>,
             selector: row => {
+
                 return (
-                    <span>{(new Date(row.timestamp * 1000)).toLocaleString()}</span>
+                    row.state === 'buy' ? <span className="text-buy text-buy-date">{(new Date(row.timestamp * 1000)).toLocaleString()}</span> :
+                        <span className="text-sell text-sell-date">{(new Date(row.timestamp * 1000)).toLocaleString()}</span>
                 )
             },
             sortable: true,
@@ -464,33 +467,45 @@ const TokenPage = ({ address }) => {
             sortable: true,
             selector: (row) => {
                 return (
-                    <span>{row.state}</span>
+                    row.state === 'buy' ? <span className="text-green">{row.state}</span> :
+                        <span className="text-red">{row.state}</span>
                 );
             },
-            width: 120
+            width: 70
         },
         {
             name: <span className='font-weight-bold fs-16'>Amount</span>,
             sortable: true,
             selector: (row) => {
                 return (
-                    <span>{Math.abs(row.amount)}</span>
+                    row.state === 'buy' ? <span className="text-buy">{Math.abs(row.amount)}</span> :
+                        <span className="text-sell">{Math.abs(row.amount)}</span>
                 )
             },
             width: 150
         },
         {
             name: <span className='font-weight-bold fs-16'>Maker</span>,
-            selector: row => row.accountId,
+            selector: (row) => {
+                return (
+                    row.state === 'buy' ? <span className="text-buy">{row.accountId}</span> :
+                        <span className="text-sell">{row.accountId}</span>
+                )
+            },
             sortable: true,
             width: 100
         },
         {
             name: <span className='font-weight-bold fs-16'>Pool</span>,
             // selector: row => row.volume ? calcUnit(row.volume) : '-',
-            selector: row => row.poolId,
+            selector: (row) => {
+                return (
+                    row.state === 'buy' ? <span className="text-buy">{row.poolId}</span> :
+                        <span className="text-sell">{row.poolId}</span>
+                )
+            },
             sortable: true,
-            width: 120
+            width: 100
         },
         {
             name: <span className='font-weight-bold fs-16'>TXID</span>,
@@ -499,7 +514,7 @@ const TokenPage = ({ address }) => {
                 return (
                     <Link
                         style={{ width: 'fit-content' }}
-                        color={'red'}
+                        color={'#00b8d8'}
                         external
                         href={'https://hashscan.io/mainnet/transactionsById/' + row.transactionId}
                     >
@@ -509,7 +524,7 @@ const TokenPage = ({ address }) => {
                     </Link>
                 )
             },
-            width: 100
+            width: 200
         },
     ];
 
@@ -519,10 +534,10 @@ const TokenPage = ({ address }) => {
             sortable: true,
             selector: (row) => {
                 return (
-                    <span>{row.no}</span>
+                    <span className="text-center">{row.no}</span>
                 );
             },
-            width: 120
+            width: 80
         },
         {
             name: <span className='font-weight-bold fs-16'>Account ID</span>,
@@ -532,7 +547,7 @@ const TokenPage = ({ address }) => {
                     <span>{row.accountId}</span>
                 );
             },
-            width: 120
+            width: 140
         },
         {
             name: <span className='font-weight-bold fs-16'>BALANCE</span>,
@@ -542,7 +557,7 @@ const TokenPage = ({ address }) => {
                     <span>{formattedNum(row.balance, false)}</span>
                 );
             },
-            width: 100
+            width: 110
         },
         {
             name: <span className='font-weight-bold fs-16'>PERCENT</span>,
@@ -553,7 +568,7 @@ const TokenPage = ({ address }) => {
                     <span>{row.percent + '%'}</span>
                 );
             },
-            width: 250
+            width: 110
         },
         {
             name: <span className='font-weight-bold fs-16'>USD</span>,
@@ -573,7 +588,7 @@ const TokenPage = ({ address }) => {
                     <span>{row.impactPercent + '%'}</span>
                 );
             },
-            width: 100
+            width: 160
         },
         {
             name: <span className='font-weight-bold fs-16'>ACTUAL USD</span>,
@@ -583,7 +598,7 @@ const TokenPage = ({ address }) => {
                     <span>{formattedNum(row.actualUsd, true)}</span>
                 );
             },
-            width: 100
+            width: 160
         },
     ]
 
@@ -596,119 +611,121 @@ const TokenPage = ({ address }) => {
             <div className="page-content">
                 <Container fluid>
                     <ContentWrapper>
-                        <RowBetween style={{ flexWrap: 'wrap', alingItems: 'start' }}>
-                            <AutoRow align="flex-end" style={{ width: 'fit-content' }}>
-                                <div style={{ fontWeight: 400, fontSize: 14, color: 'white' }}>
-                                    <BasicLink to="/tokens">{'Tokens '}</BasicLink>→ {symbol}
-                                </div>
-                                <Link
-                                    style={{ width: 'fit-content' }}
-                                    color={'red'}
-                                    external
-                                    href={'https://hashscan.io/mainnet/token/' + address}
-                                >
-                                    <Text style={{ marginLeft: '.15rem' }} fontSize={'14px'} fontWeight={400}>
-                                        ({address.slice(0, 8) + '...' + address.slice(36, 42)})
-                                    </Text>
-                                </Link>
-                            </AutoRow>
-                            {!below600 && <Search display={"all"} small={true} />}
-                        </RowBetween>
-                        <WarningGrouping disabled={false}>
-                            <DashboardWrapper style={{ marginTop: below1080 ? '0' : '0' }}>
-                                <Row >
-                                    <Col sm={12} md={6} style={{ alignItems: 'baseline' }}>
-                                        <div className="d-flex">
-                                            <TokenLogo path={iconPath} size="32px" style={{ alignSelf: 'center' }} />
-                                            <div fontSize={below1080 ? '1.5rem' : '2rem'} fontWeight={500} style={{ margin: '0 1rem' }}>
-                                                <RowFixed gap="6px">
-                                                    <div style={{ marginRight: '6px', fontSize: 32, color: 'white' }} >{name}</div>{' '}
-                                                    <span style={{ fontSize: 32, color: 'grey' }}>{formattedSymbol ? `(${formattedSymbol})` : ''}</span>
-                                                </RowFixed>
+                        <div className="d-flex flex-column new-bg br-10" style={{padding: '15px'}}>
+                            <RowBetween style={{ flexWrap: 'wrap', alingItems: 'start' }}>
+                                <AutoRow align="flex-end" style={{ width: 'fit-content' }}>
+                                    <div style={{ fontWeight: 400, fontSize: 14, color: 'white' }}>
+                                        <BasicLink to="/tokens">{'Tokens '}</BasicLink>→ {symbol}
+                                    </div>
+                                    <Link
+                                        style={{ width: 'fit-content' }}
+                                        color={'red'}
+                                        external
+                                        href={'https://hashscan.io/mainnet/token/' + address}
+                                    >
+                                        <Text style={{ marginLeft: '.15rem' }} fontSize={'14px'} fontWeight={400}>
+                                            ({address.slice(0, 8) + '...' + address.slice(36, 42)})
+                                        </Text>
+                                    </Link>
+                                </AutoRow>
+                                {!below600 && <Search display={"all"} small={true} />}
+                            </RowBetween>
+                            <WarningGrouping disabled={false}>
+                                <DashboardWrapper style={{ marginTop: below1080 ? '0' : '0' }}>
+                                    <Row >
+                                        <Col sm={12} md={6} style={{ alignItems: 'baseline' }}>
+                                            <div className="d-flex">
+                                                <TokenLogo path={iconPath} size="32px" style={{ alignSelf: 'center' }} />
+                                                <div fontSize={below1080 ? '1.5rem' : '2rem'} fontWeight={500} style={{ margin: '0 1rem' }}>
+                                                    <RowFixed gap="6px">
+                                                        <div style={{ marginRight: '6px', fontSize: 32, color: 'white' }} >{name}</div>{' '}
+                                                        <span style={{ fontSize: 32, color: 'grey' }}>{formattedSymbol ? `(${formattedSymbol})` : ''}</span>
+                                                    </RowFixed>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </Col>
-                                    <Col sm={12} md={6}>
-                                        <div className="d-flex flex-column items-end">
-                                            <div className="d-flex items-center">
-                                                <span style={{ marginRight: '1rem', fontSize: '32px', fontWeight: '500' }}>
-                                                    {`$` + priceUSD.toFixed(8)}
-                                                </span>
-                                                <div className="d-flex flex-column self-end mb-10">
-                                                    {/* <span style={{ color: priceChangeColor }}>{priceChange}</span> */}
-                                                    <span style={{ color: priceChangeColor }}>
-                                                        {
-                                                            priceChangeColor === 'green' &&
-                                                            <app-icon _ngcontent-qmb-c89="" name="arrowUp" class="ng-tns-c89-8" _nghost-qmb-c2="">
-                                                                <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true" viewBox="0 0 20 15" width="14" transform=""><path d="M16.0312 2.49999H13.75C13.109 2.49999 12.5806 2.01745 12.5084 1.39577L12.5 1.25C12.5 0.608954 12.9826 0.0806158 13.6042 0.0084096L13.75 0H18.75L18.793 0.000692605C18.8251 0.00177866 18.8573 0.00410228 18.8894 0.00766991L18.75 0C18.8172 0 18.8832 0.0053031 18.9475 0.0155139C18.9722 0.0194401 18.9972 0.0241854 19.022 0.0297021L19.0366 0.0330132L19.0962 0.0485783C19.1212 0.0557812 19.1461 0.0637897 19.1708 0.0726061C19.3111 0.122685 19.4402 0.19745 19.5525 0.291591C19.5562 0.294733 19.5599 0.297819 19.5635 0.300929L19.5816 0.316754C19.6116 0.343469 19.6402 0.371604 19.6675 0.401055L19.5635 0.300929C19.6084 0.339449 19.65 0.380466 19.688 0.423601C19.7132 0.452273 19.7373 0.482345 19.7601 0.51351C19.7675 0.523392 19.7747 0.533435 19.7816 0.543562C19.8012 0.57242 19.8197 0.601934 19.8369 0.632241C19.8454 0.646939 19.8536 0.662048 19.8614 0.677292C19.874 0.70181 19.8859 0.726766 19.8969 0.75216C19.9053 0.77163 19.9131 0.791011 19.9204 0.810547C19.9323 0.841821 19.9429 0.873831 19.9522 0.906383C19.9554 0.918355 19.9585 0.930116 19.9615 0.941916C19.9751 0.994628 19.9852 1.04887 19.9916 1.10422L20 1.25V6.24999C20 6.94034 19.4403 7.49998 18.75 7.49998C18.1089 7.49998 17.5806 7.01743 17.5084 6.39576L17.5 6.24999L17.5 4.62749L12.1991 10.8135C11.7591 11.3268 10.9997 11.3914 10.4812 10.9858L10.3661 10.8839L7.58377 8.10248L2.2103 14.5502C1.80235 15.0397 1.09936 15.1385 0.57649 14.8031L0.4498 14.7102C-0.0397492 14.3023 -0.138462 13.5993 0.196857 13.0764L0.289754 12.9497L6.53974 5.44976C6.97669 4.92542 7.74412 4.85457 8.26767 5.26327L8.3839 5.36611L11.1788 8.15998L16.0312 2.49999Z" fill="currentColor"></path></svg>
-                                                            </app-icon>
-                                                        }
-                                                        {
-                                                            priceChangeColor === 'red' &&
-                                                            <app-icon _ngcontent-qmb-c89="" name="arrowDown" class="ng-tns-c89-8" >
-                                                                <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true" viewBox="0 0 20 15" width="14" transform=""><path d="M16.0312 12.5H13.75C13.109 12.5 12.5806 12.9826 12.5084 13.6042L12.5 13.75C12.5 14.391 12.9826 14.9194 13.6042 14.9916L13.75 15H18.75L18.793 14.9993C18.8251 14.9982 18.8573 14.9959 18.8894 14.9923L18.75 15C18.8172 15 18.8832 14.9947 18.9475 14.9845C18.9722 14.9806 18.9972 14.9758 19.022 14.9703L19.0366 14.967L19.0962 14.9514C19.1212 14.9442 19.1461 14.9362 19.1708 14.9274C19.3111 14.8773 19.4402 14.8025 19.5525 14.7084C19.5562 14.7053 19.5599 14.7022 19.5635 14.6991L19.5816 14.6832C19.6116 14.6565 19.6402 14.6284 19.6675 14.5989L19.5635 14.6991C19.6084 14.6606 19.65 14.6195 19.688 14.5764C19.7132 14.5477 19.7373 14.5177 19.7601 14.4865C19.7675 14.4766 19.7747 14.4666 19.7816 14.4564C19.8012 14.4276 19.8197 14.3981 19.8369 14.3678C19.8454 14.3531 19.8536 14.338 19.8614 14.3227C19.874 14.2982 19.8859 14.2732 19.8969 14.2478C19.9053 14.2284 19.9131 14.209 19.9204 14.1895C19.9323 14.1582 19.9429 14.1262 19.9522 14.0936C19.9554 14.0816 19.9585 14.0699 19.9615 14.0581C19.9751 14.0054 19.9852 13.9511 19.9916 13.8958L20 13.75V8.75001C20 8.05966 19.4403 7.50002 18.75 7.50002C18.1089 7.50002 17.5806 7.98257 17.5084 8.60424L17.5 8.75001L17.5 10.3725L12.1991 4.18653C11.7591 3.67318 10.9997 3.60856 10.4812 4.01418L10.3661 4.11614L7.58377 6.89752L2.2103 0.4498C1.80235 -0.0397492 1.09936 -0.138462 0.57649 0.196858L0.4498 0.289755C-0.0397492 0.697713 -0.138462 1.4007 0.196857 1.92357L0.289754 2.05026L6.53974 9.55024C6.97669 10.0746 7.74412 10.1454 8.26767 9.73673L8.3839 9.63389L11.1788 6.84002L16.0312 12.5Z" fill="currentColor"></path></svg>
-                                                            </app-icon>
-                                                        }
-                                                        {priceChange}
+                                        </Col>
+                                        <Col sm={12} md={6}>
+                                            <div className="d-flex flex-column items-end">
+                                                <div className="d-flex items-center">
+                                                    <span style={{ marginRight: '1rem', fontSize: '32px', fontWeight: '500' }}>
+                                                        {`$` + priceUSD.toFixed(8)}
                                                     </span>
-                                                </div>
+                                                    <div className="d-flex flex-column self-end mb-10">
+                                                        {/* <span style={{ color: priceChangeColor }}>{priceChange}</span> */}
+                                                        <span style={{ color: priceChangeColor }}>
+                                                            {
+                                                                priceChangeColor === 'green' &&
+                                                                <app-icon _ngcontent-qmb-c89="" name="arrowUp" class="ng-tns-c89-8" _nghost-qmb-c2="">
+                                                                    <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true" viewBox="0 0 20 15" width="14" transform=""><path d="M16.0312 2.49999H13.75C13.109 2.49999 12.5806 2.01745 12.5084 1.39577L12.5 1.25C12.5 0.608954 12.9826 0.0806158 13.6042 0.0084096L13.75 0H18.75L18.793 0.000692605C18.8251 0.00177866 18.8573 0.00410228 18.8894 0.00766991L18.75 0C18.8172 0 18.8832 0.0053031 18.9475 0.0155139C18.9722 0.0194401 18.9972 0.0241854 19.022 0.0297021L19.0366 0.0330132L19.0962 0.0485783C19.1212 0.0557812 19.1461 0.0637897 19.1708 0.0726061C19.3111 0.122685 19.4402 0.19745 19.5525 0.291591C19.5562 0.294733 19.5599 0.297819 19.5635 0.300929L19.5816 0.316754C19.6116 0.343469 19.6402 0.371604 19.6675 0.401055L19.5635 0.300929C19.6084 0.339449 19.65 0.380466 19.688 0.423601C19.7132 0.452273 19.7373 0.482345 19.7601 0.51351C19.7675 0.523392 19.7747 0.533435 19.7816 0.543562C19.8012 0.57242 19.8197 0.601934 19.8369 0.632241C19.8454 0.646939 19.8536 0.662048 19.8614 0.677292C19.874 0.70181 19.8859 0.726766 19.8969 0.75216C19.9053 0.77163 19.9131 0.791011 19.9204 0.810547C19.9323 0.841821 19.9429 0.873831 19.9522 0.906383C19.9554 0.918355 19.9585 0.930116 19.9615 0.941916C19.9751 0.994628 19.9852 1.04887 19.9916 1.10422L20 1.25V6.24999C20 6.94034 19.4403 7.49998 18.75 7.49998C18.1089 7.49998 17.5806 7.01743 17.5084 6.39576L17.5 6.24999L17.5 4.62749L12.1991 10.8135C11.7591 11.3268 10.9997 11.3914 10.4812 10.9858L10.3661 10.8839L7.58377 8.10248L2.2103 14.5502C1.80235 15.0397 1.09936 15.1385 0.57649 14.8031L0.4498 14.7102C-0.0397492 14.3023 -0.138462 13.5993 0.196857 13.0764L0.289754 12.9497L6.53974 5.44976C6.97669 4.92542 7.74412 4.85457 8.26767 5.26327L8.3839 5.36611L11.1788 8.15998L16.0312 2.49999Z" fill="currentColor"></path></svg>
+                                                                </app-icon>
+                                                            }
+                                                            {
+                                                                priceChangeColor === 'red' &&
+                                                                <app-icon _ngcontent-qmb-c89="" name="arrowDown" class="ng-tns-c89-8" >
+                                                                    <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true" viewBox="0 0 20 15" width="14" transform=""><path d="M16.0312 12.5H13.75C13.109 12.5 12.5806 12.9826 12.5084 13.6042L12.5 13.75C12.5 14.391 12.9826 14.9194 13.6042 14.9916L13.75 15H18.75L18.793 14.9993C18.8251 14.9982 18.8573 14.9959 18.8894 14.9923L18.75 15C18.8172 15 18.8832 14.9947 18.9475 14.9845C18.9722 14.9806 18.9972 14.9758 19.022 14.9703L19.0366 14.967L19.0962 14.9514C19.1212 14.9442 19.1461 14.9362 19.1708 14.9274C19.3111 14.8773 19.4402 14.8025 19.5525 14.7084C19.5562 14.7053 19.5599 14.7022 19.5635 14.6991L19.5816 14.6832C19.6116 14.6565 19.6402 14.6284 19.6675 14.5989L19.5635 14.6991C19.6084 14.6606 19.65 14.6195 19.688 14.5764C19.7132 14.5477 19.7373 14.5177 19.7601 14.4865C19.7675 14.4766 19.7747 14.4666 19.7816 14.4564C19.8012 14.4276 19.8197 14.3981 19.8369 14.3678C19.8454 14.3531 19.8536 14.338 19.8614 14.3227C19.874 14.2982 19.8859 14.2732 19.8969 14.2478C19.9053 14.2284 19.9131 14.209 19.9204 14.1895C19.9323 14.1582 19.9429 14.1262 19.9522 14.0936C19.9554 14.0816 19.9585 14.0699 19.9615 14.0581C19.9751 14.0054 19.9852 13.9511 19.9916 13.8958L20 13.75V8.75001C20 8.05966 19.4403 7.50002 18.75 7.50002C18.1089 7.50002 17.5806 7.98257 17.5084 8.60424L17.5 8.75001L17.5 10.3725L12.1991 4.18653C11.7591 3.67318 10.9997 3.60856 10.4812 4.01418L10.3661 4.11614L7.58377 6.89752L2.2103 0.4498C1.80235 -0.0397492 1.09936 -0.138462 0.57649 0.196858L0.4498 0.289755C-0.0397492 0.697713 -0.138462 1.4007 0.196857 1.92357L0.289754 2.05026L6.53974 9.55024C6.97669 10.0746 7.74412 10.1454 8.26767 9.73673L8.3839 9.63389L11.1788 6.84002L16.0312 12.5Z" fill="currentColor"></path></svg>
+                                                                </app-icon>
+                                                            }
+                                                            {priceChange}
+                                                        </span>
+                                                    </div>
 
+                                                </div>
+                                                <Nav pills className="badge-bg">
+                                                    <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
+                                                        <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.five ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.five) }} >
+                                                            <span className={timeRangeType === TIME_RANGE_TYPE.five ? "text-white badge" : "text-badge badge"}>5m</span>
+                                                        </div>
+                                                    </NavItem>
+                                                    <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
+                                                        <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.hour ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.hour) }} >
+                                                            <span className={timeRangeType === TIME_RANGE_TYPE.hour ? "text-white badge" : "text-badge badge"}>1h</span>
+                                                        </div>
+                                                    </NavItem>
+                                                    <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
+                                                        <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.six ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.six) }} >
+                                                            <span className={timeRangeType == TIME_RANGE_TYPE.six ? "text-white badge" : "text-badge badge"}>6h</span>
+                                                        </div>
+                                                    </NavItem>
+                                                    <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
+                                                        <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.day ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.day) }} >
+                                                            <span className={timeRangeType == TIME_RANGE_TYPE.day ? "text-white badge" : "text-badge badge"}>24h</span>
+                                                        </div>
+                                                    </NavItem>
+                                                    <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
+                                                        <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.week ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.week) }} >
+                                                            <span className={timeRangeType == TIME_RANGE_TYPE.week ? "text-white badge" : "text-badge badge"}>1W</span>
+                                                        </div>
+                                                    </NavItem>
+                                                </Nav>
+                                                <div className="d-flex space-around">
+                                                    <div className="d-flex flex-column" style={{ width: "4rem" }}>
+                                                        <span className="text-badge text-center">Txs</span>
+                                                        <span className="text-white text-center">64</span>
+                                                    </div>
+                                                    <div className="d-flex flex-column" style={{ width: "4rem" }}>
+                                                        <span className="text-badge text-center">Buys</span>
+                                                        <span className="text-white text-center">64</span>
+                                                    </div>
+                                                    <div className="d-flex flex-column" style={{ width: "4rem" }}>
+                                                        <span className="text-badge text-center">Sells</span>
+                                                        <span className="text-white text-center">64</span>
+                                                    </div>
+                                                    <div className="d-flex flex-column" style={{ width: "4rem" }}>
+                                                        <span className="text-badge text-center">Vol.</span>
+                                                        <span className="text-white text-center">64</span>
+                                                    </div>
+                                                    <div className="d-flex flex-column" style={{ width: "4rem" }}>
+                                                        <span className="text-badge text-center">% Var.</span>
+                                                        <span className="text-red text-center">64</span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <Nav pills className="badge-bg">
-                                                <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
-                                                    <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.five ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.five) }} >
-                                                        <span className={timeRangeType === TIME_RANGE_TYPE.five ? "text-white badge" : "text-badge badge"}>5m</span>
-                                                    </div>
-                                                </NavItem>
-                                                <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
-                                                    <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.hour ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.hour) }} >
-                                                        <span className={timeRangeType === TIME_RANGE_TYPE.hour ? "text-white badge" : "text-badge badge"}>1h</span>
-                                                    </div>
-                                                </NavItem>
-                                                <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
-                                                    <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.six ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.six) }} >
-                                                        <span className={timeRangeType == TIME_RANGE_TYPE.six ? "text-white badge" : "text-badge badge"}>6h</span>
-                                                    </div>
-                                                </NavItem>
-                                                <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
-                                                    <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.day ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.day) }} >
-                                                        <span className={timeRangeType == TIME_RANGE_TYPE.day ? "text-white badge" : "text-badge badge"}>24h</span>
-                                                    </div>
-                                                </NavItem>
-                                                <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
-                                                    <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.week ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.week) }} >
-                                                        <span className={timeRangeType == TIME_RANGE_TYPE.week ? "text-white badge" : "text-badge badge"}>1W</span>
-                                                    </div>
-                                                </NavItem>
-                                            </Nav>
-                                            <div className="d-flex space-around">
-                                                <div className="d-flex flex-column" style={{ width: "4rem" }}>
-                                                    <span className="text-badge text-center">Txs</span>
-                                                    <span className="text-white text-center">64</span>
-                                                </div>
-                                                <div className="d-flex flex-column" style={{ width: "4rem" }}>
-                                                    <span className="text-badge text-center">Buys</span>
-                                                    <span className="text-white text-center">64</span>
-                                                </div>
-                                                <div className="d-flex flex-column" style={{ width: "4rem" }}>
-                                                    <span className="text-badge text-center">Sells</span>
-                                                    <span className="text-white text-center">64</span>
-                                                </div>
-                                                <div className="d-flex flex-column" style={{ width: "4rem" }}>
-                                                    <span className="text-badge text-center">Vol.</span>
-                                                    <span className="text-white text-center">64</span>
-                                                </div>
-                                                <div className="d-flex flex-column" style={{ width: "4rem" }}>
-                                                    <span className="text-badge text-center">% Var.</span>
-                                                    <span className="text-red text-center">64</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </Col>
-                                </Row>
+                                        </Col>
+                                    </Row>
 
-                            </DashboardWrapper>
-                        </WarningGrouping>
+                                </DashboardWrapper>
+                            </WarningGrouping>
+                        </div>
                         {/* <Row>
                             <Widgets address={address} price={priceUSD} />
                         </Row> */}
@@ -800,7 +817,7 @@ const TokenPage = ({ address }) => {
 
                             </Col>
                             <Col sm={12} md={9} style={{ marginBottom: '20px' }}>
-                                <div className="d-flex flex-column">
+                                <div className="d-flex flex-column new-bg br-10" style={{padding: '15px'}}>
                                     {below600 ? (
                                         <RowBetween mb={40}>
                                             <DropdownSelect options={CHART_VIEW} active={chartFilter} setActive={setChartFilter} color={'#ff007a'} />
