@@ -7,7 +7,7 @@ import { toK, toNiceDate, toNiceDateYear, formattedNum, getTimeframe } from '../
 import { OptionButton } from '../ButtonStyled'
 import { darken } from 'polished'
 import { usePairChartData, usePairData } from '../../contexts/PairData'
-import { timeframeOptions } from '../../constants'
+
 import { useMedia } from 'react-use'
 import DropdownSelect from '../DropdownSelect'
 import CandleStickChart from '../CandleChart'
@@ -38,12 +38,7 @@ const ChartWrapper = styled.div`
   }
 `
 
-const OptionsRow = styled.div`
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  margin-bottom: 0px;
-`
+
 
 const CHART_VIEW = {
   VOLUME: 'Volume',
@@ -52,11 +47,8 @@ const CHART_VIEW = {
   RATE1: 'RATE1',
 }
 
-const PairChart = ({ address, poolId, pairData, color, base0, base1 }) => {
-  const [chartFilter, setChartFilter] = useState(CHART_VIEW.LIQUIDITY)
-
-  const [timeWindow, setTimeWindow] = useState(timeframeOptions.WEEK)
-
+const PairChart = ({ address, poolId, pairData, color, base0, base1, chartFilter, timeWindow }) => {
+  
   const textColor = 'white'
 
   let hourlyChartData, dailyChartData;
@@ -117,7 +109,7 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1 }) => {
   if (dailyChartData && dailyChartData.length === 0) {
     return (
       <ChartWrapper>
-        <EmptyCard height="300px">No historical data yet.</EmptyCard>{' '}
+        <EmptyCard height="500px">No historical data yet.</EmptyCard>{' '}
       </ChartWrapper>
     )
   }
@@ -145,80 +137,7 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1 }) => {
 
   return (
     <ChartWrapper>
-      {below600 ? (
-        <RowBetween mb={40}>
-          <DropdownSelect options={CHART_VIEW} active={chartFilter} setActive={setChartFilter} color={color} />
-          <DropdownSelect options={timeframeOptions} active={timeWindow} setActive={setTimeWindow} color={color} />
-        </RowBetween>
-      ) : (
-        <OptionsRow>
-          <AutoRow gap="6px" style={{ flexWrap: 'nowrap' }}>
-            <OptionButton
-              active={chartFilter === CHART_VIEW.LIQUIDITY}
-              onClick={() => {
-                setTimeWindow(timeframeOptions.ALL_TIME)
-                setChartFilter(CHART_VIEW.LIQUIDITY)
-              }}
-              style={chartFilter === CHART_VIEW.LIQUIDITY ? { background: "green" } : {}}
-            >
-              Liquidity
-            </OptionButton>
-            <OptionButton
-              active={chartFilter === CHART_VIEW.VOLUME}
-              onClick={() => {
-                setTimeWindow(timeframeOptions.ALL_TIME)
-                setChartFilter(CHART_VIEW.VOLUME)
-              }}
-              style={chartFilter === CHART_VIEW.VOLUME ? { background: "green" } : {}}
-            >
-              Volume
-            </OptionButton>
-            <OptionButton
-              active={chartFilter === CHART_VIEW.RATE0}
-              onClick={() => {
-                setTimeWindow(timeframeOptions.WEEK)
-                setChartFilter(CHART_VIEW.RATE0)
-              }}
-              style={chartFilter === CHART_VIEW.RATE0 ? { background: "green" } : {}}
-            >
-              {pairData.tokenA ? formattedSymbol1 + '/' + formattedSymbol0 : '-'}
-            </OptionButton>
-            <OptionButton
-              active={chartFilter === CHART_VIEW.RATE1}
-              onClick={() => {
-                setTimeWindow(timeframeOptions.WEEK)
-                setChartFilter(CHART_VIEW.RATE1)
-              }}
-              style={chartFilter === CHART_VIEW.RATE1 ? { background: "green" } : {}}
-            >
-              {pairData.tokenB ? formattedSymbol0 + '/' + formattedSymbol1 : '-'}
-            </OptionButton>
-          </AutoRow>
-          <AutoRow justify="flex-end" gap="6px">
-            <OptionButton
-              active={timeWindow === timeframeOptions.WEEK}
-              onClick={() => setTimeWindow(timeframeOptions.WEEK)}
-              style={timeWindow === timeframeOptions.WEEK ? { background: "green" } : {}}
-            >
-              1W
-            </OptionButton>
-            <OptionButton
-              active={timeWindow === timeframeOptions.MONTH}
-              onClick={() => setTimeWindow(timeframeOptions.MONTH)}
-              style={timeWindow === timeframeOptions.MONTH ? { background: "green" } : {}}
-            >
-              1M
-            </OptionButton>
-            <OptionButton
-              active={timeWindow === timeframeOptions.ALL_TIME}
-              onClick={() => setTimeWindow(timeframeOptions.ALL_TIME)}
-              style={timeWindow === timeframeOptions.ALL_TIME ? { background: "green" } : {}}
-            >
-              All
-            </OptionButton>
-          </AutoRow>
-        </OptionsRow>
-      )}
+      
       {chartFilter === CHART_VIEW.LIQUIDITY && (
         <ResponsiveContainer aspect={aspect} style={{ height: '100%' }}>
           <AreaChart margin={{ top: 0, right: 10, bottom: 6, left: 0 }} barCategoryGap={1} data={dailyChartData}>

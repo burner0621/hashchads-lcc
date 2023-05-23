@@ -20,6 +20,10 @@ import PairChart from "../../Components/PairChart";
 import { usePairData } from "../../contexts/PairData";
 import { formattedNum } from "../../utils";
 import DataTable from 'react-data-table-component';
+import DropdownSelect from '../../Components/DropdownSelect'
+import { timeframeOptions } from '../../constants'
+import { OptionButton } from "../../Components/ButtonStyled";
+
 const DashboardWrapper = styled.div`
   width: 100%;
 `
@@ -49,6 +53,20 @@ const TRADING_TYPE = {
     buy: 'buy'
 }
 
+const OptionsRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  margin-bottom: 10px;
+`
+
+const CHART_VIEW = {
+    VOLUME: 'Volume',
+    LIQUIDITY: 'Liquidity',
+    RATE0: 'RATE0',
+    RATE1: 'RATE1',
+}
+
 const TokenPair = () => {
 
     const { contractId } = useParams()
@@ -74,8 +92,12 @@ const TokenPair = () => {
     const weeklyVolumes = usePairWeeklyVolume()
     const weeklyData = usePairWeeklyVolume()
     const [hbarPrice, saucePrice] = useHbarAndSaucePrice()
-    const [data, setData] = useState([])
+
     const [showCopyText, setShowCopyText] = useState(false)
+
+    const [chartFilter, setChartFilter] = useState(CHART_VIEW.LIQUIDITY)
+
+    const [timeWindow, setTimeWindow] = useState(timeframeOptions.WEEK)
 
     useEffect(() => {
         if (Object.keys(_pairData).length) {
@@ -111,7 +133,7 @@ const TokenPair = () => {
     const below600 = useMedia('(max-width: 600px)')
 
     const handleCopyAddress = (e) => {
-        
+
         document.execCommand('copy');
     }
 
@@ -124,54 +146,6 @@ const TokenPair = () => {
         else if (value < 1000000000) return value / 1000000 + 'M';
         else return value / 1000000000 + 'B'
     }
-
-    const columns = [
-
-        {
-            name: <span className='font-weight-bold fs-16'>Date</span>,
-            selector: row => {
-                return (
-                    <span className={row.type == TRADING_TYPE.buy ? "text-buy" : "text-sell"}>{row.date}</span>
-                )
-            },
-            sortable: true,
-            width: 180
-        },
-        {
-            name: <span className='font-weight-bold fs-16'>Type</span>,
-            sortable: true,
-            selector: (row) => {
-                return (
-                    <span className={row.type == TRADING_TYPE.buy ? 'text-green' : 'text-red'}>{row.type}</span>
-                );
-            },
-            width: 100
-        },
-        {
-            name: <span className='font-weight-bold fs-16'>Price USD</span>,
-            sortable: true,
-            selector: row => row.price ? '$' + calcUnit(parseInt(row.price)) : '0',
-            width: 150
-        },
-        {
-            name: <span className='font-weight-bold fs-16'>Total</span>,
-            sortable: true,
-            selector: row => row.total ? '$' + calcUnit(parseInt(row.total)) : '0',
-            width: 150
-        },
-        {
-            name: <span className='font-weight-bold fs-16'>Price HBAR</span>,
-            sortable: true,
-            selector: row => row.hbar ? calcUnit(parseInt(row.hbar)) : '0',
-            width: 150
-        },
-        {
-            name: <span className='font-weight-bold fs-16'>Amount {_pairData?.tokenA?.symbol}</span>,
-            sortable: true,
-            selector: row => row.amount ? '$' + calcUnit(parseInt(row.amount)) : '0',
-            width: 150
-        },
-    ];
 
     return (
         <React.Fragment>
@@ -212,7 +186,7 @@ const TokenPair = () => {
                                             <div fontSize={below1080 ? '1.5rem' : '2rem'} fontWeight={500} style={{ margin: '0 1rem' }}>
                                                 <RowFixed gap="6px">
                                                     <div style={{ marginRight: '6px', fontSize: 32, color: 'white' }} >{name}</div>{' '}
-                                                    <span style={{ fontSize: 32, color: 'grey' }}>{symbol ? `(${symbol})` : ''}</span>
+                                                    <span style={{ fontSize: 32 }} className="text-badge">{symbol ? `(${symbol})` : ''}</span>
                                                 </RowFixed>
                                             </div>
                                             {/* {!below1080 && (
@@ -232,249 +206,217 @@ const TokenPair = () => {
                                         color={'grey'}
                                         external
                                     >
-                                        <Text style={{ marginLeft: '.15rem' }} fontSize={'14px'} fontWeight={400}>
+                                        <Text style={{ marginLeft: '.15rem' }} className="text-badge" fontSize={'14px'} fontWeight={400}>
                                             Token:{_pairData?.tokenA?.id}   Pair:{_pairData?.tokenB?.id}
                                         </Text>
                                     </Link>
                                 </AutoRow>
                             </DashboardWrapper>
                         </WarningGrouping>
-                        
                         <Row>
                             <Col xl={4} sm={12} >
-                                <Card className="card-animate mb-0" style={{ border: '1px solid' }}>
-                                    <CardBody>
-                                        <div className="d-flex">
-                                            <div className="flex-grow-1 w-full">
-                                                <h6 className="text-muted mb-3 text-white">TVL</h6>
-                                                <h2 className="mb-0">
-                                                    $
-                                                    <span className="counter-value" style={{ textOverflow: "ellipsis" }}>
-                                                        <CountUp start={0} end={totalLiquidityUsd} duration={1} decimals={2} />
-                                                    </span>
-
-                                                </h2>
-                                                <h2 className="mb-0">
-                                                    <span className="counter-value" style={{ textOverflow: "ellipsis" }}>
-                                                        (<CountUp start={0} end={totalLiquidityHbar} duration={1} decimals={2} /> HBAR)
-                                                    </span>
-                                                </h2>
-                                            </div>
-                                        </div>
-                                    </CardBody>
-                                </Card>
-                            </Col>
-                            <Col xl={4} sm={12} >
-                                <Card className="card-animate mb-0" style={{ border: '1px solid', marginBottom: '0px !important' }}>
-                                    <CardBody>
-                                        <div className="d-flex">
-                                            <div className="flex-grow-1 w-full">
-                                                <h6 className="text-muted mb-3 text-white">24hr Volume</h6>
-                                                <h2 className="mb-0">
-                                                    $
-                                                    <span className="counter-value" style={{ textOverflow: "ellipsis" }}>
-                                                        <CountUp start={0} end={dailyUsd} duration={1} decimals={2} />
-                                                    </span>
-                                                </h2>
-                                                <h2 className="mb-0">
-                                                    <span className="counter-value" style={{ textOverflow: "ellipsis" }}>
-                                                        (<CountUp start={0} end={dailyHbar} duration={1} decimals={2} /> HBAR)
-                                                    </span>
-                                                </h2>
-                                            </div>
-                                        </div>
-                                    </CardBody>
-                                </Card>
-                            </Col>
-                            <Col xl={4} sm={12} >
-                                <Card className="card-animate mb-0" style={{ border: '1px solid', marginBottom: '0px !important' }}>
-                                    <CardBody>
-                                        <div className="d-flex">
-                                            <div className="flex-grow-1 w-full">
-                                                <h6 className="text-muted mb-3 text-white">7D Volume</h6>
-                                                <h2 className="mb-0">
-                                                    $
-                                                    <span className="counter-value" style={{ textOverflow: "ellipsis" }}>
-                                                        <CountUp start={0} end={weeklyUsd} duration={1} decimals={2} />
-                                                    </span>
-                                                </h2>
-                                                <h2 className="mb-0">
-                                                    <span className="counter-value" style={{ textOverflow: "ellipsis" }}>
-                                                        (<CountUp start={0} end={weeklyHbar} duration={1} decimals={2} /> HBAR)
-                                                    </span>
-                                                </h2>
-                                            </div>
-                                        </div>
-                                    </CardBody>
-                                </Card>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col xl={4} sm={12} >
-                                <Card className="card-animate mb-0" style={{ border: '1px solid', marginBottom: '0px !important' }}>
-                                    <CardBody>
-                                        <div className="d-flex">
-                                            <div className="flex-grow-1 w-full">
-                                                <h6 className="text-muted mb-3 text-white">Fees(25hrs)</h6>
-                                                <h2 className="mb-0">
-                                                    $
-                                                    <span className="counter-value" style={{ textOverflow: "ellipsis" }}>
-                                                        <CountUp start={0} end={dailyUsd / 400} duration={1} decimals={4} />
-                                                    </span>
-                                                </h2>
-                                                <h2>
-                                                    <span className="counter-value" style={{ textOverflow: "ellipsis" }}>
-                                                        (<CountUp start={0} end={dailyHbar / 400} duration={1} decimals={4} /> HBAR)
-                                                    </span>
-                                                </h2>
-                                            </div>
-                                        </div>
-                                    </CardBody>
-                                </Card>
-                            </Col>
-                            <Col xl={4} sm={12} >
-                                <Card className="card-animate mb-0" style={{ border: '1px solid', marginBottom: '0px !important' }}>
-                                    <CardBody>
-                                        <div className="d-flex">
-                                            <div className="flex-grow-1 w-full">
-                                                <h6 className="text-muted mb-3 text-white">LP Reward APR</h6>
-                                                <h2 className="mb-0">
-                                                    <span className="counter-value" style={{ textOverflow: "ellipsis" }}>
-                                                        <CountUp start={0} end={lpReward} duration={1} decimals={4} />%
-                                                    </span>
-                                                </h2>
-                                                <h2>
-                                                    <span style={{ visibility: 'hidden' }}>23</span>
-                                                </h2>
-                                            </div>
-                                        </div>
-                                    </CardBody>
-                                </Card>
-                            </Col>
-                            <Col xl={4} sm={12} >
-                                <Card className="card-animate mb-0" style={{ border: '1px solid', marginBottom: '0px !important' }}>
-                                    <CardBody>
-                                        <div className="d-flex">
-                                            <div className="flex-grow-1 w-full">
-                                                <h6 className="text-muted mb-3 text-white">Pooled Tokens</h6>
-                                                <h2 className="mb-0 d-flex flex-column">
-                                                    <span className="counter-value d-flex" style={{ textOverflow: "ellipsis" }}>
-                                                        <TokenLogo path={iconA} size="32px" style={{ alignSelf: 'center', marginRight: 5 }} ></TokenLogo>
-                                                        <CountUp start={0} end={tokenAReserve} duration={3} decimals={2} /><span style={{ fontSize: 12, alignSelf: 'flex-end', marginLeft: 8 }}>{' ' + symbolA}</span>
-                                                    </span>
-                                                    <span className="counter-value d-flex" style={{ textOverflow: "ellipsis" }}>
-                                                        <TokenLogo path={iconB} size="32px" style={{ alignSelf: 'center', marginRight: 5 }} ></TokenLogo>
-                                                        <CountUp start={0} end={tokenBReserve} duration={3} decimals={2} /><span style={{ fontSize: 12, alignSelf: 'flex-end', marginLeft: 8 }}>{' ' + symbolB}</span>
-                                                    </span>
-                                                </h2>
-                                            </div>
-                                        </div>
-                                    </CardBody>
-                                </Card>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col xl={8} sm={12}>
-                                {
-                                    Object.keys(_pairData).length && Object.keys(weeklyData).length && hbarPrice &&
-                                    <PairChart
-                                        address={contractId}
-                                        poolId={_pairData.poolId}
-                                        pairData={_pairData}
-                                        color={'#ff007a'}
-                                        base0={tokenAReserve / tokenBReserve}
-                                        base1={tokenBReserve / tokenAReserve}
-                                    />}
-                            </Col>
-
-                            <Col xl={4} sm={12} >
-                                <h1>Pool Information</h1>
+                                <h5 className="text-badge">Pool Information</h5>
                                 <Card className="card-animate" style={{ border: '1px solid' }}>
                                     <CardBody>
                                         <div className="d-flex flex-column">
-                                            <div className="flex-grow-1 w-full">
-                                                <h4 className="text-muted mb-3 text-white">Pair Name</h4>
-                                                <h2 className="mb-0">
-                                                    <span className="counter-value" style={{ textOverflow: "ellipsis" }}>
-                                                        {symbol}
-                                                    </span>
-                                                </h2>
-                                            </div>
-                                            <div className="flex-grow-1 w-full">
-                                                <h4 className="text-muted mb-3 text-white">{symbolA} Address</h4>
-                                                <h2 className="mb-0 d-flex items-center" onClick={(e) => handleCopyAddress(e)}>
+                                            <Row className="d-flex justify-between" >
+                                                <span className="w-auto">Pair Name:</span>
+
+                                                <span className="counter-value w-auto text-badge" style={{ textOverflow: "ellipsis" }}>
+                                                    {symbol}
+                                                </span>
+                                            </Row>
+                                        </div>
+                                        <div className="d-flex flex-column">
+                                            <Row className="d-flex justify-between" >
+                                                <span className="w-auto">{symbolA} Address:</span>
+                                                <span className="counter-value w-auto text-badge" style={{ textOverflow: "ellipsis" }}>
                                                     {tokenIdA}<i className="mdi mdi-content-copy"></i>
-                                                </h2>
-                                            </div>
-                                            <div className="flex-grow-1 w-full">
-                                                <h4 className="text-muted mb-3 text-white">{symbolB} Address</h4>
-                                                <h2 className="mb-0 d-flex items-center" onClick={(e) => handleCopyAddress(e)}>
+                                                </span>
+                                            </Row>
+                                        </div>
+                                        <div className="d-flex flex-column">
+                                            <Row className="d-flex justify-between" >
+                                                <span className="w-auto">{symbolB} Address:</span>
+
+                                                <span className="counter-value w-auto text-badge" style={{ textOverflow: "ellipsis" }}>
                                                     {tokenIdB}<i className="mdi mdi-content-copy"></i>
-                                                </h2>
-                                            </div>
+                                                </span>
+                                            </Row>
                                         </div>
                                         <Link
-                                            style={{ width: 'fit-content' }}
+                                            style={{ width: 'fit-content', display: "flex", justifyContent: "center", width: "100%" }}
                                             color={'green'}
                                             external
                                             href={'https://hashscan.io/mainnet/contract/' + contractId}
                                         >
-                                            <Text className="text-green" style={{ marginLeft: '.15rem' }} fontSize={'24px'} fontWeight={400}>
+                                            <Text className="text-green" style={{ marginLeft: '.15rem' }} fontSize={'20px'} fontWeight={400}>
                                                 View on Hashscan<i className="mdi mdi-arrow-top-right-thin"></i>
                                             </Text>
                                         </Link>
                                     </CardBody>
                                 </Card>
+                                <h5 className="text-badge">Pooled Tokens</h5>
+                                <Card className="card-animate mb-2" style={{ border: '1px solid', marginBottom: '0px !important' }}>
+                                    <CardBody>
+                                        <div className="d-flex">
+                                            <div className="flex-grow-1 w-full">
+                                                <h6 className="mb-0 d-flex flex-column justify-around">
+                                                    <span className="counter-value d-flex items-center mb-2" style={{ textOverflow: "ellipsis" }}>
+                                                        <TokenLogo path={iconA} size="32px" style={{ alignSelf: 'center', marginRight: 5 }} ></TokenLogo>
+                                                        <CountUp start={0} end={tokenAReserve} duration={3} decimals={2} />
+                                                        <span style={{ fontSize: 12, alignSelf: 'center', marginLeft: 8 }}>{' ' + symbolA}</span>
+                                                    </span>
+                                                    <span className="counter-value d-flex items-center" style={{ textOverflow: "ellipsis" }}>
+                                                        <TokenLogo path={iconB} size="32px" style={{ alignSelf: 'center', marginRight: 5 }} ></TokenLogo>
+                                                        <CountUp start={0} end={tokenBReserve} duration={3} decimals={2} />
+                                                        <span style={{ fontSize: 12, alignSelf: 'center', marginLeft: 8 }}>{' ' + symbolB}</span>
+                                                    </span>
+                                                </h6>
+                                            </div>
+                                        </div>
+                                    </CardBody>
+                                </Card>
+                                <Card className="card-animate mb-0" style={{ border: '1px solid' }}>
+                                    <CardBody>
+                                        <div className="d-flex flex-column">
+                                            <Row className="d-flex justify-between" >
+                                                <span className="w-auto">TVL:</span>
+
+                                                <span className="counter-value w-auto text-badge" style={{ textOverflow: "ellipsis" }}>
+                                                    $
+                                                    <CountUp start={0} end={totalLiquidityUsd} duration={1} decimals={2} />
+                                                    (<CountUp start={0} end={totalLiquidityHbar} duration={1} decimals={2} /> HBAR)
+                                                </span>
+                                            </Row>
+                                            <Row className="d-flex justify-between">
+                                                <span className="w-auto">24hr Volume:</span>
+                                                <span className="counter-value w-auto text-badge">
+                                                    $
+                                                    <CountUp start={0} end={dailyUsd} duration={1} decimals={2} />
+                                                    (<CountUp start={0} end={dailyHbar} duration={1} decimals={2} /> HBAR)
+                                                </span>
+                                            </Row>
+                                            <Row className="d-flex justify-between">
+                                                <span className="w-auto">7D Volume:</span>
+                                                <span className="counter-value w-auto text-badge">
+                                                    $
+                                                    <CountUp start={0} end={weeklyUsd} duration={1} decimals={2} />
+                                                    (<CountUp start={0} end={weeklyHbar} duration={1} decimals={2} /> HBAR)
+                                                </span>
+                                            </Row>
+                                            <Row className="d-flex justify-between">
+                                                <span className="w-auto">Fees(25hrs):</span>
+                                                <span className="counter-value w-auto text-badge">
+                                                    $
+                                                    <CountUp start={0} end={dailyUsd / 400} duration={1} decimals={4} />
+                                                    (<CountUp start={0} end={dailyHbar / 400} duration={1} decimals={4} /> HBAR)
+                                                </span>
+                                            </Row>
+                                            <Row className="d-flex justify-between">
+                                                <span className="w-auto">LP Reward APR:</span>
+                                                <span className="counter-value w-auto text-badge">
+                                                    $
+                                                    <CountUp start={0} end={weeklyUsd} duration={1} decimals={2} />
+                                                    (<CountUp start={0} end={weeklyHbar} duration={1} decimals={2} /> HBAR)
+                                                </span>
+                                            </Row>
+                                        </div>
+                                    </CardBody>
+                                </Card>
                             </Col>
-                        </Row>
-                        <Row>
-                            <DataTable
-                                customStyles={{
-                                    headRow: {
-                                        style: {
-                                            background: "#142028",
-                                            color: "white"
+                            <Col xl={8} sm={12}>
+                                {
+                                    <div className="d-flex flex-column">
+                                        {below600 ? (
+                                            <RowBetween mb={40}>
+                                                <DropdownSelect options={CHART_VIEW} active={chartFilter} setActive={setChartFilter} color={'#ff007a'} />
+                                                <DropdownSelect options={timeframeOptions} active={timeWindow} setActive={setTimeWindow} color={'#ff007a'} />
+                                            </RowBetween>
+                                        ) : (
+                                            <OptionsRow>
+                                                <AutoRow gap="6px" style={{ flexWrap: 'nowrap' }}>
+                                                    <OptionButton
+                                                        active={chartFilter === CHART_VIEW.LIQUIDITY}
+                                                        onClick={() => {
+                                                            setTimeWindow(timeframeOptions.ALL_TIME)
+                                                            setChartFilter(CHART_VIEW.LIQUIDITY)
+                                                        }}
+                                                        style={chartFilter === CHART_VIEW.LIQUIDITY ? { background: "green" } : {}}
+                                                    >
+                                                        Liquidity
+                                                    </OptionButton>
+                                                    <OptionButton
+                                                        active={chartFilter === CHART_VIEW.VOLUME}
+                                                        onClick={() => {
+                                                            setTimeWindow(timeframeOptions.ALL_TIME)
+                                                            setChartFilter(CHART_VIEW.VOLUME)
+                                                        }}
+                                                        style={chartFilter === CHART_VIEW.VOLUME ? { background: "green" } : {}}
+                                                    >
+                                                        Volume
+                                                    </OptionButton>
+                                                    <OptionButton
+                                                        active={chartFilter === CHART_VIEW.RATE0}
+                                                        onClick={() => {
+                                                            setTimeWindow(timeframeOptions.WEEK)
+                                                            setChartFilter(CHART_VIEW.RATE0)
+                                                        }}
+                                                        style={chartFilter === CHART_VIEW.RATE0 ? { background: "green" } : {}}
+                                                    >
+                                                        {_pairData.tokenA ? (_pairData?.tokenB?.symbol.length > 6 ? _pairData?.tokenB?.symbol.slice(0, 5) + '...' : _pairData?.tokenB?.symbol) + '/' + (_pairData?.tokenA?.symbol.length > 6 ? _pairData?.tokenA?.symbol.slice(0, 5) + '...' : _pairData?.tokenA?.symbol) : '-'}
+                                                    </OptionButton>
+                                                    <OptionButton
+                                                        active={chartFilter === CHART_VIEW.RATE1}
+                                                        onClick={() => {
+                                                            setTimeWindow(timeframeOptions.WEEK)
+                                                            setChartFilter(CHART_VIEW.RATE1)
+                                                        }}
+                                                        style={chartFilter === CHART_VIEW.RATE1 ? { background: "green" } : {}}
+                                                    >
+                                                        {_pairData.tokenB ? (_pairData?.tokenA?.symbol.length > 6 ? _pairData?.tokenA?.symbol.slice(0, 5) + '...' : _pairData?.tokenA?.symbol) + '/' + (_pairData?.tokenB?.symbol.length > 6 ? _pairData?.tokenB?.symbol.slice(0, 5) + '...' : _pairData?.tokenB?.symbol) : '-'}
+                                                    </OptionButton>
+                                                </AutoRow>
+                                                <AutoRow justify="flex-end" gap="6px">
+                                                    <OptionButton
+                                                        active={timeWindow === timeframeOptions.WEEK}
+                                                        onClick={() => setTimeWindow(timeframeOptions.WEEK)}
+                                                        style={timeWindow === timeframeOptions.WEEK ? { background: "green" } : {}}
+                                                    >
+                                                        1W
+                                                    </OptionButton>
+                                                    <OptionButton
+                                                        active={timeWindow === timeframeOptions.MONTH}
+                                                        onClick={() => setTimeWindow(timeframeOptions.MONTH)}
+                                                        style={timeWindow === timeframeOptions.MONTH ? { background: "green" } : {}}
+                                                    >
+                                                        1M
+                                                    </OptionButton>
+                                                    <OptionButton
+                                                        active={timeWindow === timeframeOptions.ALL_TIME}
+                                                        onClick={() => setTimeWindow(timeframeOptions.ALL_TIME)}
+                                                        style={timeWindow === timeframeOptions.ALL_TIME ? { background: "green" } : {}}
+                                                    >
+                                                        All
+                                                    </OptionButton>
+                                                </AutoRow>
+                                            </OptionsRow>
+                                        )}
+                                        {Object.keys(_pairData).length && Object.keys(weeklyData).length && hbarPrice &&
+                                            <PairChart
+                                                address={contractId}
+                                                poolId={_pairData.poolId}
+                                                pairData={_pairData}
+                                                color={'#ff007a'}
+                                                base0={tokenAReserve / tokenBReserve}
+                                                base1={tokenBReserve / tokenAReserve}
+                                                chartFilter={chartFilter}
+                                                timeWindow={timeWindow}
+                                            />
                                         }
-                                    },
-                                    table: {
-                                        style: {
-                                            background: "#142028",
-                                            color: "white"
-                                        }
-                                    },
-                                    rows: {
-                                        style: {
-                                            background: "#142028",
-                                            color: "white"
-                                        }
-                                    },
-                                    pagination: {
-                                        style: {
-                                            background: "#142028",
-                                            color: "white"
-                                        },
-                                        pageButtonsStyle: {
-                                            color: "white",
-                                            fill: "white"
-                                        }
-                                    },
-                                    noData: {
-                                        style: {
-                                            background: "#142028",
-                                            color: "white"
-                                        }
-                                    },
-                                    cells: {
-                                        style: {
-                                            paddingRight: "0px",
-                                            color: "white"
-                                        }
-                                    }
-                                }}
-                                columns={columns}
-                                data={data || []}
-                                pagination
-                            />
+                                    </div>
+                                }
+                            </Col>
                         </Row>
                     </ContentWrapper>
                 </Container>
