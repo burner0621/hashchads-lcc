@@ -452,7 +452,9 @@ const TokenPage = ({ address }) => {
 
         {
             name: <span className='font-weight-bold fs-16'>Date</span>,
-            selector: row => {
+            sortField: 'timestamp',
+            selector: 'timestamp',
+            cell: row => {
 
                 return (
                     row.state === 'buy' ? <span className="text-buy text-buy-date">{(new Date(row.timestamp * 1000)).toLocaleString()}</span> :
@@ -465,7 +467,8 @@ const TokenPage = ({ address }) => {
         {
             name: <span className='font-weight-bold fs-16'>Type</span>,
             sortable: true,
-            selector: (row) => {
+            selector: 'state',
+            cell: (row) => {
                 return (
                     row.state === 'buy' ? <span className="text-green">{row.state}</span> :
                         <span className="text-red">{row.state}</span>
@@ -476,7 +479,8 @@ const TokenPage = ({ address }) => {
         {
             name: <span className='font-weight-bold fs-16'>Amount</span>,
             sortable: true,
-            selector: (row) => {
+            selector: 'amount',
+            cell: (row) => {
                 return (
                     row.state === 'buy' ? <span className="text-buy">{Math.abs(row.amount)}</span> :
                         <span className="text-sell">{Math.abs(row.amount)}</span>
@@ -486,31 +490,34 @@ const TokenPage = ({ address }) => {
         },
         {
             name: <span className='font-weight-bold fs-16'>Maker</span>,
-            selector: (row) => {
+            cell: (row) => {
                 return (
                     row.state === 'buy' ? <span className="text-buy">{row.accountId}</span> :
                         <span className="text-sell">{row.accountId}</span>
                 )
             },
             sortable: true,
+            selector: 'accountId',
             width: 100
         },
         {
             name: <span className='font-weight-bold fs-16'>Pool</span>,
             // selector: row => row.volume ? calcUnit(row.volume) : '-',
-            selector: (row) => {
+            cell: (row) => {
                 return (
                     row.state === 'buy' ? <span className="text-buy">{row.poolId}</span> :
                         <span className="text-sell">{row.poolId}</span>
                 )
             },
             sortable: true,
+            selector: 'poolId',
             width: 100
         },
         {
             name: <span className='font-weight-bold fs-16'>TXID</span>,
             sortable: true,
-            selector: (row) => {
+            selector: 'transactionId',
+            cell: (row) => {
                 return (
                     <Link
                         style={{ width: 'fit-content' }}
@@ -532,7 +539,8 @@ const TokenPage = ({ address }) => {
         {
             name: <span className='font-weight-bold fs-16'>RANK</span>,
             sortable: true,
-            selector: (row) => {
+            selector: 'no',
+            cell: (row) => {
                 return (
                     <span className="text-center">{row.no}</span>
                 );
@@ -542,7 +550,8 @@ const TokenPage = ({ address }) => {
         {
             name: <span className='font-weight-bold fs-16'>Account ID</span>,
             sortable: true,
-            selector: (row) => {
+            selector: 'accountId',
+            cell: (row) => {
                 return (
                     <span>{row.accountId}</span>
                 );
@@ -552,7 +561,8 @@ const TokenPage = ({ address }) => {
         {
             name: <span className='font-weight-bold fs-16'>BALANCE</span>,
             sortable: true,
-            selector: (row) => {
+            selector: 'balance',
+            cell: (row) => {
                 return (
                     <span>{formattedNum(row.balance, false)}</span>
                 );
@@ -562,7 +572,8 @@ const TokenPage = ({ address }) => {
         {
             name: <span className='font-weight-bold fs-16'>PERCENT</span>,
             sortable: true,
-            selector: (row) => {
+            selector: 'percent',
+            cell: (row) => {
                 return (
                     // <div style={{ width: '100%', height: '2px', background: 'white' }}>{row.percent + '%'}</div>
                     <span>{row.percent + '%'}</span>
@@ -573,7 +584,8 @@ const TokenPage = ({ address }) => {
         {
             name: <span className='font-weight-bold fs-16'>USD</span>,
             sortable: true,
-            selector: (row) => {
+            selector: 'usd',
+            cell: (row) => {
                 return (
                     <span>{formattedNum(row.usd, true)}</span>
                 );
@@ -583,7 +595,8 @@ const TokenPage = ({ address }) => {
         {
             name: <span className='font-weight-bold fs-16'>SWAP IMPACT</span>,
             sortable: true,
-            selector: (row) => {
+            selector: 'impactPercent',
+            cell: (row) => {
                 return (
                     <span>{row.impactPercent + '%'}</span>
                 );
@@ -593,7 +606,8 @@ const TokenPage = ({ address }) => {
         {
             name: <span className='font-weight-bold fs-16'>ACTUAL USD</span>,
             sortable: true,
-            selector: (row) => {
+            selector: 'actualUsd',
+            cell: (row) => {
                 return (
                     <span>{formattedNum(row.actualUsd, true)}</span>
                 );
@@ -611,8 +625,8 @@ const TokenPage = ({ address }) => {
             <div className="page-content">
                 <Container fluid>
                     <ContentWrapper>
-                        <div className="d-flex flex-column new-bg br-10" style={{padding: '15px'}}>
-                            <RowBetween style={{ flexWrap: 'wrap', alingItems: 'start' }}>
+                        <div className="d-flex flex-column new-bg br-10" style={{ padding: '15px' }}>
+                            <RowBetween style={{ flexWrap: 'wrap', alingItems: 'start', marginBottom:'1rem' }}>
                                 <AutoRow align="flex-end" style={{ width: 'fit-content' }}>
                                     <div style={{ fontWeight: 400, fontSize: 14, color: 'white' }}>
                                         <BasicLink to="/tokens">{'Tokens '}</BasicLink>→ {symbol}
@@ -634,18 +648,16 @@ const TokenPage = ({ address }) => {
                                 <DashboardWrapper style={{ marginTop: below1080 ? '0' : '0' }}>
                                     <Row >
                                         <Col sm={12} md={6} style={{ alignItems: 'baseline' }}>
-                                            <div className="d-flex">
-                                                <TokenLogo path={iconPath} size="32px" style={{ alignSelf: 'center' }} />
-                                                <div fontSize={below1080 ? '1.5rem' : '2rem'} fontWeight={500} style={{ margin: '0 1rem' }}>
-                                                    <RowFixed gap="6px">
-                                                        <div style={{ marginRight: '6px', fontSize: 32, color: 'white' }} >{name}</div>{' '}
-                                                        <span style={{ fontSize: 32, color: 'grey' }}>{formattedSymbol ? `(${formattedSymbol})` : ''}</span>
-                                                    </RowFixed>
+                                            <div className="d-flex flex-column">
+                                                <div className="d-flex">
+                                                    <TokenLogo path={iconPath} size="32px" style={{ alignSelf: 'center' }} />
+                                                    <div fontSize={below1080 ? '1.5rem' : '2rem'} fontWeight={500} style={{ margin: '0 1rem' }}>
+                                                        <RowFixed gap="6px">
+                                                            <div style={{ marginRight: '6px', fontSize: 32, color: 'white' }} >{name}</div>{' '}
+                                                            <span style={{ fontSize: 32, color: 'grey' }}>{formattedSymbol ? `(${formattedSymbol})` : ''}</span>
+                                                        </RowFixed>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </Col>
-                                        <Col sm={12} md={6}>
-                                            <div className="d-flex flex-column items-end">
                                                 <div className="d-flex items-center">
                                                     <span style={{ marginRight: '1rem', fontSize: '32px', fontWeight: '500' }}>
                                                         {`$` + priceUSD.toFixed(8)}
@@ -670,6 +682,12 @@ const TokenPage = ({ address }) => {
                                                     </div>
 
                                                 </div>
+                                            </div>
+
+                                        </Col>
+                                        <Col sm={12} md={6}>
+                                            <div className="d-flex flex-column items-end">
+
                                                 <Nav pills className="badge-bg">
                                                     <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
                                                         <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.five ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.five) }} >
@@ -817,7 +835,7 @@ const TokenPage = ({ address }) => {
 
                             </Col>
                             <Col sm={12} md={9} style={{ marginBottom: '20px' }}>
-                                <div className="d-flex flex-column new-bg br-10" style={{padding: '15px'}}>
+                                <div className="d-flex flex-column new-bg br-10" style={{ padding: '15px' }}>
                                     {below600 ? (
                                         <RowBetween mb={40}>
                                             <DropdownSelect options={CHART_VIEW} active={chartFilter} setActive={setChartFilter} color={'#ff007a'} />
