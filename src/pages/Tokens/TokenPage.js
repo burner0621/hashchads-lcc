@@ -161,7 +161,6 @@ const TokenPage = ({ address }) => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [items, setItems] = useState([]);
     const [totalRows, setTotalRows] = useState(0);
-    const [perPage, setPerPage] = useState(10);
     const [timeRangeType, setTimeRangeType] = useState(TIME_RANGE_TYPE.week)
     const [tableType, setTableType] = useState(TABLE_TYPE.trade)
     const [holders, setHolders] = useState([])
@@ -173,6 +172,9 @@ const TokenPage = ({ address }) => {
     const [circulatingSupply, setCirculatingSupply] = useState(0)
     const [dilutedSupply, setDilutedSupply] = useState(0)
     const [tokenInfo, setTokenInfo] = useState(undefined)
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
 
     const [chartFilter, setChartFilter] = useState(CHART_VIEW.PRICE)
     const [frequency, setFrequency] = useState(DATA_FREQUENCY.HOUR)
@@ -186,7 +188,7 @@ const TokenPage = ({ address }) => {
     const dailyWeek = useTokenPriceData(address, timeframeOptions.WEEK, 86400)
     const dailyMonth = useTokenPriceData(address, timeframeOptions.MONTH, 86400)
     const dailyAll = useTokenPriceData(address, timeframeOptions.ALL_TIME, 86400)
-
+    
     const priceData =
         timeWindow === timeframeOptions.MONTH
             ? // monthly selected
@@ -218,8 +220,8 @@ const TokenPage = ({ address }) => {
 
     useEffect(() => {
 
-        fetchData(1, perPage);
-    }, [perPage])
+        fetchData(1, rowsPerPage);
+    }, [rowsPerPage])
 
     const calculateSwapImpactUsd = (amount) => {
         let maxSwapImpactUsd = 0
@@ -320,6 +322,7 @@ const TokenPage = ({ address }) => {
                 (result) => {
                     console.log(result, ">>>>>>>>>>>>><<<<<<<<<<<<<<")
                     setData(result.data);
+                    setCurrentPage(pageNum);
                     setTotalRows(result.count);
                 },
                 (error) => {
@@ -330,11 +333,12 @@ const TokenPage = ({ address }) => {
     }
 
     const handlePageChange = (page, totalRows) => {
-        fetchData(page, perPage);
+        fetchData(page, rowsPerPage);
+        // setCurrentPage(page)
     }
 
     const handlePerRowsChange = async (newPerPage, page) => {
-        setPerPage(newPerPage);
+        setRowsPerPage(newPerPage);
     }
 
     useEffect(() => {
@@ -952,7 +956,7 @@ const TokenPage = ({ address }) => {
                                         </Nav>
                                     </div>
                                     {tableType === TABLE_TYPE.trade && (error ? (<div>Error:{error.message}</div>) : (
-                                        isLoaded ? (<div>Loading...</div>) : (
+                                        // isLoaded ? (<div>Loading...</div>) : (
 
                                             <DataTable
                                                 customStyles={{
@@ -1004,8 +1008,10 @@ const TokenPage = ({ address }) => {
                                                 paginationTotalRows={totalRows}
                                                 onChangePage={handlePageChange}
                                                 onChangeRowsPerPage={handlePerRowsChange}
+                                                currentPage={currentPage}
+                                                rowsPerPage={rowsPerPage}
                                             />
-                                        )
+                                        // )
                                     ))}
                                     {tableType === TABLE_TYPE.holder && (
                                         <DataTable
