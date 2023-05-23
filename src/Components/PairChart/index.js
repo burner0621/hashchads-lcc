@@ -196,13 +196,15 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1, chartFilter
   function valueFormatter(val) {
     if (chartFilter === CHART_VIEW.RATE0) {
       return (
-        formattedNum(val) +
+        (val ?
+        formattedNum(val) : "") +
         `<span style="font-size: 12px; margin-left: 4px;">${formattedSymbol1}/${formattedSymbol0}<span>`
       )
     }
     if (chartFilter === CHART_VIEW.RATE1) {
       return (
-        formattedNum(val) +
+        (val ? 
+        formattedNum(val) : "") +
         `<span style="font-size: 12px; margin-left: 4px;">${formattedSymbol0}/${formattedSymbol1}<span>`
       )
     }
@@ -249,7 +251,7 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1, chartFilter
             />
             <Tooltip
               cursor={true}
-              formatter={(val) => formattedNum(val, true)}
+              formatter={(val) => val ? formattedNum(val, true) : ""}
               labelFormatter={(label) => toNiceDateYear(label)}
               labelStyle={{ paddingTop: 4 }}
               contentStyle={{
@@ -343,7 +345,7 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1, chartFilter
             />
             <Tooltip
               cursor={{ fill: color, opacity: 0.1 }}
-              formatter={(val) => formattedNum(val, true)}
+              formatter={(val) => val ? formattedNum(val, true) : ""}
               labelFormatter={(label) => toNiceDateYear(label)}
               labelStyle={{ paddingTop: 4 }}
               contentStyle={{

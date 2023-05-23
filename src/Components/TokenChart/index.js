@@ -47,7 +47,7 @@ const DATA_FREQUENCY = {
 
 const TokenChart = ({ address, color, base, priceData, chartFilter, timeWindow, frequency }) => {
     // settings for the window and candle width
-    
+
 
     const textColor = 'white'
 
@@ -113,14 +113,18 @@ const TokenChart = ({ address, color, base, priceData, chartFilter, timeWindow, 
                             tickFormatter={(tick) => '$' + toK(tick)}
                             axisLine={false}
                             tickLine={false}
-                            interval="preserveEnd"
+                            interval="preserver"
                             minTickGap={80}
                             yAxisId={0}
                             tick={{ fill: textColor }}
+                            // range={10}
+                            // tickMargin={16}
+                            domain="auto"
                         />
                         <Tooltip
                             cursor={true}
-                            formatter={(val) => formattedNum(val, true)}
+                            formatter={(val) => val ? formattedNum(val, true) : ""}
+                            
                             labelFormatter={(label) => toNiceDateYear(label)}
                             labelStyle={{ paddingTop: 4 }}
                             contentStyle={{
@@ -181,7 +185,7 @@ const TokenChart = ({ address, color, base, priceData, chartFilter, timeWindow, 
                             />
                             <Tooltip
                                 cursor={true}
-                                formatter={(val) => formattedNum(val, true)}
+                                formatter={(val) => val ? formattedNum(val, true) : ""}
                                 labelFormatter={(label) => toNiceDateYear(label)}
                                 labelStyle={{ paddingTop: 4 }}
                                 contentStyle={{
@@ -246,7 +250,7 @@ const TokenChart = ({ address, color, base, priceData, chartFilter, timeWindow, 
                         />
                         <Tooltip
                             cursor={{ fill: color, opacity: 0.1 }}
-                            formatter={(val) => formattedNum(val, true)}
+                            formatter={(val) => val ? formattedNum(val, true) : ""}
                             labelFormatter={(label) => toNiceDateYear(label)}
                             labelStyle={{ paddingTop: 4 }}
                             contentStyle={{
