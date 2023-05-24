@@ -185,7 +185,8 @@ const Pairs = () => {
                 )
             },
             sortable: true,
-            width: 180
+            width: 210
+            // width: 180
         },
         {
             name: <span className='font-weight-bold fs-16'>Price</span>,
@@ -198,7 +199,8 @@ const Pairs = () => {
                     </Link>
                 );
             },
-            width: 120
+            width: 150,
+            // width: 120
         },
         {
             name: <span className='font-weight-bold fs-16'>{'% ' + TIME_RANGE_TYPE_NAME[timeRangeType]}</span>,
@@ -216,64 +218,68 @@ const Pairs = () => {
                     </Link>
                 }
             },
-            width: 150
+            width: 210,
+            // width: 150
         },
-        {
-            name: <span className='font-weight-bold fs-16'>Created</span>,
-            cell: row => row.createdAt,
-            sortable: true,
-            selector: 'createdAt',
-            width: 100
-        },
+        // {
+        //     name: <span className='font-weight-bold fs-16'>Created</span>,
+        //     cell: row => row.createdAt,
+        //     sortable: true,
+        //     selector: 'createdAt',
+        //     width: 100
+        // },
         {
             name: <span className='font-weight-bold fs-16'>Volume</span>,
             // selector: row => row.volume ? calcUnit(row.volume) : '-',
             cell: row => row.volume ? ' $' + calcUnit(parseInt(row.volume)) : '-',
             sortable: true,
             selector: 'volume',
-            width: 120
+            width: 180,
+            // width: 120
         },
-        {
-            name: <span className='font-weight-bold fs-16'>Swaps</span>,
-            sortable: true,
-            selector: 'swaps',
-            cell: row => row.swaps ? ' $' + calcUnit(parseInt(row.swaps)) : '-',
-            width: 100
-        },
+        // {
+        //     name: <span className='font-weight-bold fs-16'>Swaps</span>,
+        //     sortable: true,
+        //     selector: 'swaps',
+        //     cell: row => row.swaps ? ' $' + calcUnit(parseInt(row.swaps)) : '-',
+        //     width: 100
+        // },
         {
             name: <span className='font-weight-bold fs-13'>Daily Fees</span>,
             sortable: true,
             selector: 'volume',
             cell: row => row.volume ? '$' + (row.volume / 400).toFixed(2) : '',
-            width: 100
+            width: 180,
+            // width: 100
         },
         {
             name: <span className='font-weight-bold fs-16'>Liquidity</span>,
             sortable: true,
             selector: 'liquidity',
             cell: row => row.liquidity ? '$' + calcUnit(parseInt(row.liquidity)) : '',
-            width: 150
+            width: 200
+            // width: 150
         },
-        {
-            name: <span className='font-weight-bold fs-16'>T.M.Cap.</span>,
-            sortable: true,
-            selector: 'cap',
-            cell: row => row.cap ? ' $' + calcUnit(parseInt(row.cap)) : '-',
-            width: 60
-        },
-        {
-            name: <span className='font-weight-bold fs-16'>Actions</span>,
-            sortable: true,
-            cell: row => {
-                return (
-                    <div>
-                        <i className="mdi mdi-binoculars fs-20"></i>
-                        <i className="bx bxs-bar-chart-square fs-20" style={{ marginRight: 5, marginLeft: 5 }}></i>
-                        <i className="bx bx-star fs-20"></i>
-                    </div>
-                )
-            }
-        },
+        // {
+        //     name: <span className='font-weight-bold fs-16'>T.M.Cap.</span>,
+        //     sortable: true,
+        //     selector: 'cap',
+        //     cell: row => row.cap ? ' $' + calcUnit(parseInt(row.cap)) : '-',
+        //     width: 60
+        // },
+        // {
+        //     name: <span className='font-weight-bold fs-16'>Actions</span>,
+        //     sortable: true,
+        //     cell: row => {
+        //         return (
+        //             <div>
+        //                 <i className="mdi mdi-binoculars fs-20"></i>
+        //                 <i className="bx bxs-bar-chart-square fs-20" style={{ marginRight: 5, marginLeft: 5 }}></i>
+        //                 <i className="bx bx-star fs-20"></i>
+        //             </div>
+        //         )
+        //     }
+        // },
     ];
 
     return (
