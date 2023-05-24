@@ -297,7 +297,7 @@ const TokenPage = ({ address }) => {
                 tmp['usd'] = (tmp['balance'] * priceUSD).toFixed(tokenInfo.decimals)
                 tmp['impactUsd'] = calculateSwapImpactUsd(tmp['balance'])
                 if (tmp['impactUsd'] > 0) {
-                    tmp['impactPercent'] = (tmp['impactUsd'] / tmp['usd'] * 100).toFixed(2)
+                    tmp['impactPercent'] = 100 - (tmp['impactUsd'] / tmp['usd'] * 100).toFixed(2)
                     if (tmp['impactPercent'] > 100) tmp['impactPercent'] = 100
                 }
                 else tmp['impactPercent'] = "0"
