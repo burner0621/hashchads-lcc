@@ -223,7 +223,7 @@ const TokenPage = ({ address }) => {
     useEffect(() => {
 
         fetchData(1, rowsPerPage);
-    }, [rowsPerPage])
+    }, [rowsPerPage, address])
 
     const calculateSwapImpactUsd = (amount) => {
         let maxSwapImpact = 1
@@ -681,10 +681,6 @@ const TokenPage = ({ address }) => {
             width: 100
         },
     ];
-
-    // useEffect(() => {
-    //     fetchData && fetchData({ pageIndex, pageSize });
-    // }, [fetchData, pageIndex, pageSize]);
 
     return (
         <React.Fragment>
