@@ -316,7 +316,6 @@ const TokenPage = ({ address }) => {
     }, [holders, pairs, tokenInfo, priceUSD])
 
     const fetchData = async (pageNum, per_page) => {
-        console.log (pageNum, per_page, ">>>>>>>>>>>>>>>>>>>>>")
         setIsLoaded(true);
         fetch(`${env.BASE_URL}/api/transaction/get?tokenId=${address}&pageNum=${pageNum}&pageSize=${per_page}`)
             .then(res => res.json())
