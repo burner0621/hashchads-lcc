@@ -31,6 +31,7 @@ import DropdownSelect from '../../Components/DropdownSelect'
 import { OptionButton } from '../../Components/ButtonStyled'
 import { Activity } from 'react-feather'
 import { usePrevious } from 'react-use'
+import { ImpulseSpinner } from "../../Components/Impulse";
 const PriceOption = styled(OptionButton)`
   border-radius: 2px;
 `
@@ -188,7 +189,7 @@ const TokenPage = ({ address }) => {
     const dailyWeek = useTokenPriceData(address, timeframeOptions.WEEK, 86400)
     const dailyMonth = useTokenPriceData(address, timeframeOptions.MONTH, 86400)
     const dailyAll = useTokenPriceData(address, timeframeOptions.ALL_TIME, 86400)
-    
+
     const priceData =
         timeWindow === timeframeOptions.MONTH
             ? // monthly selected
@@ -630,7 +631,7 @@ const TokenPage = ({ address }) => {
                 <Container fluid>
                     <ContentWrapper>
                         <div className="d-flex flex-column new-bg br-10" style={{ padding: '15px' }}>
-                            <RowBetween style={{ flexWrap: 'wrap', alingItems: 'start', marginBottom:'1rem' }}>
+                            <RowBetween style={{ flexWrap: 'wrap', alingItems: 'start', marginBottom: '1rem' }}>
                                 <AutoRow align="flex-end" style={{ width: 'fit-content' }}>
                                     <div style={{ fontWeight: 400, fontSize: 14, color: 'white' }}>
                                         <BasicLink to="/tokens">{'Tokens '}</BasicLink>→ {symbol}
@@ -755,7 +756,7 @@ const TokenPage = ({ address }) => {
                             {/* <TokenChart dataColors='["--vz-success", "--vz-danger"]' tokenId={address} /> */}
                             <Col sm={12} md={3}>
                                 <div className="d-flex flex-column">
-                                    <Card className="card-animate bg-blue-black border-radius-10" style={{maxWidth: 300}}>
+                                    <Card className="card-animate bg-blue-black border-radius-10" style={{ maxWidth: 300 }}>
                                         <CardBody>
                                             <div className="d-flex flex-column">
                                                 <Row className="d-flex justify-between mb-10" >
@@ -957,8 +958,13 @@ const TokenPage = ({ address }) => {
                                     </div>
                                     {tableType === TABLE_TYPE.trade && (error ? (<div>Error:{error.message}</div>) : (
                                         // isLoaded ? (<div>Loading...</div>) : (
+                                        <>
+                                            <div className={isLoaded ? "visible d-flex w-full items-center justify-center" : "hidden d-flex w-full items-center justify-center"}>
+                                                <ImpulseSpinner />
+                                            </div>
 
                                             <DataTable
+                                                className={isLoaded ? "height-50 hidden" : "visible"}
                                                 customStyles={{
                                                     headRow: {
                                                         style: {
@@ -1011,9 +1017,11 @@ const TokenPage = ({ address }) => {
                                                 currentPage={currentPage}
                                                 rowsPerPage={rowsPerPage}
                                             />
+                                        </>
                                         // )
                                     ))}
                                     {tableType === TABLE_TYPE.holder && (
+
                                         <DataTable
                                             customStyles={{
                                                 headRow: {
