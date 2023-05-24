@@ -256,7 +256,7 @@ const TokenPage = ({ address }) => {
 
     useEffect(() => {
         async function fetchHolderData() {
-            let t = parseInt(tokenInfo.total_supply / 30 * Math.pow(10, Number(tokenInfo.decimals))), limit = 30, e = tokenInfo.total_supply * Math.pow(10, Number(tokenInfo.decimals)), s = 0
+            let t = parseInt(tokenInfo.total_supply / 30), limit = 30, e = tokenInfo.total_supply, s = 0
             let l = 0
             let jsonData = []
             while (l < 25 || (jsonData.links && jsonData.links?.next !== null)) {
@@ -316,12 +316,12 @@ const TokenPage = ({ address }) => {
     }, [holders, pairs, tokenInfo, priceUSD])
 
     const fetchData = async (pageNum, per_page) => {
+        console.log (pageNum, per_page, ">>>>>>>>>>>>>>>>>>>>>")
         setIsLoaded(true);
         fetch(`${env.BASE_URL}/api/transaction/get?tokenId=${address}&pageNum=${pageNum}&pageSize=${per_page}`)
             .then(res => res.json())
             .then(
                 (result) => {
-                    console.log(result, ">>>>>>>>>>>>><<<<<<<<<<<<<<")
                     setData(result.data);
                     setCurrentPage(pageNum);
                     setTotalRows(result.count);
@@ -462,8 +462,8 @@ const TokenPage = ({ address }) => {
             cell: row => {
 
                 return (
-                    row.state === 'buy' ? <span className="text-buy text-buy-date">{(new Date(row.timestamp * 1000)).toLocaleString()}</span> :
-                        <span className="text-sell text-sell-date">{(new Date(row.timestamp * 1000)).toLocaleString()}</span>
+                    row.state === 'buy' ? <span className="text-buy text-buy-date">{(new Date(row.timestamp * 1000)).toLocaleString("en-US")}</span> :
+                        <span className="text-sell text-sell-date">{(new Date(row.timestamp * 1000)).toLocaleString("en-US")}</span>
                 )
             },
             sortable: true,
@@ -941,7 +941,7 @@ const TokenPage = ({ address }) => {
                                             </AutoRow>
                                         </RowBetween>
                                     )}
-                                    <TokenChart address={address} color={'#ff007a'} base={priceUSD} priceData={priceData} chartFilter={chartFilter} timeWindow={timeWindow} frequency={frequency} />
+                                    <TokenChart address={address} color={'#ff007a'} base={priceUSD} priceData={priceData} chartFilter={chartFilter} timeWindow={timeWindow} frequency={frequency} symbol={symbol}/>
                                     <div className="d-flex justify-start">
                                         <Nav pills className="badge-bg">
                                             <NavItem className="d-flex items-center justify-center" style={{ width: "6rem" }}>

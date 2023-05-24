@@ -9,6 +9,8 @@ import { darken } from 'polished'
 import { useMedia, usePrevious } from 'react-use'
 import { timeframeOptions } from '../../constants'
 import { useTokenChartData, useTokenPriceData } from '../../contexts/TokenData'
+
+import Chart from '../tradingview'
 import DropdownSelect from '../DropdownSelect'
 import CandleStickChart from '../CandleChart'
 import LocalLoader from '../LocalLoader'
@@ -45,7 +47,7 @@ const DATA_FREQUENCY = {
     LINE: 'LINE',
 }
 
-const TokenChart = ({ address, color, base, priceData, chartFilter, timeWindow, frequency }) => {
+const TokenChart = ({ address, color, base, priceData, chartFilter, timeWindow, frequency, symbol }) => {
     // settings for the window and candle width
 
 
@@ -227,7 +229,8 @@ const TokenChart = ({ address, color, base, priceData, chartFilter, timeWindow, 
                     </ResponsiveContainer>
                 ) : priceData && priceData.length ? (
                     <ResponsiveContainer aspect={aspect} ref={ref}>
-                        <CandleStickChart data={priceData} width={width} base={base} />
+                        {/* <CandleStickChart data={priceData} width={width} base={base} /> */}
+                        <Chart stock={"Stock"} interval="5" width="100%" tokenId={address} symbol={symbol.toUpperCase() + "/USD"} height="100%"/>
                     </ResponsiveContainer>
                 ) : (
                     // <LocalLoader />

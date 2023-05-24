@@ -8,11 +8,10 @@ const Chart = (props) => {
 
   useEffect(() => {
     if (symbol && interval) {
-      console.log('[entered]');
 
       // eslint-disable-next-line no-undef
       const widget = (window.tvWidget = new TradingView.widget({
-        symbol: "HBAR/USD",
+        symbol: symbol,
         interval: interval,
         fullscreen: false,
         width: "100%",
