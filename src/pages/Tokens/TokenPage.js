@@ -289,9 +289,15 @@ const TokenPage = ({ address }) => {
         if (holders.length > 0 && pairs.length > 0 && tokenInfo) {
             let totalBalance = tokenInfo.total_supply / Math.pow(10, Number(tokenInfo.decimals))
             let rlt = [], i = 1
+            let pairContracts = pairs.map(item => item.contractId)
+            let pairsByContract = {};
+            for (let pair of pairs) {
+                pairsByContract[pair.contractId] = pair
+            }
             for (let holder of holders) {
                 let tmp = {}
                 tmp['accountId'] = holder.account
+                tmp['lpToken'] = pairContracts.includes (holder.account) ? pairsByContract[holder.account]['lpToken']['symbol'] : undefined
                 tmp['balance'] = holder.balance / Math.pow(10, Number(tokenInfo.decimals))
                 tmp['percent'] = (tmp['balance'] / totalBalance * 100).toFixed(2)
                 tmp['usd'] = (tmp['balance'] * priceUSD).toFixed(tokenInfo.decimals)
@@ -557,10 +563,11 @@ const TokenPage = ({ address }) => {
             selector: 'accountId',
             cell: (row) => {
                 return (
-                    <span>{row.accountId}</span>
+                    <span>{row.lpToken ? ">> " + row.accountId + " <<\n[LP]" + row.lpToken : row.accountId}
+                    </span>
                 );
             },
-            width: 140
+            width: 170
         },
         {
             name: <span className='font-weight-bold fs-16'>BALANCE</span>,
@@ -940,7 +947,7 @@ const TokenPage = ({ address }) => {
                                             </AutoRow>
                                         </RowBetween>
                                     )}
-                                    <TokenChart address={address} color={'#ff007a'} base={priceUSD} priceData={priceData} chartFilter={chartFilter} timeWindow={timeWindow} frequency={frequency} symbol={symbol}/>
+                                    <TokenChart address={address} color={'#ff007a'} base={priceUSD} priceData={priceData} chartFilter={chartFilter} timeWindow={timeWindow} frequency={frequency} symbol={symbol} />
                                     <div className="d-flex justify-start">
                                         <Nav pills className="badge-bg">
                                             <NavItem className="d-flex items-center justify-center" style={{ width: "6rem" }}>
@@ -1020,55 +1027,64 @@ const TokenPage = ({ address }) => {
                                         // )
                                     ))}
                                     {tableType === TABLE_TYPE.holder && (
+                                        <>
+                                            {
+                                                holderInfo && holderInfo.length > 0 ?
+                                                    (<DataTable
+                                                        customStyles={{
+                                                            headRow: {
+                                                                style: {
+                                                                    background: "#142028",
+                                                                    color: "white"
+                                                                }
+                                                            },
+                                                            table: {
+                                                                style: {
+                                                                    background: "#142028",
+                                                                    color: "white"
+                                                                }
+                                                            },
+                                                            rows: {
+                                                                style: {
+                                                                    background: "#142028",
+                                                                    color: "white"
+                                                                }
+                                                            },
+                                                            pagination: {
+                                                                style: {
+                                                                    background: "#142028",
+                                                                    color: "white"
+                                                                },
+                                                                pageButtonsStyle: {
+                                                                    color: "white",
+                                                                    fill: "white"
+                                                                }
+                                                            },
+                                                            noData: {
+                                                                style: {
+                                                                    background: "#142028",
+                                                                    color: "white"
+                                                                }
+                                                            },
+                                                            cells: {
+                                                                style: {
+                                                                    paddingRight: "0px",
+                                                                    color: "white"
+                                                                }
+                                                            }
+                                                        }}
+                                                        columns={holder_columns}
+                                                        data={holderInfo || []}
+                                                        pagination>
 
-                                        <DataTable
-                                            customStyles={{
-                                                headRow: {
-                                                    style: {
-                                                        background: "#142028",
-                                                        color: "white"
-                                                    }
-                                                },
-                                                table: {
-                                                    style: {
-                                                        background: "#142028",
-                                                        color: "white"
-                                                    }
-                                                },
-                                                rows: {
-                                                    style: {
-                                                        background: "#142028",
-                                                        color: "white"
-                                                    }
-                                                },
-                                                pagination: {
-                                                    style: {
-                                                        background: "#142028",
-                                                        color: "white"
-                                                    },
-                                                    pageButtonsStyle: {
-                                                        color: "white",
-                                                        fill: "white"
-                                                    }
-                                                },
-                                                noData: {
-                                                    style: {
-                                                        background: "#142028",
-                                                        color: "white"
-                                                    }
-                                                },
-                                                cells: {
-                                                    style: {
-                                                        paddingRight: "0px",
-                                                        color: "white"
-                                                    }
-                                                }
-                                            }}
-                                            columns={holder_columns}
-                                            data={holderInfo || []}
-                                            pagination>
-
-                                        </DataTable>
+                                                    </DataTable>) :
+                                                    (
+                                                        <div className="visible d-flex w-full items-center justify-center">
+                                                            <ImpulseSpinner />
+                                                        </div>
+                                                    )
+                                            }
+                                        </>
                                     )}
                                 </div>
                             </Col>
