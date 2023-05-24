@@ -226,22 +226,25 @@ const TokenPage = ({ address }) => {
     }, [rowsPerPage])
 
     const calculateSwapImpactUsd = (amount) => {
-        let maxSwapImpactUsd = 0
+        let maxSwapImpact = 1
         for (let pair of pairs) {
+            if (address !== pair.tokenA.id && address !== pair.tokenB.id) continue
             let deltaYUsd = 0
             let reserveA = Number(pair.tokenReserveA) / Math.pow(10, Number(pair.tokenA.decimals))
-            let reserveB = Number(pair.tokenReserveB) / Math.pow(10, Number(pair.tokenB.decimals))
+            let reserveB = Number(pair.tokenReserveB) / Math.pow(10, Number(pair.tokenB.decimals)) 
 
             if (address === pair.tokenA.id) {
-                deltaYUsd = reserveB * (1 - reserveA / (reserveA + amount)) * pair.tokenB.priceUsd
+                // deltaYUsd = reserveB * (1 - reserveA / (reserveA + amount)) * pair.tokenB.priceUsd
+                deltaYUsd = 1 - Math.pow(reserveA / (reserveA + 0.997 * amount), 2)
             }
             if (address === pair.tokenB.id) {
-                deltaYUsd = reserveA * (1 - reserveB / (reserveB + amount)) * pair.tokenA.priceUsd
+                // deltaYUsd = reserveA * (1 - reserveB / (reserveB + amount)) * pair.tokenA.priceUsd
+                deltaYUsd = 1 - Math.pow(reserveB / (reserveB + 0.997 * amount), 2)
             }
-            if (maxSwapImpactUsd < deltaYUsd) maxSwapImpactUsd = deltaYUsd
+            if (maxSwapImpact > deltaYUsd) maxSwapImpact = deltaYUsd
         }
 
-        return maxSwapImpactUsd
+        return maxSwapImpact
     }
 
     useEffect(() => {
@@ -302,12 +305,16 @@ const TokenPage = ({ address }) => {
                 tmp['balance'] = holder.balance / Math.pow(10, Number(tokenInfo.decimals))
                 tmp['percent'] = (tmp['balance'] / totalBalance * 100).toFixed(2)
                 tmp['usd'] = (tmp['balance'] * priceUSD).toFixed(tokenInfo.decimals)
-                tmp['impactUsd'] = calculateSwapImpactUsd(tmp['balance'])
-                if (tmp['impactUsd'] > 0) {
-                    tmp['impactPercent'] = (100 - (tmp['impactUsd'] / tmp['usd'] * 100)).toFixed(2)
-                    if (tmp['impactPercent'] > 100) tmp['impactPercent'] = 100
-                }
-                else tmp['impactPercent'] = "0"
+                // tmp['impactUsd'] = calculateSwapImpactUsd(tmp['balance'])
+                // if (tmp['impactUsd'] > 0) {
+                //     tmp['impactPercent'] = (100 - (tmp['impactUsd'] / tmp['usd'] * 100)).toFixed(2)
+                //     if (tmp['impactPercent'] > 100) tmp['impactPercent'] = 100
+                // }
+                // else tmp['impactPercent'] = "0"
+                tmp['impactPercent'] = (100 * calculateSwapImpactUsd(tmp['balance'])).toFixed (2)
+                // if (holder.account === "0.0.834722") tmp['impactPercent'] = 100 * calculateSwapImpactUsd(tmp['balance'])
+                // else tmp['impactPercent'] = 0
+                tmp['impactUsd'] = tmp['usd'] * tmp['impactPercent'] / 100
                 tmp['actualUsd'] = tmp['usd'] - tmp['impactUsd']
                 if (tmp['actualUsd'] < 0) tmp['actualUsd'] = 0
                 rlt.push(tmp)
