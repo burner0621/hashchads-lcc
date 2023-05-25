@@ -298,7 +298,7 @@ const TokenPage = ({ address }) => {
                 tmp['usd'] = (tmp['balance'] * priceUSD).toFixed(tokenInfo.decimals)
                 tmp['impactUsd'] = calculateSwapImpactUsd(tmp['balance'])
                 if (tmp['impactUsd'] > 0) {
-                    tmp['impactPercent'] = (tmp['impactUsd'] / tmp['usd'] * 100).toFixed(2)
+                    tmp['impactPercent'] = (100 - (tmp['impactUsd'] / tmp['usd'] * 100)).toFixed(2)
                     if (tmp['impactPercent'] > 100) tmp['impactPercent'] = 100
                 }
                 else tmp['impactPercent'] = "0"
@@ -317,7 +317,6 @@ const TokenPage = ({ address }) => {
     }, [holders, pairs, tokenInfo, priceUSD])
 
     const fetchData = async (pageNum, per_page) => {
-        console.log(pageNum, per_page, ">>>>>>>>>>>>>>>>>>>>>")
         setIsLoaded(true);
         fetch(`${env.BASE_URL}/api/transaction/get?tokenId=${address}&pageNum=${pageNum}&pageSize=${per_page}`)
             .then(res => res.json())

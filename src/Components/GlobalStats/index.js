@@ -37,8 +37,8 @@ export default function GlobalStats() {
     const formattedHbarPrice = hBarPrice ? formattedNum(hBarPrice, true) : undefined
     const formattedSaucePrice = saucePrice ? formattedNum(saucePrice, true) : undefined
     const formattedTvlUSD = totalVolumeUSD ? formattedNum(totalVolumeUSD, true) : undefined
-    const formattedTvlHBAR = totalVolumeHBAR ? formattedNum(totalVolumeHBAR, true) : undefined
-    const formattedTodayVolume = todayVolumeUSD ? formattedNum(todayVolumeUSD, true) : undefined
+    const formattedTvlHBAR = totalVolumeHBAR ? formattedNum(totalVolumeHBAR, false) : undefined
+    const formattedTodayVolume = todayVolumeUSD ? formattedNum(todayVolumeUSD, false) : undefined
     const formattedTodayFees = todayVolumeUSD ? formattedNum(todayVolumeUSD/400, true) : undefined
 
     return (
@@ -83,7 +83,7 @@ export default function GlobalStats() {
                                 (todayVolumeUSD === undefined || formattedTodayVolume === undefined) && <Spinner color="light" type="grow" style={{ verticalAlign: 'middle' }}></Spinner>
                             }
                             {
-                                todayVolumeUSD !== undefined && formattedTodayVolume !== undefined && <span className='badge badge-outline-light' style={{ fontSize: 13 }}>{`${formattedNum(todayVolumeUSD * hBarPrice)} (${formattedTodayVolume} HBAR)`}</span>
+                                todayVolumeUSD !== undefined && formattedTodayVolume !== undefined && <span className='badge badge-outline-light' style={{ fontSize: 13 }}>{`${formattedNum(todayVolumeUSD * hBarPrice, true)} (${formattedTodayVolume} HBAR)`}</span>
                             }
                         </Text>
                     )}
