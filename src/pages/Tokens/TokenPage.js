@@ -119,7 +119,8 @@ const TIME_RANGE_TYPE = {
 
 const TABLE_TYPE = {
     trade: 'trade',
-    holder: 'holder'
+    holder: 'holder',
+    fee: 'fee'
 }
 
 const TIME_RANGE_TYPE_NAME = {
@@ -316,7 +317,7 @@ const TokenPage = ({ address }) => {
     }, [holders, pairs, tokenInfo, priceUSD])
 
     const fetchData = async (pageNum, per_page) => {
-        console.log (pageNum, per_page, ">>>>>>>>>>>>>>>>>>>>>")
+        console.log(pageNum, per_page, ">>>>>>>>>>>>>>>>>>>>>")
         setIsLoaded(true);
         fetch(`${env.BASE_URL}/api/transaction/get?tokenId=${address}&pageNum=${pageNum}&pageSize=${per_page}`)
             .then(res => res.json())
@@ -350,7 +351,7 @@ const TokenPage = ({ address }) => {
     useEffect(() => {
         const fetchTotalData = async () => {
             try {
-                const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=hedera-hashgraph&vs_currencies=usd`)
+                const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=hedera-hashgraph&vs_currencies=usd`, {mode: 'no-cors'})
                 if (response.status === 200) {
                     const jsonData = await response.json()
                     setHbarPrice(jsonData["hedera-hashgraph"]["usd"])
@@ -620,6 +621,53 @@ const TokenPage = ({ address }) => {
             width: 160
         },
     ]
+
+    const fee_columns = [
+
+        {
+            name: <span className='font-weight-bold fs-13'>Fractional Fee</span>,
+            selector: row => ((row.amount.numerator / row.amount.denominator * 100) + '%') || '',
+            sortable: true,
+            width:150
+        },
+        {
+            name: <span className='font-weight-bold fs-13'>Fee Currency</span>,
+            sortable: true,
+            selector: (cell) => {
+                return (
+                    <div className='d-flex'>
+                        <span>{cell.denominating_token_id} </span>
+                        <span className='text-symbol'>{'[' + tokenInfo.name + ']'}</span>
+                    </div>
+                );
+            },
+            width:180,
+        },
+        {
+            name: <span className='font-weight-bold fs-13'>Collector Account</span>,
+            selector: row => row.collector_account_id,
+            sortable: true,
+            width: 120,
+        },
+        {
+            name: <span className='font-weight-bold fs-13'>Min</span>,
+            selector: row => row.minimum,
+            sortable: true,
+            width:100
+        },
+        {
+            name: <span className='font-weight-bold fs-13'>Max</span>,
+            selector: row => row.max ? row.max : 'none',
+            sortable: true,
+            width:100
+        },
+        {
+            name: <span className='font-weight-bold fs-13'>Net</span>,
+            sortable: true,
+            selector: row => row.denominating_token_id,
+            width: 100
+        },
+    ];
 
     // useEffect(() => {
     //     fetchData && fetchData({ pageIndex, pageSize });
@@ -941,7 +989,7 @@ const TokenPage = ({ address }) => {
                                             </AutoRow>
                                         </RowBetween>
                                     )}
-                                    <TokenChart address={address} color={'#ff007a'} base={priceUSD} priceData={priceData} chartFilter={chartFilter} timeWindow={timeWindow} frequency={frequency} symbol={symbol}/>
+                                    <TokenChart address={address} color={'#ff007a'} base={priceUSD} priceData={priceData} chartFilter={chartFilter} timeWindow={timeWindow} frequency={frequency} symbol={symbol} />
                                     <div className="d-flex justify-start">
                                         <Nav pills className="badge-bg">
                                             <NavItem className="d-flex items-center justify-center" style={{ width: "6rem" }}>
@@ -954,6 +1002,13 @@ const TokenPage = ({ address }) => {
                                                     <span className={tableType == TABLE_TYPE.holder ? "text-white badge" : "text-badge badge"}>Holders</span>
                                                 </div>
                                             </NavItem>
+                                            {tokenInfo && tokenInfo.custom_fees && tokenInfo.custom_fees.fractional_fees && tokenInfo.custom_fees.fractional_fees.length > 0 && (
+                                                <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
+                                                    <div style={{ cursor: "pointer" }} className={tableType == TABLE_TYPE.fee ? "active badge-active-bg" : ""} onClick={() => { handleTableType(TABLE_TYPE.fee) }} >
+                                                        <span className={tableType == TABLE_TYPE.fee ? "text-white badge" : "text-badge badge"}>Fees</span>
+                                                    </div>
+                                                </NavItem>
+                                            )}
                                         </Nav>
                                     </div>
                                     {tableType === TABLE_TYPE.trade && (error ? (<div>Error:{error.message}</div>) : (
@@ -1070,6 +1125,55 @@ const TokenPage = ({ address }) => {
                                             pagination>
 
                                         </DataTable>
+                                    )}
+                                    {tableType == TABLE_TYPE.fee && (
+                                        <DataTable
+                                            customStyles={{
+                                                headRow: {
+                                                    style: {
+                                                        background: "#142028",
+                                                        color: "white"
+                                                    }
+                                                },
+                                                table: {
+                                                    style: {
+                                                        background: "#142028",
+                                                        color: "white"
+                                                    }
+                                                },
+                                                rows: {
+                                                    style: {
+                                                        background: "#142028",
+                                                        color: "white"
+                                                    }
+                                                },
+                                                pagination: {
+                                                    style: {
+                                                        background: "#142028",
+                                                        color: "white"
+                                                    },
+                                                    pageButtonsStyle: {
+                                                        color: "white",
+                                                        fill: "white"
+                                                    }
+                                                },
+                                                noData: {
+                                                    style: {
+                                                        background: "#142028",
+                                                        color: "white"
+                                                    }
+                                                },
+                                                cells: {
+                                                    style: {
+                                                        paddingRight: "0px",
+                                                        color: "white"
+                                                    }
+                                                }
+                                            }}
+                                            columns={fee_columns}
+                                            data={tokenInfo && tokenInfo.custom_fees && tokenInfo.custom_fees.fractional_fees || []}
+                                            pagination
+                                        />
                                     )}
                                 </div>
                             </Col>
