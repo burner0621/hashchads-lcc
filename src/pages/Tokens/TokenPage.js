@@ -226,25 +226,25 @@ const TokenPage = ({ address }) => {
     useEffect(() => {
 
         fetchData(1, rowsPerPage);
-    }, [rowsPerPage])
+    }, [rowsPerPage, address])
 
     const calculateSwapImpactUsd = (amount) => {
         let maxSwapImpact = 1
         for (let pair of pairs) {
             if (address !== pair.tokenA.id && address !== pair.tokenB.id) continue
-            let deltaYUsd = 0
+            let swapImpact = 0
             let reserveA = Number(pair.tokenReserveA) / Math.pow(10, Number(pair.tokenA.decimals))
             let reserveB = Number(pair.tokenReserveB) / Math.pow(10, Number(pair.tokenB.decimals)) 
 
             if (address === pair.tokenA.id) {
                 // deltaYUsd = reserveB * (1 - reserveA / (reserveA + amount)) * pair.tokenB.priceUsd
-                deltaYUsd = 1 - Math.pow(reserveA / (reserveA + 0.997 * amount), 2)
+                swapImpact = 1 - Math.pow(reserveA / (reserveA + 0.997 * amount), 2)
             }
             if (address === pair.tokenB.id) {
                 // deltaYUsd = reserveA * (1 - reserveB / (reserveB + amount)) * pair.tokenA.priceUsd
-                deltaYUsd = 1 - Math.pow(reserveB / (reserveB + 0.997 * amount), 2)
+                swapImpact = 1 - Math.pow(reserveB / (reserveB + 0.997 * amount), 2)
             }
-            if (maxSwapImpact > deltaYUsd) maxSwapImpact = deltaYUsd
+            if (maxSwapImpact > swapImpact) maxSwapImpact = swapImpact
         }
 
         return maxSwapImpact
@@ -284,9 +284,9 @@ const TokenPage = ({ address }) => {
             }
             setHolders(jsonData.balances)
         }
-        if (address && tokenInfo && holders.length === 0)
+        if (address && tokenInfo)
             fetchHolderData()
-    }, [address, tokenInfo, holders])
+    }, [address, tokenInfo])
 
     useEffect(() => {
         setIsLoaded(false)
@@ -315,7 +315,7 @@ const TokenPage = ({ address }) => {
                 // }
                 // else tmp['impactPercent'] = "0"
                 tmp['impactPercent'] = (100 * calculateSwapImpactUsd(tmp['balance'])).toFixed (2)
-                // if (holder.account === "0.0.834722") tmp['impactPercent'] = 100 * calculateSwapImpactUsd(tmp['balance'])
+                // if (holder.account === "0.0.285576") tmp['impactPercent'] = 100 * calculateSwapImpactUsd(tmp['balance'])
                 // else tmp['impactPercent'] = 0
                 tmp['impactUsd'] = tmp['usd'] * tmp['impactPercent'] / 100
                 tmp['actualUsd'] = tmp['usd'] - tmp['impactUsd']
@@ -422,7 +422,7 @@ const TokenPage = ({ address }) => {
                 }
             }
         }
-        if (priceUSD > 0 && (circulatingSupply === 0 || dilutedSupply === 0 || tokenInfo === undefined)) fetchTokenData()
+        if (priceUSD > 0 && address) fetchTokenData()
     }, [address, priceUSD])
 
     useEffect(() => {
@@ -684,10 +684,6 @@ const TokenPage = ({ address }) => {
             width: 100
         },
     ];
-
-    // useEffect(() => {
-    //     fetchData && fetchData({ pageIndex, pageSize });
-    // }, [fetchData, pageIndex, pageSize]);
 
     return (
         <React.Fragment>
