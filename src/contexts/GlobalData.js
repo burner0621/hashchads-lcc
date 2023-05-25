@@ -197,7 +197,7 @@ export function useGlobalData() {
 
 async function getHbarAndSaucePrice() {
   try {
-    let response = await fetch("https://api.saucerswap.finance/tokens", {mode: 'no-cors'})
+    let response = await fetch("https://api.saucerswap.finance/tokens")
     if (response.status === 200) {
       const jsonData = await response.json();
       try {
@@ -215,7 +215,7 @@ async function getHbarAndSaucePrice() {
 async function getAllPairsOnSaucerswap() {
   try {
     let pairs = []
-    let response = await fetch("https://api.saucerswap.finance/pools", {mode: 'no-cors'})
+    let response = await fetch("https://api.saucerswap.finance/pools")
     if (response.status === 200) {
       const jsonData = await response.json();
       pairs = jsonData;
@@ -231,7 +231,7 @@ async function getAllTokensOnSaucerswap(_allPairs, tokenDailyVolume, priceChange
     let tokens = [], tmpTokens = []
     let rlt = []
 
-    let response = await fetch("https://api.saucerswap.finance/tokens", {mode: 'no-cors'})
+    let response = await fetch("https://api.saucerswap.finance/tokens")
     if (response.status === 200) {
       const jsonData = await response.json();
       tokens = jsonData;

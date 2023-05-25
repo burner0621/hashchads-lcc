@@ -350,7 +350,7 @@ const TokenPage = ({ address }) => {
     useEffect(() => {
         const fetchTotalData = async () => {
             try {
-                const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=hedera-hashgraph&vs_currencies=usd`, {mode: 'no-cors'})
+                const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=hedera-hashgraph&vs_currencies=usd`)
                 if (response.status === 200) {
                     const jsonData = await response.json()
                     setHbarPrice(jsonData["hedera-hashgraph"]["usd"])
@@ -627,7 +627,7 @@ const TokenPage = ({ address }) => {
             name: <span className='font-weight-bold fs-13'>Fractional Fee</span>,
             selector: row => ((row.amount.numerator / row.amount.denominator * 100) + '%') || '',
             sortable: true,
-            width:150
+            width: 150
         },
         {
             name: <span className='font-weight-bold fs-13'>Fee Currency</span>,
@@ -640,7 +640,7 @@ const TokenPage = ({ address }) => {
                     </div>
                 );
             },
-            width:180,
+            width: 180,
         },
         {
             name: <span className='font-weight-bold fs-13'>Collector Account</span>,
@@ -652,13 +652,13 @@ const TokenPage = ({ address }) => {
             name: <span className='font-weight-bold fs-13'>Min</span>,
             selector: row => row.minimum,
             sortable: true,
-            width:100
+            width: 100
         },
         {
             name: <span className='font-weight-bold fs-13'>Max</span>,
             selector: row => row.max ? row.max : 'none',
             sortable: true,
-            width:100
+            width: 100
         },
         {
             name: <span className='font-weight-bold fs-13'>Net</span>,
