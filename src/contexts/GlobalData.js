@@ -176,7 +176,6 @@ export function useGlobalData() {
 
       let allPairs = await getAllPairsOnSaucerswap()
       updateAllPairsInSaucerswap(allPairs)
-
       let allTokens = await getAllTokensOnSaucerswap(allPairs, tokenDailyVolume, priceChanges, hbarPrice)
       updateAllTokensInSaucerswap(allTokens)
 
@@ -230,14 +229,13 @@ async function getAllTokensOnSaucerswap(_allPairs, tokenDailyVolume, priceChange
   try {
     let tokens = [], tmpTokens = []
     let rlt = []
-
     let response = await fetch("https://api.saucerswap.finance/tokens")
     if (response.status === 200) {
       const jsonData = await response.json();
       tokens = jsonData;
     }
     for (let token of tokens) {
-      token['oneDayVolumeUSD'] = Number(tokenDailyVolume[token['id']]) * hbarPrice.toFixed(4)
+      token['oneDayVolumeUSD'] = Number(tokenDailyVolume[token['id']]) * (hbarPrice !== undefined ? hbarPrice.toFixed(4) : 0)
       token['priceChangeUSD'] = Number(priceChanges[token['id']])
       tmpTokens.push(token)
     }
@@ -267,6 +265,7 @@ async function getAllTokensOnSaucerswap(_allPairs, tokenDailyVolume, priceChange
     }
     return rlt
   } catch (e) {
+    console.error('getAllTokensOnSaucerswap error', e)
     return []
   }
 }
@@ -575,7 +574,7 @@ export function useAllTokensInSaucerswap() {
       updateAllTokensInSaucerswap(data)
     }
     if (allTokens === undefined || allTokens?.length === 0) fetchData()
-  }, [allTokens, _allPairs, priceChanges, updateAllTokensInSaucerswap, tokenDailyVolume, hbarPrice])
+  }, [allTokens, _allPairs, priceChanges, tokenDailyVolume, hbarPrice])
   return allTokens || []
 }
 

@@ -234,7 +234,7 @@ const Tokens = () => {
                                                 <Input
                                                     type="switch"
                                                     style={{ height: "1.5rem", width: '3rem', marginRight: 5 }}
-                                                    checked={showLiquidity}
+                                                    defaultChecked={showLiquidity}
                                                     onClick={() => {
                                                         setShowLiquidity(!showLiquidity)
                                                     }}

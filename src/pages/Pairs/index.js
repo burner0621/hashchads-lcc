@@ -166,7 +166,6 @@ const Pairs = () => {
 
         {
             name: <span className='font-weight-bold fs-16'>Pair</span>,
-            selector: 'first',
             cell: row => {
                 return (
                     <Link to={'/pairs/' + row.pair_address}>
@@ -191,7 +190,6 @@ const Pairs = () => {
         {
             name: <span className='font-weight-bold fs-16'>Price</span>,
             sortable: true,
-            selector: 'price',
             cell: (row) => {
                 return (
                     <Link to={'/pairs/' + row.pair_address}>
@@ -205,7 +203,6 @@ const Pairs = () => {
         {
             name: <span className='font-weight-bold fs-16'>{'% ' + TIME_RANGE_TYPE_NAME[timeRangeType]}</span>,
             sortable: true,
-            selector: 'percent',
             cell: (row) => {
                 if (row.percent >= 0) {
                     return <Link to={'/pairs/' + row.pair_address}>
@@ -233,7 +230,6 @@ const Pairs = () => {
             // selector: row => row.volume ? calcUnit(row.volume) : '-',
             cell: row => row.volume ? ' $' + calcUnit(parseInt(row.volume)) : '-',
             sortable: true,
-            selector: 'volume',
             width: 180,
             // width: 120
         },
@@ -247,7 +243,6 @@ const Pairs = () => {
         {
             name: <span className='font-weight-bold fs-13'>Daily Fees</span>,
             sortable: true,
-            selector: 'volume',
             cell: row => row.volume ? '$' + (row.volume / 400).toFixed(2) : '',
             width: 180,
             // width: 100
@@ -255,7 +250,6 @@ const Pairs = () => {
         {
             name: <span className='font-weight-bold fs-16'>Liquidity</span>,
             sortable: true,
-            selector: 'liquidity',
             cell: row => row.liquidity ? '$' + calcUnit(parseInt(row.liquidity)) : '',
             width: 200
             // width: 150
@@ -316,7 +310,7 @@ const Pairs = () => {
                                             <Input
                                                 type="switch"
                                                 style={{ height: "1.5rem", width: '3rem', marginRight: 5 }}
-                                                checked={showLiquidity}
+                                                defaultChecked={showLiquidity}
                                                 onClick={() => {
                                                     setShowLiquidity(!showLiquidity)
                                                 }}

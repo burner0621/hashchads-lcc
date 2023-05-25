@@ -181,6 +181,9 @@ const TokenPage = ({ address }) => {
     const [chartFilter, setChartFilter] = useState(CHART_VIEW.PRICE)
     const [frequency, setFrequency] = useState(DATA_FREQUENCY.HOUR)
     const [timeWindow, setTimeWindow] = useState(timeframeOptions.WEEK)
+
+    const [statisticData, setStatisticData] = useState({})
+
     const prevWindow = usePrevious(timeWindow)
 
     // hourly and daily price data based on the current time window
@@ -346,6 +349,20 @@ const TokenPage = ({ address }) => {
             )
     }
 
+    const fetchStatisticData = async (timeRangeType) => {
+        
+        fetch(`${env.BASE_URL}/api/transaction/getStatistic?tokenId=${address}&timeRangeType=${timeRangeType}`)
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    setStatisticData(result);
+                },
+                (error) => {
+                    console.log('fetchStatisticData error', error)
+                }
+            )
+    }
+
     const handlePageChange = (page, totalRows) => {
         fetchData(page, rowsPerPage);
         // setCurrentPage(page)
@@ -369,11 +386,11 @@ const TokenPage = ({ address }) => {
                     setHbarPrice(jsonData["hedera-hashgraph"]["usd"])
                 }
             } catch (e) {
-                console.log(e)
+                console.error("https://api.coingecko.com/api/v3/simple/price?ids=hedera-hashgraph&vs_currencies=usd", e);
             }
         }
         if (hbarPrice === undefined || hbarPrice === 0) fetchTotalData()
-    })
+    }, [hbarPrice])
 
     useEffect(() => {
         const fetchTotalData = async () => {
@@ -471,7 +488,6 @@ const TokenPage = ({ address }) => {
         {
             name: <span className='font-weight-bold fs-16'>Date</span>,
             sortField: 'timestamp',
-            selector: 'timestamp',
             cell: row => {
 
                 return (
@@ -485,7 +501,6 @@ const TokenPage = ({ address }) => {
         {
             name: <span className='font-weight-bold fs-16'>Type</span>,
             sortable: true,
-            selector: 'state',
             cell: (row) => {
                 return (
                     row.state === 'buy' ? <span className="text-green">{row.state}</span> :
@@ -497,7 +512,6 @@ const TokenPage = ({ address }) => {
         {
             name: <span className='font-weight-bold fs-16'>Amount</span>,
             sortable: true,
-            selector: 'amount',
             cell: (row) => {
                 return (
                     row.state === 'buy' ? <span className="text-buy">{Math.abs(row.amount)}</span> :
@@ -515,12 +529,10 @@ const TokenPage = ({ address }) => {
                 )
             },
             sortable: true,
-            selector: 'accountId',
             width: 100
         },
         {
             name: <span className='font-weight-bold fs-16'>Pool</span>,
-            // selector: row => row.volume ? calcUnit(row.volume) : '-',
             cell: (row) => {
                 return (
                     row.state === 'buy' ? <span className="text-buy">{row.poolId}</span> :
@@ -528,13 +540,11 @@ const TokenPage = ({ address }) => {
                 )
             },
             sortable: true,
-            selector: 'poolId',
             width: 100
         },
         {
             name: <span className='font-weight-bold fs-16'>TXID</span>,
             sortable: true,
-            selector: 'transactionId',
             cell: (row) => {
                 return (
                     <Link
@@ -557,7 +567,6 @@ const TokenPage = ({ address }) => {
         {
             name: <span className='font-weight-bold fs-16'>RANK</span>,
             sortable: true,
-            selector: 'no',
             cell: (row) => {
                 return (
                     <span className="text-center">{row.no}</span>
@@ -568,7 +577,6 @@ const TokenPage = ({ address }) => {
         {
             name: <span className='font-weight-bold fs-16'>Account ID</span>,
             sortable: true,
-            selector: 'accountId',
             cell: (row) => {
                 return (
                     <span>{row.lpToken ? ">> " + row.accountId + " <<\n[LP]" + row.lpToken : row.accountId}
@@ -580,7 +588,6 @@ const TokenPage = ({ address }) => {
         {
             name: <span className='font-weight-bold fs-16'>BALANCE</span>,
             sortable: true,
-            selector: 'balance',
             cell: (row) => {
                 return (
                     <span>{formattedNum(row.balance, false)}</span>
@@ -591,7 +598,6 @@ const TokenPage = ({ address }) => {
         {
             name: <span className='font-weight-bold fs-16'>PERCENT</span>,
             sortable: true,
-            selector: 'percent',
             cell: (row) => {
                 return (
                     // <div style={{ width: '100%', height: '2px', background: 'white' }}>{row.percent + '%'}</div>
@@ -603,7 +609,6 @@ const TokenPage = ({ address }) => {
         {
             name: <span className='font-weight-bold fs-16'>USD</span>,
             sortable: true,
-            selector: 'usd',
             cell: (row) => {
                 return (
                     <span>{formattedNum(row.usd, true)}</span>
@@ -614,7 +619,6 @@ const TokenPage = ({ address }) => {
         {
             name: <span className='font-weight-bold fs-16'>SWAP IMPACT</span>,
             sortable: true,
-            selector: 'impactPercent',
             cell: (row) => {
                 return (
                     <span>{row.impactPercent + '%'}</span>
@@ -625,7 +629,6 @@ const TokenPage = ({ address }) => {
         {
             name: <span className='font-weight-bold fs-16'>ACTUAL USD</span>,
             sortable: true,
-            selector: 'actualUsd',
             cell: (row) => {
                 return (
                     <span>{formattedNum(row.actualUsd, true)}</span>
@@ -784,24 +787,24 @@ const TokenPage = ({ address }) => {
                                                 <div className="d-flex space-around">
                                                     <div className="d-flex flex-column" style={{ width: "4rem" }}>
                                                         <span className="text-badge text-center">Txs</span>
-                                                        <span className="text-white text-center">64</span>
+                                                        <span className="text-white text-center">{statisticData?.txs}</span>
                                                     </div>
                                                     <div className="d-flex flex-column" style={{ width: "4rem" }}>
                                                         <span className="text-badge text-center">Buys</span>
-                                                        <span className="text-white text-center">64</span>
+                                                        <span className="text-white text-center">{statisticData?.buys}</span>
                                                     </div>
                                                     <div className="d-flex flex-column" style={{ width: "4rem" }}>
                                                         <span className="text-badge text-center">Sells</span>
-                                                        <span className="text-white text-center">64</span>
+                                                        <span className="text-white text-center">{statisticData?.sells}</span>
                                                     </div>
                                                     <div className="d-flex flex-column" style={{ width: "4rem" }}>
                                                         <span className="text-badge text-center">Vol.</span>
-                                                        <span className="text-white text-center">64</span>
+                                                        <span className="text-white text-center">{statisticData?.vol}</span>
                                                     </div>
-                                                    <div className="d-flex flex-column" style={{ width: "4rem" }}>
+                                                    {/* <div className="d-flex flex-column" style={{ width: "4rem" }}>
                                                         <span className="text-badge text-center">% Var.</span>
                                                         <span className="text-red text-center">64</span>
-                                                    </div>
+                                                    </div> */}
                                                 </div>
                                             </div>
                                         </Col>
