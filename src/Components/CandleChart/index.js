@@ -81,7 +81,7 @@ const CandleStickChart = ({
       // remove the tooltip element
       let tooltip = document.getElementById('tooltip-id')
       let node = document.getElementById('test-id')
-      node.removeChild(tooltip)
+      // node.removeChild(tooltip)
       chartCreated.resize(0, 0)
       setChartCreated(null)
     }

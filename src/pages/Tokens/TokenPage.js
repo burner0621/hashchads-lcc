@@ -349,9 +349,9 @@ const TokenPage = ({ address }) => {
             )
     }
 
-    const fetchStatisticData = async (timeRangeType) => {
+    const fetchStatisticData = async (timeRange) => {
         
-        fetch(`${env.BASE_URL}/api/transaction/getStatistic?tokenId=${address}&timeRangeType=${timeRangeType}`)
+        fetch(`${env.BASE_URL}/api/transaction/getStatistic?tokenId=${address}&timeRangeType=${timeRange}`)
             .then(res => res.json())
             .then(
                 (result) => {
@@ -362,6 +362,10 @@ const TokenPage = ({ address }) => {
                 }
             )
     }
+
+    useEffect (()=> {
+        fetchStatisticData (timeRangeType)
+    }, [timeRangeType])
 
     const handlePageChange = (page, totalRows) => {
         fetchData(page, rowsPerPage);
@@ -795,7 +799,7 @@ const TokenPage = ({ address }) => {
                                                     </div>
                                                     <div className="d-flex flex-column" style={{ width: "4rem" }}>
                                                         <span className="text-badge text-center">Vol.</span>
-                                                        <span className="text-white text-center">{statisticData?.vol}</span>
+                                                        <span className="text-white text-center">{formattedNum(statisticData?.vol * priceUSD, true)}</span>
                                                     </div>
                                                     {/* <div className="d-flex flex-column" style={{ width: "4rem" }}>
                                                         <span className="text-badge text-center">% Var.</span>
