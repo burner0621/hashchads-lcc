@@ -27,15 +27,16 @@ const Chart = (props) => {
           "mainSeriesProperties.candleStyle.borderUpColor": "#11CC9A", // Up Candle Border Color
           "mainSeriesProperties.candleStyle.borderDownColor": "#E20E7C", // Down Candle Border Color
           "mainSeriesProperties.candleStyle.drawBorder": false, // Disable candle borders
+          "mainSeriesProperties.candleStyle.minTick": "100000000,0.000000001,false",
         },
         disabled_features: ["header_symbol_search"],
         time_frames: [],
         theme: "Dark",
+        timezone: "America/New_York",
       }));
 
       widget.onChartReady(async () => {
         widget.activeChart().setTimezone('UTC');
-        widget.mainSeriesPriceFormatter()._priceScale = 100000000;
       })
     }
   }, [symbol, interval]);

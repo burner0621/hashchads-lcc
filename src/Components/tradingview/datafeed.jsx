@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
-import * as env from '../../env'
+import socketIO from "socket.io-client";
+import * as env from "../../env";
 var latestBar;
 const sendResolutions = {
   1: "1min",
@@ -28,6 +29,19 @@ function printDate(mm) {
     ":" +
     date.getSeconds();
   return tt;
+}
+
+function parseFullSymbol(fullSymbol) {
+  const match = fullSymbol.match(/^(\w+):(\w+)\/(\w+)$/);
+  if (!match) {
+    return null;
+  }
+
+  return {
+    exchange: match[1],
+    fromSymbol: match[2],
+    toSymbol: match[3],
+  };
 }
 
 export const configurationData = {
@@ -74,6 +88,78 @@ const INTERVAL_SECONDS = {
   "24h": 86400,
 };
 
+const channelToSubscription = new Map();
+const socket = socketIO.connect("http://localhost:5005");
+socket.on("connect", () => {
+  console.log("[socket] Connected");
+});
+
+socket.on("disconnect", (reason) => {
+  console.log("[socket] Disconnected:", reason);
+});
+
+socket.on("error", (error) => {
+  console.log("[socket] Error:", error);
+});
+
+socket.on("m", (data) => {
+  console.log("[socket] Message:", data);
+  const [
+    eventTypeStr,
+    exchange,
+    fromSymbol,
+    toSymbol,
+    ,
+    ,
+    tradeTimeStr,
+    ,
+    tradePriceStr,
+  ] = data.split("~");
+
+  if (parseInt(eventTypeStr) !== 0) {
+    // Skip all non-trading events
+    return;
+  }
+  const tradePrice = parseFloat(tradePriceStr);
+  const tradeTime = parseInt(tradeTimeStr);
+  const channelString = `0~${exchange}~${fromSymbol}~${toSymbol}`;
+  const subscriptionItem = channelToSubscription.get(channelString);
+  if (subscriptionItem === undefined) {
+    return;
+  }
+  const lastDailyBar = subscriptionItem.lastDailyBar;
+  const nextDailyBarTime = getNextDailyBarTime(lastDailyBar.time);
+
+  let bar;
+  if (tradeTime >= nextDailyBarTime) {
+    bar = {
+      time: nextDailyBarTime,
+      open: tradePrice,
+      high: tradePrice,
+      low: tradePrice,
+      close: tradePrice,
+    };
+    console.log("[socket] Generate new bar", bar);
+  } else {
+    bar = {
+      ...lastDailyBar,
+      high: Math.max(lastDailyBar.high, tradePrice),
+      low: Math.min(lastDailyBar.low, tradePrice),
+      close: tradePrice,
+    };
+    console.log("[socket] Update the latest bar by price", tradePrice);
+  }
+  subscriptionItem.lastDailyBar = bar;
+
+  // Send data to every subscriber of that symbol
+  subscriptionItem.handlers.forEach((handler) => handler.callback(bar));
+});
+function getNextDailyBarTime(barTime) {
+  const date = new Date(barTime * 1000);
+  date.setDate(date.getDate() + 1);
+  return date.getTime() / 1000;
+}
+
 // Chart Methods
 // eslint-disable-next-line import/no-anonymous-default-export
 const datafeed = (tokenId) => {
@@ -99,7 +185,7 @@ const datafeed = (tokenId) => {
         minmov: 0.00000001,
         pricescale: 100000000,
         has_weekly_and_monthly: true,
-        volume_precision: 2,
+        volume_precision: 8,
         data_status: "streaming",
         supported_resolutions: configurationData.supported_resolutions,
       };
@@ -112,7 +198,7 @@ const datafeed = (tokenId) => {
       resolution,
       periodParams,
       onHistoryCallback,
-      onErrorCallback,
+      onErrorCallback
       // firstDataRequest
     ) => {
       const resName = sendResolutions[resolution];
@@ -157,99 +243,129 @@ const datafeed = (tokenId) => {
         onErrorCallback(error);
       }
     },
-    // subscribeBars: (symbolInfo, resolution, onRealtimeCallback, subscribeUID, onResetCacheNeededCallback) => {
+    subscribeBars: (
+      symbolInfo,
+      resolution,
+      onRealtimeCallback,
+      subscribeUID,
+      onResetCacheNeededCallback,
+      lastDailyBar
+    ) => {
+      const parsedSymbol = parseFullSymbol(symbolInfo.full_name);
+      const channelString = `0~${parsedSymbol.exchange}~${parsedSymbol.fromSymbol}~${parsedSymbol.toSymbol}`;
+      const handler = {
+        id: subscribeUID,
+        callback: onRealtimeCallback,
+      };
+      let subscriptionItem = channelToSubscription.get(channelString);
+      if (subscriptionItem) {
+        // Already subscribed to the channel, use the existing subscription
+        subscriptionItem.handlers.push(handler);
+        return;
+      }
+      subscriptionItem = {
+        subscribeUID,
+        resolution,
+        lastDailyBar,
+        handlers: [handler],
+      };
+      channelToSubscription.set(channelString, subscriptionItem);
+      console.log(
+        "[subscribeBars]: Subscribe to streaming. Channel:",
+        channelString
+      );
+      socket.emit("SubAdd", { subs: channelString });
+      // const resName = sendResolutions[resolution];
+      // const symbolName = symbolInfo.name;
+      // console.log('[rec]', symbolInfo.name, resolution, resName)
 
-    //   const resName = sendResolutions[resolution];
-    //   const symbolName = symbolInfo.name;
-    //   console.log('[rec]', symbolInfo.name, resolution, resName)
+      // try {
+      //   let ws = new WebSocket(`wss://ws.twelvedata.com/v1/quotes/price?apikey=${API_KEY}`);
+      //   ws.onopen = (e) => {
+      //     window.delta = 0;
+      //     console.log('[ws onopen]');
+      //     let sendData = {
+      //       "action": "subscribe",
+      //       "params": {
+      //         "symbols": [{
+      //           "symbol": symbolName,
+      //           "exchange": "NASDAQ",
+      //           "price": true
+      //         }],
+      //         "event": "price"
+      //       }
+      //     }
+      //     ws.send(JSON.stringify(sendData));
+      //   }
 
-    //   try {
-    //     let ws = new WebSocket(`wss://ws.twelvedata.com/v1/quotes/price?apikey=${API_KEY}`);
-    //     ws.onopen = (e) => {
-    //       window.delta = 0;
-    //       console.log('[ws onopen]');
-    //       let sendData = {
-    //         "action": "subscribe",
-    //         "params": {
-    //           "symbols": [{
-    //             "symbol": symbolName,
-    //             "exchange": "NASDAQ",
-    //             "price": true
-    //           }],
-    //           "event": "price"
-    //         }
-    //       }
-    //       ws.send(JSON.stringify(sendData));
-    //     }
+      //   ws.onmessage = e => {
+      //     let transaction = JSON.parse(e.data);
 
-    //     ws.onmessage = e => {
-    //       let transaction = JSON.parse(e.data);
+      //     console.log('[onmsg]', transaction);
+      //     if (transaction.event == 'price') {
+      //       const seconds = INTERVAL_SECONDS[convertResolution(resolution)]
 
-    //       console.log('[onmsg]', transaction);
-    //       if (transaction.event == 'price') {
-    //         const seconds = INTERVAL_SECONDS[convertResolution(resolution)]
+      //       var txTime = Math.floor(transaction.timestamp / seconds) * seconds * 1000 - (1440 + 30) * 60 * 1000
+      //       console.log('[input_time]', printDate(latestBar.time), printDate(txTime));
 
-    //         var txTime = Math.floor(transaction.timestamp / seconds) * seconds * 1000 - (1440 + 30) * 60 * 1000
-    //         console.log('[input_time]', printDate(latestBar.time), printDate(txTime));
+      //       var current = new Date();
+      //       // var d_time = (current.getDate() * 86400 + current.getHours() * 3600 + current.getMinutes() * 60) - (current.getUTCDate() * 86400 + current.getUTCHours() * 3600 + current.getUTCMinutes() * 60) + 73800;
+      //       var d_time = (16 * 60 + 30) * 60 * 1000;
 
-    //         var current = new Date();
-    //         // var d_time = (current.getDate() * 86400 + current.getHours() * 3600 + current.getMinutes() * 60) - (current.getUTCDate() * 86400 + current.getUTCHours() * 3600 + current.getUTCMinutes() * 60) + 73800;
-    //         var d_time = (16 * 60 + 30) * 60 * 1000;
+      //       if(window.delta == 0) {
+      //         window.delta = latestBar.time - txTime;
+      //       }
 
-    //         if(window.delta == 0) {
-    //           window.delta = latestBar.time - txTime;
-    //         }
+      //       txTime += window.delta;
 
-    //         txTime += window.delta;
+      //       console.log("[delta time]", printDate(latestBar.time), printDate(txTime));
 
-    //         console.log("[delta time]", printDate(latestBar.time), printDate(txTime));
+      //       if (latestBar && txTime == latestBar.time) {
+      //         latestBar.close = transaction.price
+      //         if (transaction.price > latestBar.high) {
+      //           latestBar.high = transaction.price
+      //         }
 
-    //         if (latestBar && txTime == latestBar.time) {
-    //           latestBar.close = transaction.price
-    //           if (transaction.price > latestBar.high) {
-    //             latestBar.high = transaction.price
-    //           }
+      //         if (transaction.price < latestBar.low) {
+      //           latestBar.low = transaction.price
+      //         }
 
-    //           if (transaction.price < latestBar.low) {
-    //             latestBar.low = transaction.price
-    //           }
+      //         latestBar.volume += transaction.day_volume
+      //         console.log('[update bar]', printDate(latestBar.time));
+      //         onRealtimeCallback(latestBar)
+      //       } else if (latestBar && txTime > latestBar.time) {
+      //         const newBar = {
+      //           low: transaction.price,
+      //           high: transaction.price,
+      //           open: transaction.price,
+      //           close: transaction.price,
+      //           volume: transaction.day_volume,
+      //           time: txTime
+      //         }
+      //         latestBar = newBar
+      //         console.log('[new Bar]', printDate(newBar.time))
+      //         onRealtimeCallback(newBar)
+      //       }
 
-    //           latestBar.volume += transaction.day_volume
-    //           console.log('[update bar]', printDate(latestBar.time));
-    //           onRealtimeCallback(latestBar)
-    //         } else if (latestBar && txTime > latestBar.time) {
-    //           const newBar = {
-    //             low: transaction.price,
-    //             high: transaction.price,
-    //             open: transaction.price,
-    //             close: transaction.price,
-    //             volume: transaction.day_volume,
-    //             time: txTime
-    //           }
-    //           latestBar = newBar
-    //           console.log('[new Bar]', printDate(newBar.time))
-    //           onRealtimeCallback(newBar)
-    //         }
+      //       // lastBar.time
+      //     }
 
-    //         // lastBar.time
-    //       }
+      //   }
 
-    //     }
+      //   ws.onclose = function () {
+      //     console.log('[onclose]');
+      //   }
 
-    //     ws.onclose = function () {
-    //       console.log('[onclose]');
-    //     }
-
-    //   } catch (err) {
-    //     console.log(err);
-    //   }
-    //   // Code here...
-    //   window.resetCacheNeededCallback = onResetCacheNeededCallback;
-    // },
-    // unsubscribeBars: (subscriberUID) => {
-    //   // Code here...
-    // },
+      // } catch (err) {
+      //   console.log(err);
+      // }
+      // // Code here...
+      // window.resetCacheNeededCallback = onResetCacheNeededCallback;
+    },
+    unsubscribeBars: (subscriberUID) => {
+      // Code here...
+    },
   };
 };
 
-export default datafeed
+export default datafeed;
