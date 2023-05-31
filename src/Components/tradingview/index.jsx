@@ -31,11 +31,11 @@ const Chart = (props) => {
         disabled_features: ["header_symbol_search"],
         time_frames: [],
         theme: "Dark",
-        pricescale: 10000
       }));
 
       widget.onChartReady(async () => {
         widget.activeChart().setTimezone('UTC');
+        widget.mainSeriesPriceFormatter()._priceScale = 100000000;
       })
     }
   }, [symbol, interval]);

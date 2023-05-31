@@ -89,32 +89,34 @@ const datafeed = (tokenId) => {
       onSymbolResolvedCallback,
       onResolveErrorCallback
     ) => {
-      const symbolInfo = {
+      let symbolInfo = {
         name: symbolName,
         has_intraday: true,
         has_no_volume: false,
         session: "24x7",
         timezone: "Europe/Athens",
         exchange: "tradEAsy",
-        minmov: 1,
+        minmov: 0.00000001,
+        pricescale: 100000000,
         has_weekly_and_monthly: true,
         volume_precision: 2,
         data_status: "streaming",
         supported_resolutions: configurationData.supported_resolutions,
       };
+
       onSymbolResolvedCallback(symbolInfo);
     },
 
     getBars: async (
       symbolInfo,
       resolution,
-      from,
-      to,
+      periodParams,
       onHistoryCallback,
       onErrorCallback,
-      firstDataRequest
+      // firstDataRequest
     ) => {
       const resName = sendResolutions[resolution];
+      const { from, to, firstDataRequest } = periodParams;
       try {
         // let url = `https://api.twelvedata.com/time_series?symbol=${symbolInfo.name}&outputsize=1000&interval=${resName}&apikey=${API_KEY}`;
         let url = `${env.BASE_URL}/api/feed/getfeeddata?tokenId=${tokenId}&from=${from}&to=${to}`;
