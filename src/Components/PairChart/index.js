@@ -217,7 +217,7 @@ const PairChart = ({ address, poolId, pairData, color, base0, base1, chartFilter
 
       {chartFilter === CHART_VIEW.LIQUIDITY && (
         <ResponsiveContainer aspect={aspect} style={{ height: '100%' }}>
-          <AreaChart margin={{ top: 0, right: 10, bottom: 6, left: 0 }} barCategoryGap={1} data={chartData}>
+          <AreaChart margin={{ top: 0, right: 40, bottom: 6, left: 0 }} barCategoryGap={1} data={chartData}>
             <defs>
               <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor={color} stopOpacity={0.35} />

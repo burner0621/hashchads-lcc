@@ -105,7 +105,7 @@ const TokenChart = ({ address, color, base, priceData, chartFilter, timeWindow, 
         <ChartWrapper>
             {chartFilter === CHART_VIEW.LIQUIDITY && chartData && chartData.length && (
                 <ResponsiveContainer aspect={aspect}>
-                    <AreaChart margin={{ top: 0, right: 10, bottom: 6, left: 0 }} barCategoryGap={1} data={chartData}>
+                    <AreaChart margin={{ top: 0, right: 40, bottom: 6, left: 0 }} barCategoryGap={1} data={chartData}>
                         <defs>
                             <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
                                 <stop offset="5%" stopColor={color} stopOpacity={0.35} />
@@ -170,7 +170,7 @@ const TokenChart = ({ address, color, base, priceData, chartFilter, timeWindow, 
             {chartFilter === CHART_VIEW.PRICE &&
                 (frequency === DATA_FREQUENCY.LINE ? (
                     <ResponsiveContainer aspect={below1080 ? 60 / 32 : 60 / 16}>
-                        <AreaChart margin={{ top: 0, right: 10, bottom: 6, left: 0 }} barCategoryGap={1} data={chartData}>
+                        <AreaChart margin={{ top: 0, right: 40, bottom: 6, left: 0 }} barCategoryGap={1} data={chartData}>
                             <defs>
                                 <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="5%" stopColor={color} stopOpacity={0.35} />
