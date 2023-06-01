@@ -236,6 +236,7 @@ const TokenPage = ({ address }) => {
     }, [address])
 
     useEffect(() => {
+        setCurrentPage (1)
         fetchData(1, rowsPerPage);
     }, [rowsPerPage, address])
 
@@ -378,13 +379,14 @@ const TokenPage = ({ address }) => {
     }, [timeRangeType])
 
     useEffect (() => {
-        const tradeHistoryInterval = setInterval(async () => {
-            await fetchData()
+        const tradeHistoryInterval = setInterval(() => {
+            fetchData(currentPage, rowsPerPage)
         }, 1000)
     }, [])
 
     const handlePageChange = (page, totalRows) => {
         setIsLoaded(true);
+        setCurrentPage (page)
         fetchData(page, rowsPerPage);
     }
 
