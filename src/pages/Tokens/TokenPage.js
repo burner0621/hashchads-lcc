@@ -829,49 +829,73 @@ const TokenPage = ({ address }) => {
                                                     {
                                                         socialInfos !== undefined && socialInfos['Saucerswap'] !== undefined &&
                                                         <div className="d-flex ml-10">
-                                                            <a target="_blank" href={socialInfos['Saucerswap']}><img src="/socials/saucerswap.png" width="30" /></a>
+                                                            <a target="_blank" className="tooltipp" href={socialInfos['Saucerswap']}>
+                                                                <span className="tooltiptext">Trade</span>
+                                                                <img src="/socials/saucerswap.png" width="30" />
+                                                            </a>
                                                         </div>
                                                     }
                                                     {
                                                         socialInfos && socialInfos['Linktree'] &&
                                                         <div className="d-flex ml-10">
-                                                            <a target="_blank" href={socialInfos['Linktree']}><img src="/socials/linktree.png" width="30" /></a>
+                                                            <a target="_blank" className="tooltipp" href={socialInfos['Linktree']}>
+                                                                <span className="tooltiptext">LinkTree</span>
+                                                                <img src="/socials/linktree.png" width="30" />
+                                                            </a>
                                                         </div>
                                                     }
                                                     {
                                                         socialInfos && socialInfos['Website'] &&
                                                         <div className="d-flex ml-10">
-                                                            <a target="_blank" href={socialInfos['Website']}><img src="/socials/website.png" width="30" /></a>
+                                                            <a target="_blank" className="tooltipp" href={socialInfos['Website']}>
+                                                                <span className="tooltiptext">Website</span>
+                                                                <img src="/socials/website.png" width="30" ></img>
+                                                            </a>
                                                         </div>
                                                     }
                                                     {
                                                         socialInfos && socialInfos['Twitter'] &&
                                                         <div className="d-flex ml-10">
-                                                            <a target="_blank" href={socialInfos['Twitter']}><img src="/socials/twitter.png" width="30" /></a>
+                                                            <a target="_blank" className="tooltipp" href={socialInfos['Twitter']}>
+                                                                <span className="tooltiptext">Twitter</span>
+                                                                <img src="/socials/twitter.png" width="30" />
+                                                            </a>
                                                         </div>
                                                     }
                                                     {
                                                         socialInfos && socialInfos['Discord'] &&
                                                         <div className="d-flex ml-10">
-                                                            <a target="_blank" href={socialInfos['Discord']}><img src="/socials/discord.png" width="30" /></a>
+                                                            <a target="_blank" className="tooltipp" href={socialInfos['Discord']}>
+                                                                <span className="tooltiptext">Discord</span>
+                                                                <img src="/socials/discord.png" width="30" />
+                                                            </a>
                                                         </div>
                                                     }
                                                     {
                                                         socialInfos && socialInfos['Telegram'] &&
                                                         <div className="d-flex ml-10">
-                                                            <a target="_blank" href={socialInfos['Telegram']}><img src="/socials/telegram.png" width="30" /></a>
+                                                            <a target="_blank" className="tooltipp" href={socialInfos['Telegram']}>
+                                                                <span className="tooltiptext">Telegram</span>
+                                                                <img src="/socials/telegram.png" width="30" />
+                                                            </a>
                                                         </div>
                                                     }
                                                     {
                                                         socialInfos && socialInfos['Reddit'] &&
                                                         <div className="d-flex ml-10">
-                                                            <a target="_blank" href={socialInfos['Reddit']}><img src="/socials/reddit.png" width="30" /></a>
+                                                            <a target="_blank" className="tooltipp" href={socialInfos['Reddit']}>
+                                                                <span className="tooltiptext">Reddit</span>
+                                                                <img src="/socials/reddit.png" width="30" />
+                                                            </a>
                                                         </div>
                                                     }
                                                     {
                                                         socialInfos && socialInfos['GitHub'] &&
                                                         <div className="d-flex ml-10">
-                                                            <a target="_blank" href={socialInfos['GitHub']}><img src="/socials/github.png" width="30" /></a>
+                                                            <a target="_blank" className="tooltipp" href={socialInfos['GitHub']}>
+                                                                <span className="tooltiptext">GitHub</span>
+                                                                <img src="/socials/github.png" width="30" />
+                                                            </a>
                                                         </div>
                                                     }
                                                 </div>

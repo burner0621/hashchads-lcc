@@ -1,261 +1,300 @@
 /* button css */
 .btn-download:hover {
-    border: 1px solid white !important
+  border: 1px solid white !important;
 }
 
 .btn-force {
-    background-color: #37a26a !important;
+  background-color: #37a26a !important;
 }
 
 .button-border {
-    border: 1px solid white !important;
+  border: 1px solid white !important;
 }
 
 /* flex css */
 .justify-center {
-    justify-content: center !important;
+  justify-content: center !important;
 }
 
 .justify-between {
-    justify-content: space-between;
+  justify-content: space-between;
 }
 
 .justify-end {
-    justify-content: flex-end;
+  justify-content: flex-end;
 }
 
 .items-center {
-    align-items: center;
+  align-items: center;
 }
 
 .items-end {
-    align-items: flex-end;
+  align-items: flex-end;
 }
 
 .flex-column {
-    flex-direction: column;
+  flex-direction: column;
 }
 
 /* text css */
 .text-green {
-    color: green;
+  color: green;
 }
 
 .text-whitc {
-    color: white;
+  color: white;
 }
 
 .text-red {
-    color: red;
+  color: red;
 }
 
 .text-grey {
-    color: gray;
+  color: gray;
 }
 
 .text-hover {
-    color: white;
+  color: white;
 }
 
 .text-hover:hover {
-    color: #1896b2 !important;
+  color: #1896b2 !important;
 }
 
 .text-buy {
-    color: #cdffe7 !important
+  color: #cdffe7 !important;
 }
 
 .text-sell {
-    color: #ffacb1 !important;
+  color: #ffacb1 !important;
 }
 
 .text-badge {
-    color: #818ea3 !important
+  color: #818ea3 !important;
 }
 
 .text-symbol {
-    color: #1896b2;
+  color: #1896b2;
 }
 
 .text-center {
-    text-align: center;
+  text-align: center;
 }
 
 .text-buy-date:hover {
-    color: green !important;
+  color: green !important;
 }
 
 .text-sell-date:hover {
-    color: red !important;
+  color: red !important;
 }
 
 /* font css */
 .fs-20 {
-    font-size: 24px;
+  font-size: 24px;
 }
 
 .fs-24 {
-    font-size: 24px;
+  font-size: 24px;
 }
 
 .fw-450 {
-    font-weight: 450;
+  font-weight: 450;
 }
 
 /* background css */
 .normal-background {
-    background-color: blueviolet;
+  background-color: blueviolet;
 }
 
 body {
-    background-image: none;
-    background-color: #0b1217 !important;
+  background-image: none;
+  background-color: #0b1217 !important;
 }
 
 .green-bg {
-    background: green;
+  background: green;
 }
 
 .badge-active-bg {
-    background: #0b1217;
-    border-radius: 5px;
+  background: #0b1217;
+  border-radius: 5px;
 }
 
 .new-bg {
-    background: #142028 !important;
+  background: #142028 !important;
 }
 
 #page-topbar {
-    background: #142028 !important;
+  background: #142028 !important;
 }
 
 .badge-bg {
-    border-radius: 5px;
-    background: #23323c !important;
-    min-height: 2rem;
+  border-radius: 5px;
+  background: #23323c !important;
+  min-height: 2rem;
 }
 
 /* border css */
 .border-green {
-    border: 1px solid green !important;
+  border: 1px solid green !important;
 }
 
 .border-expand {
-    outline: 1px solid #333;
-    outline-offset: -1px;
+  outline: 1px solid #333;
+  outline-offset: -1px;
 
-    &:hover {
-        outline: none;
-    }
+  &:hover {
+    outline: none;
+  }
 }
 
 .border-red {
-    border: 1px solid red;
+  border: 1px solid red;
 }
 
 .br-10 {
-    border-radius: 10px !important;
+  border-radius: 10px !important;
 }
 
 /* margin padding css */
 .mr-0 {
-    margin-right: 0px !important;
+  margin-right: 0px !important;
 }
 
 .ml-0 {
-    margin-left: 0px !important;
+  margin-left: 0px !important;
 }
 
 .pl-0 {
-    padding-left: 0px !important;
+  padding-left: 0px !important;
 }
 
 .pr-0 {
-    padding-right: 0px !important;
+  padding-right: 0px !important;
 }
 
 .mt-30 {
-    margin-top: 30px;
+  margin-top: 30px;
 }
 
 .mt-15 {
-    margin-top: 15px;
+  margin-top: 15px;
 }
 /* other css */
 .cursor:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .w-full {
-    width: 100%;
+  width: 100%;
 }
 
 .w-auth {
-    width: auto;
+  width: auto;
 }
 
 .h-full {
-    height: 100%;
+  height: 100%;
 }
 
 .height-50 {
-    height: 50px !important;
+  height: 50px !important;
 }
 
 .height-100 {
-    height: 100px !important;
+  height: 100px !important;
 }
 
 .blink {
-    animation: blinker 1s linear infinite;
-    color: #ff007a;
+  animation: blinker 1s linear infinite;
+  color: #ff007a;
 }
 
 @keyframes blinker {
-    50% {
-        opacity: 0;
-    }
+  50% {
+    opacity: 0;
+  }
 }
 
 .visible {
-    visibility: visible !important;
-}   
+  visibility: visible !important;
+}
 
 .hidden {
-    visibility: hidden !important;
+  visibility: hidden !important;
 }
 
 .self-end {
-    align-self: self-end;
+  align-self: self-end;
 }
 
 .mb-10 {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .bg-blue-black {
-    background-color: #142028!important;
+  background-color: #142028 !important;
 }
 
 .border-radius-10 {
-    border-radius: 10px!important;
+  border-radius: 10px !important;
 }
 
 .fc-white {
-    color: #fff;
+  color: #fff;
 }
 
 .fs-20 {
-    font-size: 20px;
+  font-size: 20px;
 }
 .fs-16 {
-    font-size: 16px;
+  font-size: 16px;
 }
 
 .ml-15 {
-    margin-left: 15px;
+  margin-left: 15px;
 }
 
 .ml-10 {
-    margin-left: 10px;
+  margin-left: 10px;
+}
+
+.tooltipp {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltipp .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltitooltippp .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.tooltipp:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
 }
