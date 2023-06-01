@@ -236,7 +236,6 @@ const TokenPage = ({ address }) => {
     }, [address])
 
     useEffect(() => {
-
         fetchData(1, rowsPerPage);
     }, [rowsPerPage, address])
 
@@ -345,7 +344,6 @@ const TokenPage = ({ address }) => {
     }, [holders, pairs, tokenInfo, priceUSD])
 
     const fetchData = async (pageNum, per_page) => {
-        setIsLoaded(true);
         fetch(`${env.BASE_URL}/api/transaction/get?tokenId=${address}&pageNum=${pageNum}&pageSize=${per_page}`)
             .then(res => res.json())
             .then(
@@ -379,9 +377,15 @@ const TokenPage = ({ address }) => {
         fetchStatisticData(timeRangeType)
     }, [timeRangeType])
 
+    useEffect (() => {
+        const tradeHistoryInterval = setInterval(async () => {
+            await fetchData()
+        }, 1000)
+    }, [])
+
     const handlePageChange = (page, totalRows) => {
+        setIsLoaded(true);
         fetchData(page, rowsPerPage);
-        // setCurrentPage(page)
     }
 
     const handlePerRowsChange = async (newPerPage, page) => {
@@ -419,6 +423,9 @@ const TokenPage = ({ address }) => {
         }
         if (totalLiquidity === undefined || totalLiquidity === 0) fetchTotalData()
         if (priceUSD === undefined || priceUSD === 0) fetchTotalData()
+        const interval = setInterval (async() => {
+            await fetchTotalData ()
+        }, 1000)
     }, [address, totalLiquidity, priceUSD])
 
     useEffect(() => {
@@ -447,8 +454,6 @@ const TokenPage = ({ address }) => {
                 setIconPath(token?.icon)
             }
         }
-        //   if(setPrice)
-        //     fetchData()
     }, [address, allTokens])
 
     useEffect(() => {
