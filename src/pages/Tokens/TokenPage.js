@@ -381,7 +381,7 @@ const TokenPage = ({ address }) => {
     useEffect (() => {
         const tradeHistoryInterval = setInterval(() => {
             fetchData(currentPage, rowsPerPage)
-        }, 1000)
+        }, 5000)
     }, [])
 
     const handlePageChange = (page, totalRows) => {
@@ -427,7 +427,7 @@ const TokenPage = ({ address }) => {
         if (priceUSD === undefined || priceUSD === 0) fetchTotalData()
         const interval = setInterval (async() => {
             await fetchTotalData ()
-        }, 1000)
+        }, 5000)
     }, [address, totalLiquidity, priceUSD])
 
     useEffect(() => {
