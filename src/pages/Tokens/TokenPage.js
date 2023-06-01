@@ -829,7 +829,7 @@ const TokenPage = ({ address }) => {
                                                     {
                                                         socialInfos !== undefined && socialInfos['Saucerswap'] !== undefined &&
                                                         <div className="d-flex ml-10">
-                                                            <a target="_blank" className="tooltipp" href={socialInfos['Saucerswap']}>
+                                                            <a target="_blank" className="tooltipp" style={{justifyContent: 'center', display: 'flex'}} href={socialInfos['Saucerswap']}>
                                                                 <span className="tooltiptext">Trade</span>
                                                                 <img src="/socials/saucerswap.png" width="30" />
                                                             </a>
