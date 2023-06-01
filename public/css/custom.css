@@ -178,6 +178,9 @@ body {
     margin-top: 30px;
 }
 
+.mt-15 {
+    margin-top: 15px;
+}
 /* other css */
 .cursor:hover {
     cursor: pointer;
@@ -251,4 +254,8 @@ body {
 
 .ml-15 {
     margin-left: 15px;
+}
+
+.ml-10 {
+    margin-left: 10px;
 }

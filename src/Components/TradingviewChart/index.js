@@ -62,7 +62,11 @@ const TradingViewChart = ({
             // remove the tooltip element
             let tooltip = document.getElementById('tooltip-id' + type)
             let node = document.getElementById('test-id' + type)
-            node.removeChild(tooltip)
+            try {
+                node.removeChild(tooltip)
+            }catch(e) {
+                console.log (e)
+            }
             chartCreated.resize(0, 0)
             setChartCreated(false)
         }
@@ -89,7 +93,11 @@ const TradingViewChart = ({
             // remove the tooltip element
             let tooltip = document.getElementById('tooltip-id' + type)
             let node = document.getElementById('test-id' + type)
-            node.removeChild(tooltip)
+            try {
+                node.removeChild(tooltip)
+            }catch(e) {
+                console.log (e)
+            }
             chartCreated.resize(0, 0)
             setChartCreated(false)
         }

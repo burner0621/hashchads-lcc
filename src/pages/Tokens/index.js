@@ -10,10 +10,9 @@ import { RowBetween } from '../../Components/Row'
 import Search from '../../Components/Search'
 import TokenPage from './TokenPage'
 import { TOKEN_TYPE, TOKEN_TYPE_NAME } from "../../constants";
-import Select from "react-select";
-import { TokenType } from "@hashgraph/sdk";
 import { useAllTokensInSaucerswap } from "../../contexts/GlobalData";
 import classnames from "classnames";
+import tradingViewImg from '../../assets/images/tradingview.png'
 
 export const PageWrapper = styled.div`
   display: flex;
@@ -290,6 +289,9 @@ const Tokens = () => {
                                         <TopTokenList tokens={loserTokens} />
                                     </Panel>
                                 }
+                                <div style={{textAlign: 'center'}}>
+                                    <a target="_blank" href="https://www.tradingview.com"><img src={tradingViewImg} width="200"/></a>
+                                </div>
                             </FullWrapper>
                         </PageWrapper>
                     </Container>

@@ -89,7 +89,7 @@ const INTERVAL_SECONDS = {
 };
 
 const channelToSubscription = new Map();
-const socket = socketIO.connect("http://localhost:5005");
+const socket = socketIO.connect(env.BASE_URL);
 socket.on("connect", () => {
   console.log("[socket] Connected");
 });

@@ -181,6 +181,7 @@ const TokenPage = ({ address }) => {
     const [chartFilter, setChartFilter] = useState(CHART_VIEW.PRICE)
     const [frequency, setFrequency] = useState(DATA_FREQUENCY.HOUR)
     const [timeWindow, setTimeWindow] = useState(timeframeOptions.WEEK)
+    const [socialInfos, setSocialInfos] = useState(undefined)
 
     const [statisticData, setStatisticData] = useState({})
 
@@ -220,6 +221,17 @@ const TokenPage = ({ address }) => {
     }
 
     useEffect(() => {
+        async function fetchSocialData() {
+            let res = await fetch(env.BASE_URL + `/api/feed/getsocial?tokenId=${address}`)
+            if (res.status === 200) {
+                let jsonData = await res.json()
+                setSocialInfos(jsonData)
+            }
+        }
+        if (address) fetchSocialData()
+    }, [address])
+
+    useEffect(() => {
         fetchNameAndSymbolData()
     }, [address])
 
@@ -234,7 +246,7 @@ const TokenPage = ({ address }) => {
             if (address !== pair.tokenA.id && address !== pair.tokenB.id) continue
             let swapImpact = 0
             let reserveA = Number(pair.tokenReserveA) / Math.pow(10, Number(pair.tokenA.decimals))
-            let reserveB = Number(pair.tokenReserveB) / Math.pow(10, Number(pair.tokenB.decimals)) 
+            let reserveB = Number(pair.tokenReserveB) / Math.pow(10, Number(pair.tokenB.decimals))
 
             if (address === pair.tokenA.id) {
                 // deltaYUsd = reserveB * (1 - reserveA / (reserveA + amount)) * pair.tokenB.priceUsd
@@ -304,7 +316,7 @@ const TokenPage = ({ address }) => {
             for (let holder of holders) {
                 let tmp = {}
                 tmp['accountId'] = holder.account
-                tmp['lpToken'] = pairContracts.includes (holder.account) ? pairsByContract[holder.account]['lpToken']['symbol'] : undefined
+                tmp['lpToken'] = pairContracts.includes(holder.account) ? pairsByContract[holder.account]['lpToken']['symbol'] : undefined
                 tmp['balance'] = holder.balance / Math.pow(10, Number(tokenInfo.decimals))
                 tmp['percent'] = (tmp['balance'] / totalBalance * 100).toFixed(2)
                 tmp['usd'] = (tmp['balance'] * priceUSD).toFixed(tokenInfo.decimals)
@@ -314,7 +326,7 @@ const TokenPage = ({ address }) => {
                 //     if (tmp['impactPercent'] > 100) tmp['impactPercent'] = 100
                 // }
                 // else tmp['impactPercent'] = "0"
-                tmp['impactPercent'] = (100 * calculateSwapImpactUsd(tmp['balance'])).toFixed (2)
+                tmp['impactPercent'] = (100 * calculateSwapImpactUsd(tmp['balance'])).toFixed(2)
                 // if (holder.account === "0.0.285576") tmp['impactPercent'] = 100 * calculateSwapImpactUsd(tmp['balance'])
                 // else tmp['impactPercent'] = 0
                 tmp['impactUsd'] = tmp['usd'] * tmp['impactPercent'] / 100
@@ -350,7 +362,7 @@ const TokenPage = ({ address }) => {
     }
 
     const fetchStatisticData = async (timeRange) => {
-        
+
         fetch(`${env.BASE_URL}/api/transaction/getStatistic?tokenId=${address}&timeRangeType=${timeRange}`)
             .then(res => res.json())
             .then(
@@ -363,8 +375,8 @@ const TokenPage = ({ address }) => {
             )
     }
 
-    useEffect (()=> {
-        fetchStatisticData (timeRangeType)
+    useEffect(() => {
+        fetchStatisticData(timeRangeType)
     }, [timeRangeType])
 
     const handlePageChange = (page, totalRows) => {
@@ -805,6 +817,56 @@ const TokenPage = ({ address }) => {
                                                         <span className="text-badge text-center">% Var.</span>
                                                         <span className="text-red text-center">64</span>
                                                     </div> */}
+                                                </div>
+                                                <div className="d-flex space-around mt-15">
+                                                    {
+                                                        socialInfos !== undefined && socialInfos['Saucerswap'] !== undefined &&
+                                                        <div className="d-flex ml-10">
+                                                            <a target="_blank" href={socialInfos['Saucerswap']}><img src="/socials/saucerswap.png" width="30" /></a>
+                                                        </div>
+                                                    }
+                                                    {
+                                                        socialInfos && socialInfos['Linktree'] &&
+                                                        <div className="d-flex ml-10">
+                                                            <a target="_blank" href={socialInfos['Linktree']}><img src="/socials/linktree.png" width="30" /></a>
+                                                        </div>
+                                                    }
+                                                    {
+                                                        socialInfos && socialInfos['Website'] &&
+                                                        <div className="d-flex ml-10">
+                                                            <a target="_blank" href={socialInfos['Website']}><img src="/socials/website.png" width="30" /></a>
+                                                        </div>
+                                                    }
+                                                    {
+                                                        socialInfos && socialInfos['Twitter'] &&
+                                                        <div className="d-flex ml-10">
+                                                            <a target="_blank" href={socialInfos['Twitter']}><img src="/socials/twitter.png" width="30" /></a>
+                                                        </div>
+                                                    }
+                                                    {
+                                                        socialInfos && socialInfos['Discord'] &&
+                                                        <div className="d-flex ml-10">
+                                                            <a target="_blank" href={socialInfos['Discord']}><img src="/socials/discord.png" width="30" /></a>
+                                                        </div>
+                                                    }
+                                                    {
+                                                        socialInfos && socialInfos['Telegram'] &&
+                                                        <div className="d-flex ml-10">
+                                                            <a target="_blank" href={socialInfos['Telegram']}><img src="/socials/telegram.png" width="30" /></a>
+                                                        </div>
+                                                    }
+                                                    {
+                                                        socialInfos && socialInfos['Reddit'] &&
+                                                        <div className="d-flex ml-10">
+                                                            <a target="_blank" href={socialInfos['Reddit']}><img src="/socials/reddit.png" width="30" /></a>
+                                                        </div>
+                                                    }
+                                                    {
+                                                        socialInfos && socialInfos['GitHub'] &&
+                                                        <div className="d-flex ml-10">
+                                                            <a target="_blank" href={socialInfos['GitHub']}><img src="/socials/github.png" width="30" /></a>
+                                                        </div>
+                                                    }
                                                 </div>
                                             </div>
                                         </Col>
