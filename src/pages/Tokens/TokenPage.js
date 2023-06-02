@@ -768,7 +768,81 @@ const TokenPage = ({ address }) => {
                                                             {priceChange}
                                                         </span>
                                                     </div>
-
+                                                </div>
+                                                
+                                                <div className="d-flex space-around mt-15">
+                                                    {
+                                                        socialInfos !== undefined && socialInfos['Saucerswap'] !== undefined &&
+                                                        <div className="d-flex ml-10">
+                                                            <a target="_blank" className="tooltipp" style={{justifyContent: 'center', display: 'flex'}} href={socialInfos['Saucerswap']}>
+                                                                <span className="tooltiptext">Trade</span>
+                                                                <img src="/socials/saucerswap.png" width="20" />
+                                                            </a>
+                                                        </div>
+                                                    }
+                                                    {
+                                                        socialInfos && socialInfos['Linktree'] &&
+                                                        <div className="d-flex ml-10">
+                                                            <a target="_blank" className="tooltipp" href={socialInfos['Linktree']}>
+                                                                <span className="tooltiptext">LinkTree</span>
+                                                                <img src="/socials/linktree.png" width="20" />
+                                                            </a>
+                                                        </div>
+                                                    }
+                                                    {
+                                                        socialInfos && socialInfos['Website'] &&
+                                                        <div className="d-flex ml-10">
+                                                            <a target="_blank" className="tooltipp" href={socialInfos['Website']}>
+                                                                <span className="tooltiptext">Website</span>
+                                                                <img src="/socials/website.png" width="20" ></img>
+                                                            </a>
+                                                        </div>
+                                                    }
+                                                    {
+                                                        socialInfos && socialInfos['Twitter'] &&
+                                                        <div className="d-flex ml-10">
+                                                            <a target="_blank" className="tooltipp" href={socialInfos['Twitter']}>
+                                                                <span className="tooltiptext">Twitter</span>
+                                                                <img src="/socials/twitter.png" width="20" />
+                                                            </a>
+                                                        </div>
+                                                    }
+                                                    {
+                                                        socialInfos && socialInfos['Discord'] &&
+                                                        <div className="d-flex ml-10">
+                                                            <a target="_blank" className="tooltipp" href={socialInfos['Discord']}>
+                                                                <span className="tooltiptext">Discord</span>
+                                                                <img src="/socials/discord.png" width="20" />
+                                                            </a>
+                                                        </div>
+                                                    }
+                                                    {
+                                                        socialInfos && socialInfos['Telegram'] &&
+                                                        <div className="d-flex ml-10">
+                                                            <a target="_blank" className="tooltipp" href={socialInfos['Telegram']}>
+                                                                <span className="tooltiptext">Telegram</span>
+                                                                <img src="/socials/telegram.png" width="20" />
+                                                            </a>
+                                                        </div>
+                                                    }
+                                                    {
+                                                        socialInfos && socialInfos['Reddit'] &&
+                                                        <div className="d-flex ml-10">
+                                                            <a target="_blank" className="tooltipp" href={socialInfos['Reddit']}>
+                                                                <span className="tooltiptext">Reddit</span>
+                                                                <img src="/socials/reddit.png" width="20" />
+                                                            </a>
+                                                        </div>
+                                                    }
+                                                    {
+                                                        socialInfos && socialInfos['GitHub'] &&
+                                                        <div className="d-flex ml-10">
+                                                            <a target="_blank" className="tooltipp" href={socialInfos['GitHub']}>
+                                                                <span className="tooltiptext">GitHub</span>
+                                                                <img src="/socials/github.png" width="20" />
+                                                            </a>
+                                                        </div>
+                                                    }
                                                 </div>
                                             </div>
 
@@ -779,125 +853,51 @@ const TokenPage = ({ address }) => {
                                                 <Nav pills className="badge-bg">
                                                     <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
                                                         <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.five ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.five) }} >
-                                                            <span className={timeRangeType === TIME_RANGE_TYPE.five ? "text-white badge" : "text-badge badge"}>5m</span>
+                                                            <span className={timeRangeType === TIME_RANGE_TYPE.five ? "text-white badge" : "text-badge badge"} style={{fontSize: 14, padding: 20}}>5m</span>
                                                         </div>
                                                     </NavItem>
                                                     <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
                                                         <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.hour ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.hour) }} >
-                                                            <span className={timeRangeType === TIME_RANGE_TYPE.hour ? "text-white badge" : "text-badge badge"}>1h</span>
+                                                            <span className={timeRangeType === TIME_RANGE_TYPE.hour ? "text-white badge" : "text-badge badge"} style={{fontSize: 14, padding: 20}}>1h</span>
                                                         </div>
                                                     </NavItem>
                                                     <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
                                                         <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.six ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.six) }} >
-                                                            <span className={timeRangeType == TIME_RANGE_TYPE.six ? "text-white badge" : "text-badge badge"}>6h</span>
+                                                            <span className={timeRangeType == TIME_RANGE_TYPE.six ? "text-white badge" : "text-badge badge"} style={{fontSize: 14, padding: 20}}>6h</span>
                                                         </div>
                                                     </NavItem>
                                                     <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
                                                         <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.day ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.day) }} >
-                                                            <span className={timeRangeType == TIME_RANGE_TYPE.day ? "text-white badge" : "text-badge badge"}>24h</span>
+                                                            <span className={timeRangeType == TIME_RANGE_TYPE.day ? "text-white badge" : "text-badge badge"} style={{fontSize: 14, padding: 20}}>24h</span>
                                                         </div>
                                                     </NavItem>
                                                     <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
                                                         <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.week ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.week) }} >
-                                                            <span className={timeRangeType == TIME_RANGE_TYPE.week ? "text-white badge" : "text-badge badge"}>1W</span>
+                                                            <span className={timeRangeType == TIME_RANGE_TYPE.week ? "text-white badge" : "text-badge badge"} style={{fontSize: 14, padding: 20}}>1W</span>
                                                         </div>
                                                     </NavItem>
                                                 </Nav>
-                                                <div className="d-flex space-around">
-                                                    <div className="d-flex flex-column" style={{ width: "4rem" }}>
-                                                        <span className="text-badge text-center">Txs</span>
+                                                <div className="d-flex space-around mt-15">
+                                                    <div className="d-flex flex-column" style={{ width: "5rem" }}>
+                                                        <span className="text-badge text-center" style={{fontSize: 12}}>Txs</span>
                                                         <span className="text-white text-center">{statisticData?.txs}</span>
                                                     </div>
-                                                    <div className="d-flex flex-column" style={{ width: "4rem" }}>
-                                                        <span className="text-badge text-center">Buys</span>
+                                                    <div className="d-flex flex-column" style={{ width: "5rem" }}>
+                                                        <span className="text-badge text-center" style={{fontSize: 12}}>Buys</span>
                                                         <span className="text-white text-center">{statisticData?.buys}</span>
                                                     </div>
-                                                    <div className="d-flex flex-column" style={{ width: "4rem" }}>
-                                                        <span className="text-badge text-center">Sells</span>
+                                                    <div className="d-flex flex-column" style={{ width: "5rem" }}>
+                                                        <span className="text-badge text-center" style={{fontSize: 12}}>Sells</span>
                                                         <span className="text-white text-center">{statisticData?.sells}</span>
                                                     </div>
-                                                    <div className="d-flex flex-column" style={{ width: "4rem" }}>
-                                                        <span className="text-badge text-center">Vol.</span>
+                                                    <div className="d-flex flex-column" style={{ width: "5rem" }}>
+                                                        <span className="text-badge text-center" style={{fontSize: 12}}>Vol.</span>
                                                         <span className="text-white text-center">{formattedNum(statisticData?.vol * priceUSD, true)}</span>
                                                     </div>
                                                     {/* <div className="d-flex flex-column" style={{ width: "4rem" }}>
                                                         <span className="text-badge text-center">% Var.</span>
                                                         <span className="text-red text-center">64</span>
                                                     </div> */}
-                                                </div>
-                                                <div className="d-flex space-around mt-15">
-                                                    {
-                                                        socialInfos !== undefined && socialInfos['Saucerswap'] !== undefined &&
-                                                        <div className="d-flex ml-10">
-                                                            <a target="_blank" className="tooltipp" style={{justifyContent: 'center', display: 'flex'}} href={socialInfos['Saucerswap']}>
-                                                                <span className="tooltiptext">Trade</span>
-                                                                <img src="/socials/saucerswap.png" width="30" />
-                                                            </a>
-                                                        </div>
-                                                    }
-                                                    {
-                                                        socialInfos && socialInfos['Linktree'] &&
-                                                        <div className="d-flex ml-10">
-                                                            <a target="_blank" className="tooltipp" href={socialInfos['Linktree']}>
-                                                                <span className="tooltiptext">LinkTree</span>
-                                                                <img src="/socials/linktree.png" width="30" />
-                                                            </a>
-                                                        </div>
-                                                    }
-                                                    {
-                                                        socialInfos && socialInfos['Website'] &&
-                                                        <div className="d-flex ml-10">
-                                                            <a target="_blank" className="tooltipp" href={socialInfos['Website']}>
-                                                                <span className="tooltiptext">Website</span>
-                                                                <img src="/socials/website.png" width="30" ></img>
-                                                            </a>
-                                                        </div>
-                                                    }
-                                                    {
-                                                        socialInfos && socialInfos['Twitter'] &&
-                                                        <div className="d-flex ml-10">
-                                                            <a target="_blank" className="tooltipp" href={socialInfos['Twitter']}>
-                                                                <span className="tooltiptext">Twitter</span>
-                                                                <img src="/socials/twitter.png" width="30" />
-                                                            </a>
-                                                        </div>
-                                                    }
-                                                    {
-                                                        socialInfos && socialInfos['Discord'] &&
-                                                        <div className="d-flex ml-10">
-                                                            <a target="_blank" className="tooltipp" href={socialInfos['Discord']}>
-                                                                <span className="tooltiptext">Discord</span>
-                                                                <img src="/socials/discord.png" width="30" />
-                                                            </a>
-                                                        </div>
-                                                    }
-                                                    {
-                                                        socialInfos && socialInfos['Telegram'] &&
-                                                        <div className="d-flex ml-10">
-                                                            <a target="_blank" className="tooltipp" href={socialInfos['Telegram']}>
-                                                                <span className="tooltiptext">Telegram</span>
-                                                                <img src="/socials/telegram.png" width="30" />
-                                                            </a>
-                                                        </div>
-                                                    }
-                                                    {
-                                                        socialInfos && socialInfos['Reddit'] &&
-                                                        <div className="d-flex ml-10">
-                                                            <a target="_blank" className="tooltipp" href={socialInfos['Reddit']}>
-                                                                <span className="tooltiptext">Reddit</span>
-                                                                <img src="/socials/reddit.png" width="30" />
-                                                            </a>
-                                                        </div>
-                                                    }
-                                                    {
-                                                        socialInfos && socialInfos['GitHub'] &&
-                                                        <div className="d-flex ml-10">
-                                                            <a target="_blank" className="tooltipp" href={socialInfos['GitHub']}>
-                                                                <span className="tooltiptext">GitHub</span>
-                                                                <img src="/socials/github.png" width="30" />
-                                                            </a>
-                                                        </div>
-                                                    }
                                                 </div>
                                             </div>
                                         </Col>
