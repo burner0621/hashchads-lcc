@@ -49,6 +49,10 @@ function useGlobalDataContext() {
   return useContext(GlobalDataContext)
 }
 
+const interval = setInterval (async() => {
+  await getHbarAndSaucePrice ()
+}, 5000)
+
 function reducer(state, { type, payload }) {
   switch (type) {
     case UPDATE: {
