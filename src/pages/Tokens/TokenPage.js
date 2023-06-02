@@ -194,6 +194,8 @@ const TokenPage = ({ address }) => {
     const dailyWeek = useTokenPriceData(address, timeframeOptions.WEEK, 86400)
     const dailyMonth = useTokenPriceData(address, timeframeOptions.MONTH, 86400)
     const dailyAll = useTokenPriceData(address, timeframeOptions.ALL_TIME, 86400)
+    let tradeHistoryInterval;
+    const [count, setCount] = useState(0);
 
     const priceData =
         timeWindow === timeframeOptions.MONTH
@@ -236,9 +238,9 @@ const TokenPage = ({ address }) => {
     }, [address])
 
     useEffect(() => {
-        setCurrentPage (1)
-        fetchData(1, rowsPerPage);
-    }, [rowsPerPage, address])
+        setCurrentPage(1)
+        fetchData();
+    }, [rowsPerPage])
 
     const calculateSwapImpactUsd = (amount) => {
         let maxSwapImpact = 1
@@ -344,13 +346,12 @@ const TokenPage = ({ address }) => {
         }
     }, [holders, pairs, tokenInfo, priceUSD])
 
-    const fetchData = async (pageNum, per_page) => {
-        fetch(`${env.BASE_URL}/api/transaction/get?tokenId=${address}&pageNum=${pageNum}&pageSize=${per_page}`)
+    const fetchData = async () => {
+        fetch(`${env.BASE_URL}/api/transaction/get?tokenId=${address}&pageNum=${currentPage}&pageSize=${rowsPerPage}`)
             .then(res => res.json())
             .then(
                 (result) => {
                     setData(result.data);
-                    setCurrentPage(pageNum);
                     setTotalRows(result.count);
                 },
                 (error) => {
@@ -378,16 +379,27 @@ const TokenPage = ({ address }) => {
         fetchStatisticData(timeRangeType)
     }, [timeRangeType])
 
-    useEffect (() => {
-        const tradeHistoryInterval = setInterval(() => {
-            fetchData(currentPage, rowsPerPage)
-        }, 5000)
-    }, [])
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        tradeHistoryInterval = setInterval(() => {
+            setCount (prev => {
+                if (prev === 5) {
+                    fetchData ()
+                    return 0
+                }
+                return prev + 1
+            })
+            fetchData()
+        }, 1000)
+        return () => {
+            clearInterval(tradeHistoryInterval);
+        };
+    }, [currentPage, rowsPerPage])
 
     const handlePageChange = (page, totalRows) => {
         setIsLoaded(true);
-        setCurrentPage (page)
-        fetchData(page, rowsPerPage);
+        setCurrentPage(page)
+        fetchData();
     }
 
     const handlePerRowsChange = async (newPerPage, page) => {
@@ -425,8 +437,8 @@ const TokenPage = ({ address }) => {
         }
         if (totalLiquidity === undefined || totalLiquidity === 0) fetchTotalData()
         if (priceUSD === undefined || priceUSD === 0) fetchTotalData()
-        const interval = setInterval (async() => {
-            await fetchTotalData ()
+        const interval = setInterval(async () => {
+            await fetchTotalData()
         }, 5000)
     }, [address, totalLiquidity, priceUSD])
 
@@ -769,12 +781,12 @@ const TokenPage = ({ address }) => {
                                                         </span>
                                                     </div>
                                                 </div>
-                                                
+
                                                 <div className="d-flex space-around mt-15">
                                                     {
                                                         socialInfos !== undefined && socialInfos['Saucerswap'] !== undefined &&
                                                         <div className="d-flex ml-10">
-                                                            <a target="_blank" className="tooltipp" style={{justifyContent: 'center', display: 'flex'}} href={socialInfos['Saucerswap']}>
+                                                            <a target="_blank" className="tooltipp" style={{ justifyContent: 'center', display: 'flex' }} href={socialInfos['Saucerswap']}>
                                                                 <span className="tooltiptext">Trade</span>
                                                                 <img src="/socials/saucerswap.png" width="20" />
                                                             </a>
@@ -853,45 +865,45 @@ const TokenPage = ({ address }) => {
                                                 <Nav pills className="badge-bg">
                                                     <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
                                                         <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.five ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.five) }} >
-                                                            <span className={timeRangeType === TIME_RANGE_TYPE.five ? "text-white badge" : "text-badge badge"} style={{fontSize: 14, padding: 20}}>5m</span>
+                                                            <span className={timeRangeType === TIME_RANGE_TYPE.five ? "text-white badge" : "text-badge badge"} style={{ fontSize: 14, padding: 20 }}>5m</span>
                                                         </div>
                                                     </NavItem>
                                                     <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
                                                         <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.hour ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.hour) }} >
-                                                            <span className={timeRangeType === TIME_RANGE_TYPE.hour ? "text-white badge" : "text-badge badge"} style={{fontSize: 14, padding: 20}}>1h</span>
+                                                            <span className={timeRangeType === TIME_RANGE_TYPE.hour ? "text-white badge" : "text-badge badge"} style={{ fontSize: 14, padding: 20 }}>1h</span>
                                                         </div>
                                                     </NavItem>
                                                     <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
                                                         <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.six ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.six) }} >
-                                                            <span className={timeRangeType == TIME_RANGE_TYPE.six ? "text-white badge" : "text-badge badge"} style={{fontSize: 14, padding: 20}}>6h</span>
+                                                            <span className={timeRangeType == TIME_RANGE_TYPE.six ? "text-white badge" : "text-badge badge"} style={{ fontSize: 14, padding: 20 }}>6h</span>
                                                         </div>
                                                     </NavItem>
                                                     <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
                                                         <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.day ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.day) }} >
-                                                            <span className={timeRangeType == TIME_RANGE_TYPE.day ? "text-white badge" : "text-badge badge"} style={{fontSize: 14, padding: 20}}>24h</span>
+                                                            <span className={timeRangeType == TIME_RANGE_TYPE.day ? "text-white badge" : "text-badge badge"} style={{ fontSize: 14, padding: 20 }}>24h</span>
                                                         </div>
                                                     </NavItem>
                                                     <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
                                                         <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.week ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.week) }} >
-                                                            <span className={timeRangeType == TIME_RANGE_TYPE.week ? "text-white badge" : "text-badge badge"} style={{fontSize: 14, padding: 20}}>1W</span>
+                                                            <span className={timeRangeType == TIME_RANGE_TYPE.week ? "text-white badge" : "text-badge badge"} style={{ fontSize: 14, padding: 20 }}>1W</span>
                                                         </div>
                                                     </NavItem>
                                                 </Nav>
                                                 <div className="d-flex space-around mt-15">
                                                     <div className="d-flex flex-column" style={{ width: "5rem" }}>
-                                                        <span className="text-badge text-center" style={{fontSize: 12}}>Txs</span>
+                                                        <span className="text-badge text-center" style={{ fontSize: 12 }}>Txs</span>
                                                         <span className="text-white text-center">{statisticData?.txs}</span>
                                                     </div>
                                                     <div className="d-flex flex-column" style={{ width: "5rem" }}>
-                                                        <span className="text-badge text-center" style={{fontSize: 12}}>Buys</span>
+                                                        <span className="text-badge text-center" style={{ fontSize: 12 }}>Buys</span>
                                                         <span className="text-white text-center">{statisticData?.buys}</span>
                                                     </div>
                                                     <div className="d-flex flex-column" style={{ width: "5rem" }}>
-                                                        <span className="text-badge text-center" style={{fontSize: 12}}>Sells</span>
+                                                        <span className="text-badge text-center" style={{ fontSize: 12 }}>Sells</span>
                                                         <span className="text-white text-center">{statisticData?.sells}</span>
                                                     </div>
                                                     <div className="d-flex flex-column" style={{ width: "5rem" }}>
-                                                        <span className="text-badge text-center" style={{fontSize: 12}}>Vol.</span>
+                                                        <span className="text-badge text-center" style={{ fontSize: 12 }}>Vol.</span>
                                                         <span className="text-white text-center">{formattedNum(statisticData?.vol * priceUSD, true)}</span>
                                                     </div>
                                                     {/* <div className="d-flex flex-column" style={{ width: "4rem" }}>
