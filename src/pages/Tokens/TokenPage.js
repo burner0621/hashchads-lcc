@@ -379,22 +379,22 @@ const TokenPage = ({ address }) => {
         fetchStatisticData(timeRangeType)
     }, [timeRangeType])
 
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        tradeHistoryInterval = setInterval(() => {
-            setCount (prev => {
-                if (prev === 5) {
-                    fetchData ()
-                    return 0
-                }
-                return prev + 1
-            })
-            fetchData()
-        }, 1000)
-        return () => {
-            clearInterval(tradeHistoryInterval);
-        };
-    }, [currentPage, rowsPerPage])
+    // useEffect(() => {
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    //     tradeHistoryInterval = setInterval(() => {
+    //         setCount (prev => {
+    //             if (prev === 5) {
+    //                 fetchData ()
+    //                 return 0
+    //             }
+    //             return prev + 1
+    //         })
+    //         fetchData()
+    //     }, 1000)
+    //     return () => {
+    //         clearInterval(tradeHistoryInterval);
+    //     };
+    // }, [currentPage, rowsPerPage])
 
     const handlePageChange = (page, totalRows) => {
         setIsLoaded(true);
@@ -426,21 +426,22 @@ const TokenPage = ({ address }) => {
         if (hbarPrice === undefined || hbarPrice === 0) fetchTotalData()
     }, [hbarPrice])
 
-    useEffect(() => {
-        const fetchTotalData = async () => {
-            const response = await fetch(`https://api.saucerswap.finance/tokens/prices/latest/${address}?interval=DAY`)
-            if (response.status === 200) {
-                const jsonData = await response.json()
-                setTotalLiquidity(jsonData.liquidityUsd)
-                setPriceUSD(jsonData.closeUsd)
-            }
-        }
-        if (totalLiquidity === undefined || totalLiquidity === 0) fetchTotalData()
-        if (priceUSD === undefined || priceUSD === 0) fetchTotalData()
-        const interval = setInterval(async () => {
-            await fetchTotalData()
-        }, 5000)
-    }, [address, totalLiquidity, priceUSD])
+    // useEffect(() => {
+    //     const fetchTotalData = async () => {
+    //         const response = await fetch(`https://api.saucerswap.finance/tokens/prices/latest/${address}?interval=DAY`)
+    //         if (response.status === 200) {
+    //             const jsonData = await response.json()
+    //             setTotalLiquidity(jsonData.liquidityUsd)
+    //             setPriceUSD(jsonData.closeUsd)
+    //         }
+    //         setTimeout (await fetchTotalData(), 5000)
+    //     }
+    //     if (totalLiquidity === undefined || totalLiquidity === 0) fetchTotalData()
+    //     if (priceUSD === undefined || priceUSD === 0) fetchTotalData()
+    //     const interval = setTimeout(async () => {
+    //         await fetchTotalData()
+    //     }, 15000)
+    // }, [address])
 
     useEffect(() => {
         async function fetchTokenData() {

@@ -8,36 +8,63 @@ import { Link } from 'react-router-dom';
 import { Card, CardHeader, Col, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
 import fetch from 'cross-fetch'
 import {useAllTokensInSaucerswap} from "../../contexts/GlobalData"
+import * as env from "../../env";
 
 const TRENDING_TYPE = {
-    hot: 'hot',
+    gainer: 'gainer',
     new: 'new',
-    pool: 'pool'
+    loser: 'loser'
 }
 
-const HOT_TOKENS = [
-    '0.0.1190803',
-    '0.0.127877',
-    '0.0.786931',
-    '0.0.1109951',
-    '0.0.1055483',
-]
-
 const Trending = () => {
-    const [trendingType, setTrendingType] = useState(TRENDING_TYPE.hot)
+    const [trendingType, setTrendingType] = useState(TRENDING_TYPE.gainer)
     const [currencies, setCurrencies] = useState ([])
     const [newTokens, setNewTokens] = useState ([])
-    const [hotTokens, setHotTokens] = useState ([])
+    const [gainerTokens, setGainers] = useState ([])
+    const [loserTokens, setLosers] = useState ([])
     
     const allTokens = useAllTokensInSaucerswap ()
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
-        let tmpCUr = []
-        for (let token of allTokens) {
-            if (HOT_TOKENS.includes(token.id)) {
+        function fetchTopTokenData () {
+            let tmpCur = [], tmpLoser = []
+            let HOT_TOKENS = []
+
+            let gainers = [], losers = [];
+            for (let token of allTokens) {
+                if (token.priceChangeUSD >= 0) {
+                    gainers.push(token);
+                } else {
+                    losers.push(token);
+                }
+            }
+
+            gainers = gainers.sort((a, b) => {
+                if (a.priceChangeUSD < b.priceChangeUSD) {
+                  return 1;
+                } else if (a.priceChangeUSD > b.priceChangeUSD) {
+                  return -1;
+                }
+              return 0;
+            });
+            gainers = gainers.slice (0, 5)
+
+            losers = losers.sort((a, b) => {
+                if (a.priceChangeUSD < b.priceChangeUSD) {
+                  return -1;
+                } else if (a.priceChangeUSD > b.priceChangeUSD) {
+                  return 1;
+                }
+              return 0;
+            });
+            losers = losers.slice (0, 5)
+            
+            for (let token of gainers) {
                 let tmp = {}
+                tmp.id = token.id
                 tmp.price = token.priceUsd.toFixed (6) || 0.0
                 tmp.img = `https://saucerswap.finance${token.icon}`
+                tmp.iconPath = token.icon
                 tmp.change = token.priceChangeUSD.toFixed (6)
                 tmp.coinName = token.name
                 if (Number(token.priceChangeUSD) > 0) {
@@ -47,10 +74,30 @@ const Trending = () => {
                     tmp.iconClass = "danger"
                     tmp.icon = "mdi mdi-trending-down"
                 }
-                tmpCUr.push (tmp)
+                tmpCur.push (tmp)
             }
+
+            for (let token of losers) {
+                let tmp = {}
+                tmp.id = token.id
+                tmp.price = token.priceUsd.toFixed (6) || 0.0
+                tmp.img = `https://saucerswap.finance${token.icon}`
+                tmp.iconPath = token.icon
+                tmp.change = token.priceChangeUSD.toFixed (6)
+                tmp.coinName = token.name
+                if (Number(token.priceChangeUSD) > 0) {
+                    tmp.iconClass = "success"
+                    tmp.icon = "mdi mdi-trending-up"
+                } else {
+                    tmp.iconClass = "danger"
+                    tmp.icon = "mdi mdi-trending-down"
+                }
+                tmpLoser.push (tmp)
+            }
+            if (tmpCur.length >0) setGainers (tmpCur)
+            if (tmpLoser.length >0) setLosers (tmpLoser)
         }
-        if (tmpCUr.length >0) setHotTokens (tmpCUr)
+        fetchTopTokenData ()
     }, [allTokens])
 
     const sortedList = useMemo(() => {
@@ -70,6 +117,7 @@ const Trending = () => {
             let tmp = {}
             tmp.price = token.priceUsd.toFixed (6)
             tmp.img = `https://saucerswap.finance${token.icon}`
+            tmp.iconPath = token.icon
             tmp.change = token.priceChangeUSD.toFixed (6)
             tmp.coinName = token.name
             if (Number(token.priceChangeUSD) > 0) {
@@ -85,14 +133,14 @@ const Trending = () => {
     }, [sortedList])
 
     useEffect (() => {
-        if (trendingType === TRENDING_TYPE.hot) {
-            setCurrencies (hotTokens)
+        if (trendingType === TRENDING_TYPE.gainer) {
+            setCurrencies (gainerTokens)
         }
-        else if (trendingType === TRENDING_TYPE.new) {
-            setCurrencies (newTokens)
+        else if (trendingType === TRENDING_TYPE.loser) {
+            setCurrencies (loserTokens)
         }
-        else setCurrencies ([])
-    }, [hotTokens, newTokens, trendingType])
+        else setCurrencies (newTokens)
+    }, [gainerTokens, loserTokens, trendingType])
     
     const handleTrendingType = (type) => {
         if(type !== trendingType) setTrendingType(type)
@@ -105,30 +153,21 @@ const Trending = () => {
                     <CardHeader className="align-items-center d-flex new-bg">
                         <h4 className="card-title mb-0 flex-grow-1">Trending</h4>
                         <div className="flex-shrink-0">
-                            <button className= {trendingType == TRENDING_TYPE.hot ? "btn btn-md button-border" : "btn btn-md"} style={{color: 'red'}} onClick={() => handleTrendingType(TRENDING_TYPE.hot)}>HOT</button>
-                            <button className= {trendingType == TRENDING_TYPE.new ? "btn btn-md button-border" : "btn btn-md"} style={{color: 'red'}} onClick={() => handleTrendingType(TRENDING_TYPE.new)}>NEW</button>
-                            <button className= {trendingType == TRENDING_TYPE.pool ? "btn btn-md button-border" : "btn btn-md"} style={{color: 'red'}} onClick={() => handleTrendingType(TRENDING_TYPE.pool)}>TOP POOLS</button>
+                            <button className= {trendingType === TRENDING_TYPE.gainer ? "btn btn-md button-border" : "btn btn-md"} style={{color: 'red'}} onClick={() => handleTrendingType(TRENDING_TYPE.gainer)}>GAINERS</button>
+                            <button className= {trendingType === TRENDING_TYPE.loser ? "btn btn-md button-border" : "btn btn-md"} style={{color: 'red'}} onClick={() => handleTrendingType(TRENDING_TYPE.loser)}>LOSERS</button>
+                            <button className= {trendingType === TRENDING_TYPE.new ? "btn btn-md button-border" : "btn btn-md"} style={{color: 'red'}} onClick={() => handleTrendingType(TRENDING_TYPE.new)}>NEW</button>
                         </div>
                     </CardHeader>
                     <div className="card-body">
                         <div className="table-responsive table-card">
                             <table className="table table-hover table-borderless table-centered align-middle table-nowrap mb-0">
                                 <thead className="text-muted bg-soft-light">
-                                    {trendingType == TRENDING_TYPE.pool ? (
-                                        <tr>
-                                            <th>Trading Pair</th>
-                                            <th>24h Change</th>
-                                            <th>LP Rewoard APR</th>
-                                            {/* <th>Actions</th> */}
-                                        </tr>    
-                                    ) : (
-                                        <tr>
-                                            <th>Token Name</th>
-                                            <th>Price</th>
-                                            <th>Change</th>
-                                            {/* <th>Actions</th> */}
-                                        </tr>
-                                    )}
+                                    <tr>
+                                        <th>Token Name</th>
+                                        <th>Price</th>
+                                        <th>---</th>
+                                        {/* <th>Actions</th> */}
+                                    </tr>
                                 </thead>
                                 <tbody>
                                     {(currencies || []).map((item, key) => (
@@ -136,7 +175,14 @@ const Trending = () => {
                                             <td>
                                                 <div className="d-flex align-items-center">
                                                     <div className="me-2">
-                                                        <img src={item.img} alt="" className="avatar-xxs" />
+                                                        {
+                                                            item.iconPath &&
+                                                            <img src={item.img} alt="" className="avatar-xxs" />
+                                                        }
+                                                        {
+                                                            item.iconPath === null &&
+                                                            <span alt={''} style={{ fontSize: 18 }} role="img" aria-label="face">🤔</span>
+                                                        }
                                                     </div>
                                                     <div>
                                                         <h6 className="fs-14 mb-0">{item.coinName}</h6>
@@ -144,7 +190,10 @@ const Trending = () => {
                                                 </div>
                                             </td>
                                             <td>${item.price}</td>
-                                            <td><h6 className={"fs-13 mb-0 text-" + item.iconClass}><i className={"align-middle me-1 " + item.icon}></i>{item.change}</h6></td>
+                                            <td>
+                                                {/* <h6 className={"fs-13 mb-0 text-" + item.iconClass}><i className={"align-middle me-1 " + item.icon}></i>{item.change}</h6> */}
+                                                <a href={"https://www.saucerswap.finance/swap/HBAR/" + item.id}><Button color="success" size='sm'>Trade</Button></a>
+                                            </td>
                                             {/* <td>${item.balance}</td>
                                             <td>{item.totalCoin}</td> */}
                                             {/* <td><Link to="/apps-crypto-buy-sell" className="btn btn-md btn-success">Trade</Link></td> */}
