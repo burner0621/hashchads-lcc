@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { RowFixed, RowBetween } from '../Row'
 import { useMedia } from 'react-use'
 import { formattedNum } from '../../utils'
-import { useGlobalData, useHbarAndSaucePrice } from '../../contexts/GlobalData'
+import { useGlobalDataContext, useHbarAndSaucePrice } from '../../contexts/GlobalData'
 import { Spinner } from "reactstrap";
 const Header = styled.div`
   width: 100%;
@@ -31,8 +31,15 @@ export default function GlobalStats() {
     const [tvlHbar, setTvlHbar] = useState(0)
     const [dailyVolHbar, setDailyVolHbar] = useState(0)
 
-    const { totalVolumeUSD, totalVolumeHBAR, todayVolumeUSD } = useGlobalData()
-    const [hBarPrice, saucePrice] = useHbarAndSaucePrice()
+    // const { totalVolumeUSD, totalVolumeHBAR, todayVolumeUSD } = useGlobalData()
+    // const {  totalVolumeUSD, totalVolumeHBAR, todayVolumeUSD, state  } = useGlobalDataContext() 
+    const [state]= useGlobalDataContext()
+    const totalVolumeUSD = state?.globalData?.totalVolumeUSD;
+    const totalVolumeHBAR = state?.globalData?.totalVolumeHBAR;
+    const todayVolumeUSD = state?.globalData?.todayVolumeUSD;
+    const hBarPrice = state?.hBarPrice;
+    const saucePrice = state?.saucePrice;
+    // const [hBarPrice, saucePrice] = useHbarAndSaucePrice()
 
     const formattedHbarPrice = hBarPrice ? formattedNum(hBarPrice, true) : undefined
     const formattedSaucePrice = saucePrice ? formattedNum(saucePrice, true) : undefined
@@ -41,6 +48,7 @@ export default function GlobalStats() {
     const formattedTodayVolume = todayVolumeUSD ? formattedNum(todayVolumeUSD, false) : undefined
     const formattedTodayFees = todayVolumeUSD ? formattedNum(todayVolumeUSD/400, true) : undefined
 
+    // useHbarAndSaucePrice()
     return (
         <Header id="globalStats">
             <RowBetween style={{ padding: below816 ? '0.5rem' : '.5rem' }}>

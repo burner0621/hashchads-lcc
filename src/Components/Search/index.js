@@ -9,7 +9,7 @@ import { BasicLink } from '../Link'
 // import FormattedName from '../FormattedName'
 import TokenLogo from '../TokenLogo'
 import DoubleTokenLogo from '../DoubleLogo'
-import { useAllPairsInSaucerswap, useAllTokensInSaucerswap } from '../../contexts/GlobalData'
+import { useAllPairsInSaucerswap, useAllTokensInSaucerswap, useGlobalDataContext } from '../../contexts/GlobalData'
 
 const Container = styled.div`
   height: 48px;
@@ -147,8 +147,11 @@ export const Search = ({ small = false, display }) => {
     const below470 = useMedia('(max-width: 470px)')
     const below410 = useMedia('(max-width: 410px)')
 
-    let allPairs = useAllPairsInSaucerswap()
-    let allTokens = useAllTokensInSaucerswap()
+    // let allPairs = useAllPairsInSaucerswap()
+    // let allTokens = useAllTokensInSaucerswap()
+    const [state] = useGlobalDataContext()
+    let allPairs = state?.allPairs || [];
+    let allTokens = state?.allTokens || [];
 
     useEffect(() => {
         if (value !== '') {
@@ -415,13 +418,13 @@ export const Search = ({ small = false, display }) => {
                                 </MenuItem>
                             )}
                             {filteredPairList &&
-                                filteredPairList.slice(0, pairsShown).map((pair) => {
+                                filteredPairList.slice(0, pairsShown).map((pair, index) => {
                                     //format incorrect names
                                     // updateNameData(pair)
                                     return (
                                         <BasicLink to={'/pairs/' + pair.contractId} key={pair.contractId} onClick={onDismiss}>
                                             <MenuItem>
-                                                <DoubleTokenLogo a0={pair?.tokenA?.icon} a1={pair?.tokenB?.icon} margin={true} />
+                                                <DoubleTokenLogo id={index} a0={pair?.tokenA?.icon} a1={pair?.tokenB?.icon} margin={true} />
                                                 <div style={{ marginLeft: '10px' }}>
                                                     {pair.tokenA.symbol + '-' + pair.tokenB.symbol} Pair
                                                 </div>

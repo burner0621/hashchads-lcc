@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react'
 import { ResponsiveContainer } from 'recharts'
 import { timeframeOptions } from '../../constants'
-import { useGlobalChartData, useGlobalData } from '../../contexts/GlobalData'
+import { getChartData, useGlobalDataContext } from '../../contexts/GlobalData'
 import { useMedia } from 'react-use'
 import { Spinner } from 'reactstrap'
 import DropdownSelect from '../DropdownSelect'
@@ -10,7 +10,10 @@ import { RowFixed } from '../Row'
 import { OptionButton } from '../ButtonStyled'
 import { getTimeframe } from '../../utils'
 import { ImpulseSpinner } from '../Impulse'
-
+import { useTimeframe } from '../../contexts/Application'
+import socketIO from 'socket.io-client';
+import * as env from "../../env";
+const socket = socketIO.connect(env.BASE_URL);
 const CHART_VIEW = {
   VOLUME: 'Volume',
   LIQUIDITY: 'Liquidity',
@@ -20,6 +23,7 @@ const VOLUME_WINDOW = {
   WEEKLY: 'WEEKLY',
   DAYS: 'DAYS',
 }
+let isFetchingChartData = false;
 const GlobalChart = ({ display }) => {
   const [loading, setLoading] = useState(true)
   // chart options
@@ -29,10 +33,16 @@ const GlobalChart = ({ display }) => {
   const timeWindow = timeframeOptions.ALL_TIME
   const [volumeWindow, setVolumeWindow] = useState(VOLUME_WINDOW.DAYS)
 
-  // global historical data
-  const [dailyData, weeklyData] = useGlobalChartData()
-  const { totalLiquidityUSD, oneDayVolumeUSD, volumeChangeUSD, liquidityChangeUSD, oneWeekVolume, weeklyVolumeChange } = useGlobalData()
-  
+  // const { totalLiquidityUSD, oneDayVolumeUSD, volumeChangeUSD, liquidityChangeUSD, oneWeekVolume, weeklyVolumeChange } = useGlobalData()
+  const [state, {updatePrices, updateChart}] = useGlobalDataContext()
+  // const { totalLiquidityUSD, oneDayVolumeUSD, volumeChangeUSD, liquidityChangeUSD, oneWeekVolume, weeklyVolumeChange } = useGlobalDataContext()
+  const totalLiquidityUSD = state?.globalData?.totalLiquidityUSD;
+  const oneDayVolumeUSD = state?.globalData?.oneDayVolumeUSD;
+  const volumeChangeUSD = state?.globalData?.volumeChangeUSD;
+  const liquidityChangeUSD = state?.globalData?.liquidityChangeUSD;
+  const oneWeekVolume = state?.globalData?.oneWeekVolume;
+  const weeklyVolumeChange = state?.globalData?.weeklyVolumeChange;
+
   const [stateLiquidityChangeUSD, setStateLiquidityChangeUSD] = useState(0)
   const [stateTotalLiquidityUSD, setStateTotalLiquidityUSD] = useState(0)
   const [stateVolumeChangeUSD, setStateVolumeChangeUSD] = useState(0)
@@ -50,6 +60,57 @@ const GlobalChart = ({ display }) => {
   }, [totalLiquidityUSD, volumeChangeUSD, liquidityChangeUSD, oneDayVolumeUSD, oneWeekVolume, weeklyVolumeChange])
   // based on window, get starttim
   let utcStartTime = getTimeframe(timeWindow)
+
+  // global historical data
+  const dailyData = state?.chartData?.daily
+  const weeklyData = state?.chartData?.weekly
+
+  const [oldestDateFetch, setOldestDateFetched] = useState()
+  const [activeWindow] = useTimeframe()
+  const [tmpPrices, setTmpPrices] = useState([])
+  
+  useEffect(() => {
+    socket.on('getPricesResponse', (p) => {
+      setTmpPrices(p)
+      updatePrices(p);
+    });
+  }, [updatePrices]);
+
+  /**
+   * Keep track of oldest date fetched. Used to
+   * limit data fetched until its actually needed.
+   * (dont fetch year long stuff unless year option selected)
+   */
+  useEffect(() => {
+    // based on window, get starttime
+    let startTime = getTimeframe(activeWindow)
+
+    if ((activeWindow && startTime < oldestDateFetch) || !oldestDateFetch) {
+      setOldestDateFetched(startTime)
+    }
+  }, [activeWindow, oldestDateFetch])
+
+  // fix for rebass tokens
+
+  /**
+   * Fetch data if none fetched or older data is needed
+   */
+  
+  useEffect(() => {
+    async function fetchData() {
+      // historical stuff for chart
+      const [data, weekelyData] = await getChartData(oldestDateFetch, tmpPrices)
+      updateChart(data, weekelyData)
+      isFetchingChartData = false
+    }
+    if (oldestDateFetch && !(dailyData && weeklyData) && tmpPrices && tmpPrices.length > 0) {
+      if(!isFetchingChartData) {
+        isFetchingChartData = true
+        fetchData()
+      }
+    }
+  }, [dailyData, tmpPrices, weeklyData, oldestDateFetch, updateChart])
+
 
   const chartDataFiltered = useMemo(() => {
     let currentData = volumeWindow === VOLUME_WINDOW.DAYS ? dailyData : weeklyData

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Col, Container, Row } from "reactstrap";
 import { Box } from 'rebass'
 import styled from 'styled-components'
@@ -13,8 +13,14 @@ import GlobalChart from '../../Components/GlobalChart'
 import Trending from '../../Components/Trending'
 import { formattedNum, formattedPercent } from '../../utils'
 import GlobalStats from '../../Components/GlobalStats'
+import fetch from 'cross-fetch'
 
-import { useGlobalData } from '../../contexts/GlobalData'
+import Provider, { getAllPairsOnSaucerswap, getAllTokensOnSaucerswap, getGlobalData, getHbarAndSaucePrice, useGlobalDataContext, useHbarAndSaucePrice, usePriceChanges, useTokenDailyVolume } from '../../contexts/GlobalData'
+
+import socketIO from 'socket.io-client';
+import * as env from "../../env";
+
+const socket = socketIO.connect(env.BASE_URL);
 
 const Text = styled.div`
     font-size: 0.8125rem !important;
@@ -29,17 +35,121 @@ const GridRow = styled.div`
   align-items: start;
   justify-content: space-between;
 `
-
+let isFetchingUseTokenDailyVolume = false
+let isFetchingUsePriceChanges = false;
+let isGettingData = false;
 const Overview = () => {
   document.title = "Overview";
 
   const [rightColumn, setRightColumn] = useState(true);
 
-  const { totalLiquidityUSD, oneDayVolumeUSD, volumeChangeUSD, liquidityChangeUSD } = useGlobalData()
-  console.log('newstar totalLiquidityUSD', totalLiquidityUSD, oneDayVolumeUSD, volumeChangeUSD, liquidityChangeUSD);
-  const toggleRightColumn = () => {
-    setRightColumn(!rightColumn);
-  };
+  // const { totalLiquidityUSD, oneDayVolumeUSD, volumeChangeUSD, liquidityChangeUSD } = useGlobalData()
+
+  const [state, { update, updateAllPairsInSaucerswap, updateAllTokensInSaucerswap, updateHbarAndSaucePrice, updatePrices, updateTokenDailyVolume, updatePriceChange }] = useGlobalDataContext();
+
+  const totalLiquidityUSD = state?.globalData?.totalLiquidityUSD;
+  const oneDayVolumeUSD = state?.globalData?.oneDayVolumeUSD;
+  const volumeChangeUSD = state?.globalData?.volumeChangeUSD;
+  const liquidityChangeUSD = state?.globalData?.liquidityChangeUSD;
+
+  const [tmpPrices, setTmpPrices] = useState([])
+  // console.log('newstar totalLiquidityUSD', totalLiquidityUSD, oneDayVolumeUSD, volumeChangeUSD, liquidityChangeUSD);
+  // const toggleRightColumn = () => {
+  //   setRightColumn(!rightColumn);
+  // };
+  const hbarPrice = state?.hBarPrice;
+
+  const priceChanges = state?.priceChange
+  const data = state?.globalData
+  const tokenDailyVolume = state?.tokenDailyVolume
+
+  useEffect(() => {
+
+    if (!hbarPrice) {
+      getHbarAndSaucePrice().then((hbarP, sauceP) => {
+        updateHbarAndSaucePrice(hbarP, sauceP)
+      })
+    }
+
+    if (tokenDailyVolume === undefined || tokenDailyVolume === {}) {
+      if (!isFetchingUseTokenDailyVolume) {
+        try {
+          isFetchingUseTokenDailyVolume = true
+          fetch("https://api.saucerswap.finance/tokens/daily-volumes").then((response) => {
+            if (response.status === 200) {
+              response.json().then((dailyVolData) => {
+                updateTokenDailyVolume(dailyVolData)
+
+                isFetchingUseTokenDailyVolume = false
+              })
+            } else {
+              isFetchingUseTokenDailyVolume = false
+            }
+          })
+        } catch (e) {
+          console.log(e)
+          isFetchingUseTokenDailyVolume = false
+        }
+      }
+    }
+
+    if (!priceChanges || priceChanges?.length === {}) {
+      if (!isFetchingUsePriceChanges) {
+        try {
+          isFetchingUsePriceChanges = true
+          fetch("https://api.saucerswap.finance/tokens/price-change").then((response) => {
+            if (response.status === 200) {
+              response.json().then(priceChangeData => {
+                updatePriceChange(priceChangeData)
+                isFetchingUsePriceChanges = false
+              });
+            } else {
+              isFetchingUsePriceChanges = false
+            }
+          })
+        } catch (e) {
+          console.log(e)
+          isFetchingUsePriceChanges = false
+        }
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    socket.on('getPricesResponse', (p) => {
+
+      setTmpPrices(p)
+      updatePrices(p);
+      if (p && p.length > 0) socket.disconnect()
+    });
+  }, [updatePrices]);
+
+  useEffect(() => {
+
+    async function getAllData() {
+
+      let globalData = await getGlobalData(tmpPrices, hbarPrice)
+      globalData && update(globalData)
+
+      let allPairs = await getAllPairsOnSaucerswap()
+      updateAllPairsInSaucerswap(allPairs)
+
+      let allTokens = await getAllTokensOnSaucerswap(allPairs, tokenDailyVolume, priceChanges, hbarPrice)
+      updateAllTokensInSaucerswap(allTokens)
+
+      let [hbarP, sauceP] = await getHbarAndSaucePrice()
+      updateHbarAndSaucePrice(hbarP, sauceP)
+      isGettingData = false
+    }
+
+    if (data === undefined && hbarPrice && tmpPrices && tmpPrices.length > 0) {
+      if (!isGettingData) {
+        getAllData()
+        isGettingData = true
+      }
+    }
+
+  }, [hbarPrice, tmpPrices])
 
   const below800 = useMedia('(max-width: 800px)')
 

@@ -11,7 +11,7 @@ import { RowBetween, RowFixed, AutoRow } from '../../Components/Row'
 import Link, { BasicLink } from '../../Components/Link'
 import Search from '../../Components/Search'
 import { useParams } from 'react-router-dom'
-import { useAllPairsInSaucerswap, usePairWeeklyVolume, useHbarAndSaucePrice, usePairDailyVolume } from '../../contexts/GlobalData'
+import { useAllPairsInSaucerswap, usePairWeeklyVolume, useHbarAndSaucePrice, usePairDailyVolume, useGlobalDataContext, getHbarAndSaucePrice } from '../../contexts/GlobalData'
 import fetch from 'cross-fetch'
 
 import DoubleTokenLogo from "../../Components/DoubleLogo";
@@ -70,7 +70,6 @@ const CHART_VIEW = {
 const TokenPair = () => {
 
     const { contractId } = useParams()
-    const _allPairs = useAllPairsInSaucerswap()
     // const [pairData, setPairData] = useState({});
     const [totalLiquidityUsd, setTotalLiquidityUsd] = useState(0)
     const [totalLiquidityHbar, setTotalLiquidityHbar] = useState(0)
@@ -91,8 +90,16 @@ const TokenPair = () => {
     const dailyVolumes = usePairDailyVolume()
     const weeklyVolumes = usePairWeeklyVolume()
     const weeklyData = usePairWeeklyVolume()
-    const [hbarPrice, saucePrice] = useHbarAndSaucePrice()
-
+    const [state, { updateHbarAndSaucePrice }] = useGlobalDataContext();
+    const hbarPrice = state?.hBarPrice;
+    const saucePrice = state?.saucePrice;
+    useEffect(() => {
+        if (!hbarPrice) {
+            getHbarAndSaucePrice().then((hbarP, sauceP) => {
+                updateHbarAndSaucePrice(hbarP, sauceP)
+            })
+        }
+    }, [])
     const [showCopyText, setShowCopyText] = useState(false)
 
     const [chartFilter, setChartFilter] = useState(CHART_VIEW.LIQUIDITY)
@@ -152,7 +159,7 @@ const TokenPair = () => {
             <div className="page-content" style={{ marginBottom: '20px' }}>
                 <Container fluid>
                     <ContentWrapper>
-                        <div className="d-flex flex-column new-bg br-10" style={{padding:'15px'}}>
+                        <div className="d-flex flex-column new-bg br-10" style={{ padding: '15px' }}>
                             <RowBetween style={{ flexWrap: 'wrap', alingItems: 'start' }}>
                                 <AutoRow align="flex-end" style={{ width: 'fit-content' }}>
                                     <div style={{ fontWeight: 400, fontSize: 14, color: 'white' }}>
@@ -332,7 +339,7 @@ const TokenPair = () => {
                             </Col>
                             <Col xl={8} sm={12}>
                                 {
-                                    <div className="d-flex flex-column new-bg br-10" style={{padding:'15px'}}>
+                                    <div className="d-flex flex-column new-bg br-10" style={{ padding: '15px' }}>
                                         {below600 ? (
                                             <RowBetween mb={40}>
                                                 <DropdownSelect options={CHART_VIEW} active={chartFilter} setActive={setChartFilter} color={'#ff007a'} />
