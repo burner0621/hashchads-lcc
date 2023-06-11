@@ -415,13 +415,13 @@ export const Search = ({ small = false, display }) => {
                                 </MenuItem>
                             )}
                             {filteredPairList &&
-                                filteredPairList.slice(0, pairsShown).map((pair) => {
+                                filteredPairList.slice(0, pairsShown).map((pair, index) => {
                                     //format incorrect names
                                     // updateNameData(pair)
                                     return (
                                         <BasicLink to={'/pairs/' + pair.contractId} key={pair.contractId} onClick={onDismiss}>
                                             <MenuItem>
-                                                <DoubleTokenLogo a0={pair?.tokenA?.icon} a1={pair?.tokenB?.icon} margin={true} />
+                                                <DoubleTokenLogo id={index} a0={pair?.tokenA?.icon} a1={pair?.tokenB?.icon} margin={true} />
                                                 <div style={{ marginLeft: '10px' }}>
                                                     {pair.tokenA.symbol + '-' + pair.tokenB.symbol} Pair
                                                 </div>

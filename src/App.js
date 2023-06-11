@@ -5,7 +5,7 @@ import './assets/scss/themes.scss';
 
 //imoprt Route
 import Route from './Routes';
-import { useGlobalData, useGlobalChartData } from './contexts/GlobalData'
+// import { useGlobalData, useGlobalChartData } from './contexts/GlobalData'
 // Import Firebase Configuration file
 // import { initFirebaseBackend } from "./helpers/firebase_helper";
 
@@ -29,8 +29,6 @@ import fakeBackend from "./helpers/AuthType/fakeBackend";
 // initFirebaseBackend(firebaseConfig);
 
 function App() {
-  const globalData = useGlobalData()
-  const globalChartData = useGlobalChartData()
   return (
     <React.Fragment>
       {/* {globalData &&

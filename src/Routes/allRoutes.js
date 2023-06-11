@@ -9,10 +9,10 @@ import TokenPair from "../pages/Tokens/TokenPairPage";
 
 const authProtectedRoutes = [
   { path: "/overview", component: <Overview /> },
-  { path: "/tokens", component: <Tokens /> },
-  { path: "/tokens/:tokenAddress", component: <Tokens /> },
-  { path: "/pairs", component: <Pairs /> },
-  { path: "/pairs/:contractId", component: <TokenPair /> },
+  // { path: "/tokens", component: <Tokens /> },
+  // { path: "/tokens/:tokenAddress", component: <Tokens /> },
+  // { path: "/pairs", component: <Pairs /> },
+  // { path: "/pairs/:contractId", component: <TokenPair /> },
   // {
   //   path: "/apps-ecommerce-product-details",
   //   component: <EcommerceProductDetail />,

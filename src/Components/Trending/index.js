@@ -7,7 +7,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardHeader, Col, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
 import fetch from 'cross-fetch'
-import {useAllTokensInSaucerswap} from "../../contexts/GlobalData"
+import {useAllTokensInSaucerswap, useGlobalDataContext} from "../../contexts/GlobalData"
 import * as env from "../../env";
 
 const TRENDING_TYPE = {
@@ -23,7 +23,11 @@ const Trending = () => {
     const [gainerTokens, setGainers] = useState ([])
     const [loserTokens, setLosers] = useState ([])
     
-    const allTokens = useAllTokensInSaucerswap ()
+    // const allTokens = useAllTokensInSaucerswap ()
+    const [state]= useGlobalDataContext()
+    const allTokens = state?.allTokens || []
+
+    useAllTokensInSaucerswap()
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         function fetchTopTokenData () {

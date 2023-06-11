@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react'
 import { ResponsiveContainer } from 'recharts'
 import { timeframeOptions } from '../../constants'
-import { useGlobalChartData, useGlobalData } from '../../contexts/GlobalData'
+import { useGlobalChartData, useGlobalDataContext } from '../../contexts/GlobalData'
 import { useMedia } from 'react-use'
 import { Spinner } from 'reactstrap'
 import DropdownSelect from '../DropdownSelect'
@@ -31,8 +31,16 @@ const GlobalChart = ({ display }) => {
 
   // global historical data
   const [dailyData, weeklyData] = useGlobalChartData()
-  const { totalLiquidityUSD, oneDayVolumeUSD, volumeChangeUSD, liquidityChangeUSD, oneWeekVolume, weeklyVolumeChange } = useGlobalData()
-  
+  // const { totalLiquidityUSD, oneDayVolumeUSD, volumeChangeUSD, liquidityChangeUSD, oneWeekVolume, weeklyVolumeChange } = useGlobalData()
+  const [state] = useGlobalDataContext()
+  // const { totalLiquidityUSD, oneDayVolumeUSD, volumeChangeUSD, liquidityChangeUSD, oneWeekVolume, weeklyVolumeChange } = useGlobalDataContext()
+  const totalLiquidityUSD = state?.globalData?.totalLiquidityUSD;
+  const oneDayVolumeUSD = state?.globalData?.oneDayVolumeUSD;
+  const volumeChangeUSD = state?.globalData?.volumeChangeUSD;
+  const liquidityChangeUSD = state?.globalData?.liquidityChangeUSD;
+  const oneWeekVolume = state?.globalData?.oneWeekVolume;
+  const weeklyVolumeChange = state?.globalData?.weeklyVolumeChange;
+
   const [stateLiquidityChangeUSD, setStateLiquidityChangeUSD] = useState(0)
   const [stateTotalLiquidityUSD, setStateTotalLiquidityUSD] = useState(0)
   const [stateVolumeChangeUSD, setStateVolumeChangeUSD] = useState(0)

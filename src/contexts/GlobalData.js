@@ -45,13 +45,13 @@ dayjs.extend(weekOfYear)
 
 const GlobalDataContext = createContext()
 
-function useGlobalDataContext() {
+export function useGlobalDataContext() {
   return useContext(GlobalDataContext)
 }
 
-const interval = setInterval (async() => {
-  await getHbarAndSaucePrice ()
-}, 5000)
+// const interval = setInterval (async() => {
+//   await getHbarAndSaucePrice ()
+// }, 5000)
 
 function reducer(state, { type, payload }) {
   switch (type) {
@@ -198,24 +198,32 @@ export function useGlobalData() {
   return data || {}
 }
 
-async function getHbarAndSaucePrice() {
-  try {
-    let response = await fetch("https://api.saucerswap.finance/tokens")
-    if (response.status === 200) {
-      const jsonData = await response.json();
-      try {
-        return [Number(jsonData[0]['priceUsd']), Number(jsonData[2]['priceUsd'])];
-      } catch (error) {
-        return [0, 0]
+let isFetchingGetHbarAndSaucePrice = false
+export async function getHbarAndSaucePrice() {
+  if(!isFetchingGetHbarAndSaucePrice) {
+    try {
+      isFetchingGetHbarAndSaucePrice = true
+      let response = await fetch("https://api.saucerswap.finance/tokens")
+      if (response.status === 200) {
+        const jsonData = await response.json();
+        try {
+          isFetchingGetHbarAndSaucePrice = false
+          return [Number(jsonData[0]['priceUsd']), Number(jsonData[2]['priceUsd'])];
+        } catch (error) {
+          isFetchingGetHbarAndSaucePrice = false
+          return [0, 0]
+        }
       }
+      isFetchingGetHbarAndSaucePrice = false
+      return [0, 0]
+    } catch (e) {
+      isFetchingGetHbarAndSaucePrice = false
+      return [0, 0]
     }
-    return [0, 0]
-  } catch (e) {
-    return [0, 0]
   }
 }
 
-async function getAllPairsOnSaucerswap() {
+export async function getAllPairsOnSaucerswap() {
   try {
     let pairs = []
     let response = await fetch("https://api.saucerswap.finance/pools")
@@ -229,7 +237,7 @@ async function getAllPairsOnSaucerswap() {
   }
 }
 
-async function getAllTokensOnSaucerswap(_allPairs, tokenDailyVolume, priceChanges, hbarPrice) {
+export async function getAllTokensOnSaucerswap(_allPairs, tokenDailyVolume, priceChanges, hbarPrice) {
   try {
     let tokens = [], tmpTokens = []
     let rlt = []
@@ -239,8 +247,15 @@ async function getAllTokensOnSaucerswap(_allPairs, tokenDailyVolume, priceChange
       tokens = jsonData;
     }
     for (let token of tokens) {
-      token['oneDayVolumeUSD'] = Number(tokenDailyVolume[token['id']]) * (hbarPrice !== undefined ? hbarPrice.toFixed(4) : 0)
-      token['priceChangeUSD'] = Number(priceChanges[token['id']])
+      if (tokenDailyVolume && tokenDailyVolume.length > 0) {
+        token['oneDayVolumeUSD'] = Number(tokenDailyVolume[token['id']]) * (hbarPrice !== undefined ? hbarPrice.toFixed(4) : 0)
+        token['priceChangeUSD'] = Number(priceChanges[token['id']])
+      } else {
+        // token['oneDayVolumeUSD'] = 0
+        // token['priceChangeUSD'] = 0
+        break;
+      }
+
       tmpTokens.push(token)
     }
 
@@ -302,7 +317,7 @@ export default function Provider({ children }) {
       },
     })
   }, [])
-  
+
   const updatePairDailyVolume = useCallback((data) => {
     dispatch({
       type: UPDATE_PAIR_DAILY_VOLUME,
@@ -311,7 +326,7 @@ export default function Provider({ children }) {
       },
     })
   }, [])
-  
+
   const updatePairWeeklyVolume = useCallback((data) => {
     dispatch({
       type: UPDATE_PAIR_WEEKLY_VOLUME,
@@ -353,7 +368,7 @@ export default function Provider({ children }) {
       type: UPDATE_HBAR_AND_SAUCE_PRICE,
       payload: {
         hBarPrice: hbarPrice,
-        saucePrice
+        saucePrice: saucePrice
       },
     })
   }, [])
@@ -408,18 +423,23 @@ export default function Provider({ children }) {
 export function useHbarAndSaucePrice() {
   const [state, { updateHbarAndSaucePrice }] = useGlobalDataContext()
   const hBarPrice = state?.hBarPrice
-  const saucePrice = state?.saucePrice;
-  useEffect(() => {
-    async function checkForHbarPrice() {
-      if (!hBarPrice) {
-        let [hbarP, sauceP] = await getHbarAndSaucePrice()
-        updateHbarAndSaucePrice(hbarP, sauceP)
-      }
-    }
-    if (!hBarPrice) checkForHbarPrice()
-  }, [hBarPrice, saucePrice, updateHbarAndSaucePrice])
+  // const saucePrice = state?.saucePrice;
+  // useEffect(() => {
+  //   async function checkForHbarPrice() {
+  //     if (!hBarPrice) {
+  //       let [hbarP, sauceP] = await getHbarAndSaucePrice()
+  //       updateHbarAndSaucePrice(hbarP, sauceP)
+  //     }
+  //   }
+  //   if (!hBarPrice) checkForHbarPrice()
+  // }, [hBarPrice, saucePrice, updateHbarAndSaucePrice])
 
-  return [hBarPrice, saucePrice]
+  // return [hBarPrice, saucePrice]
+  if (!hBarPrice) {
+    getHbarAndSaucePrice().then((hbarP, sauceP) => {
+      updateHbarAndSaucePrice(hbarP, sauceP)
+    })
+  }
 }
 
 export function usePrices() {
@@ -456,7 +476,7 @@ export function useAllPairsInSaucerswap() {
       isGettingPairs = false
     }
     if (!allPairs || allPairs?.length === 0) {
-      if (!isGettingPairs){
+      if (!isGettingPairs) {
         fetchData()
         isGettingPairs = true
       }
@@ -464,59 +484,99 @@ export function useAllPairsInSaucerswap() {
   }, [allPairs])
   return allPairs || []
 }
-let isGettingPriceChange = false;
+
+let isFetchingUsePriceChanges = false;
 export function usePriceChanges() {
   const [state, { updatePriceChange }] = useGlobalDataContext()
   let priceChange = state?.priceChange
-  useEffect(() => {
-    async function fetchData() {
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     try {
+  //       let response = await fetch("https://api.saucerswap.finance/tokens/price-change")
+  //       if (response.status === 200) {
+  //         const priceChangeData = await response.json();
+  //         updatePriceChange(priceChangeData)
+  //       }
+  //     } catch (e) {
+  //       console.log(e)
+  //     }
+  //   }
+  //   if (!priceChange || priceChange?.length === {}) {
+  //     fetchData()
+  //   }
+  // }, [updatePriceChange, priceChange])
+  // return priceChange || {}
+  if (!priceChange || priceChange?.length === {}) {
+    if(!isFetchingUsePriceChanges) {
       try {
-        let response = await fetch("https://api.saucerswap.finance/tokens/price-change")
-        if (response.status === 200) {
-          const priceChangeData = await response.json();
-          updatePriceChange(priceChangeData)
-        }
+        isFetchingUsePriceChanges = true
+        fetch("https://api.saucerswap.finance/tokens/price-change").then((response) => {
+          if (response.status === 200) {
+            response.json().then(priceChangeData => {
+              updatePriceChange(priceChangeData)
+              isFetchingUsePriceChanges = false
+            });
+          } else {
+            isFetchingUsePriceChanges = false
+          }
+        })
       } catch (e) {
         console.log(e)
-      }
-      isGettingPriceChange = false;
-    }
-    if (!priceChange || priceChange?.length === {}) {
-      if (!isGettingPriceChange) {
-        fetchData()
-        isGettingPriceChange = true;
+        isFetchingUsePriceChanges = false
       }
     }
-  }, [updatePriceChange, priceChange])
-  return priceChange || {}
+  }
 }
-let isGettingDailyVolumes = false;
+
+let isFetchingUseTokenDailyVolume = false
 export function useTokenDailyVolume() {
+  
   const [state, { updateTokenDailyVolume }] = useGlobalDataContext()
   let tokenDailyVolume = state?.tokenDailyVolume
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        let response = await fetch("https://api.saucerswap.finance/tokens/daily-volumes")
+  
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     try {
+  //       let response = await fetch("https://api.saucerswap.finance/tokens/daily-volumes")
 
-        if (response.status === 200) {
-          const dailyVolData = await response.json();
-          updateTokenDailyVolume(dailyVolData)
-        }
+  //       if (response.status === 200) {
+  //         const dailyVolData = await response.json();
+  //         updateTokenDailyVolume(dailyVolData)
+  //       }
+  //     } catch (e) {
+  //       console.log(e)
+  //     }
+  //   }
+  //   if (tokenDailyVolume === undefined || tokenDailyVolume === {}) {
+  //     fetchData()
+  //   }
+  // }, [updateTokenDailyVolume, tokenDailyVolume])
+  // return tokenDailyVolume || {}
+  if (tokenDailyVolume === undefined || tokenDailyVolume === {}) {
+    if (!isFetchingUseTokenDailyVolume) {
+      try {
+        isFetchingUseTokenDailyVolume = true
+        fetch("https://api.saucerswap.finance/tokens/daily-volumes").then((response) => {
+          if (response.status === 200) {
+            response.json().then((dailyVolData) => {
+              updateTokenDailyVolume(dailyVolData)
+              isFetchingUseTokenDailyVolume = false
+            })
+          } else {
+            isFetchingUseTokenDailyVolume = false
+          }
+        })
       } catch (e) {
         console.log(e)
-      }
-      isGettingDailyVolumes = false
-    }
-    if (tokenDailyVolume === undefined || tokenDailyVolume === {}) {
-      if (!isGettingDailyVolumes) {
-        fetchData()
-        isGettingDailyVolumes = true;
+        isFetchingUseTokenDailyVolume = false
       }
     }
-  }, [updateTokenDailyVolume, tokenDailyVolume])
-  return tokenDailyVolume || {}
+  }
 }
+
+// export function dispatchTokenDailyVolume (dailyVolData) {
+//   updateTokenDailyVolume(dailyVolData)
+// }
 
 export function usePairDailyVolume() {
   const [state, { updatePairDailyVolume }] = useGlobalDataContext()
@@ -535,7 +595,7 @@ export function usePairDailyVolume() {
       }
     }
     if (pairDailyVolume === undefined || pairDailyVolume.length === 0) {
-        fetchData()
+      fetchData()
     }
   }, [updatePairDailyVolume, pairDailyVolume])
   return pairDailyVolume || {}
@@ -558,7 +618,7 @@ export function usePairWeeklyVolume() {
       }
     }
     if (pairWeeklyVolume === undefined || pairWeeklyVolume.length === 0) {
-        fetchData()
+      fetchData()
     }
   }, [updatePairWeeklyVolume, pairWeeklyVolume])
   return pairWeeklyVolume || {}
@@ -566,20 +626,31 @@ export function usePairWeeklyVolume() {
 
 export function useAllTokensInSaucerswap() {
   const [state, { updateAllTokensInSaucerswap }] = useGlobalDataContext()
-  const tokenDailyVolume = useTokenDailyVolume()
-  const priceChanges = usePriceChanges()
-  const [hbarPrice, saucePrice] = useHbarAndSaucePrice()
+  // const tokenDailyVolume = useTokenDailyVolume()
+  // const priceChanges = usePriceChanges()
+  // const [hbarPrice, saucePrice] = useHbarAndSaucePrice()
   const _allPairs = useAllPairsInSaucerswap()
 
+  const tokenDailyVolume = state?.tokenDailyVolume;
+  const priceChanges = state?.priceChange;
+  const hbarPrice = state?.hBarPrice;
+
   let allTokens = state?.allTokens
-  useEffect(() => {
-    async function fetchData() {
-      let data = await getAllTokensOnSaucerswap(_allPairs, tokenDailyVolume, priceChanges, hbarPrice)
-      updateAllTokensInSaucerswap(data)
-    }
-    if (allTokens === undefined || allTokens?.length === 0) fetchData()
-  }, [allTokens, _allPairs, priceChanges, tokenDailyVolume, hbarPrice])
-  return allTokens || []
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     let data = await getAllTokensOnSaucerswap(_allPairs, tokenDailyVolume, priceChanges, hbarPrice)
+  //     updateAllTokensInSaucerswap(data)
+  //   }
+  //   if (allTokens === undefined || allTokens?.length === 0) fetchData()
+  // }, [allTokens, _allPairs, priceChanges, tokenDailyVolume, hbarPrice])
+  // return allTokens || []
+  async function fetchData() {
+    let data = await getAllTokensOnSaucerswap(_allPairs, tokenDailyVolume, priceChanges, hbarPrice)
+    updateAllTokensInSaucerswap(data)
+  }
+  if (allTokens === undefined || allTokens?.length === 0) {
+    fetchData()
+  }
 }
 
 export function useGlobalChartData() {
@@ -631,7 +702,7 @@ export function useGlobalChartData() {
   return [chartDataDaily, chartDataWeekly]
 }
 
-async function getGlobalData(prices, hbarPrice) {
+export async function getGlobalData(prices, hbarPrice) {
   let data = {}
   try {
     let now_date = Date.now()
