@@ -7,7 +7,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardHeader, Col, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
 import fetch from 'cross-fetch'
-import {useAllTokensInSaucerswap, useGlobalDataContext} from "../../contexts/GlobalData"
+import {getAllTokensOnSaucerswap, useAllTokensInSaucerswap, useGlobalDataContext} from "../../contexts/GlobalData"
 import * as env from "../../env";
 
 const TRENDING_TYPE = {
@@ -24,10 +24,26 @@ const Trending = () => {
     const [loserTokens, setLosers] = useState ([])
     
     // const allTokens = useAllTokensInSaucerswap ()
-    const [state]= useGlobalDataContext()
+    const [state, {updateAllTokensInSaucerswap}]= useGlobalDataContext()
     const allTokens = state?.allTokens || []
 
-    useAllTokensInSaucerswap()
+    // useAllTokensInSaucerswap()
+    const _allPairs = state?.Pairs || []
+
+    const tokenDailyVolume = state?.tokenDailyVolume;
+    const priceChanges = state?.priceChange;
+    const hbarPrice = state?.hBarPrice;
+
+    useEffect(() => {
+    async function fetchData() {
+        let data = await getAllTokensOnSaucerswap(_allPairs, tokenDailyVolume, priceChanges, hbarPrice)
+        updateAllTokensInSaucerswap(data)
+        }
+        if (allTokens === undefined || allTokens?.length === 0) {
+        fetchData()
+        }
+    }, [])
+  
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         function fetchTopTokenData () {

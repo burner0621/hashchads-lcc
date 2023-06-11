@@ -152,6 +152,7 @@ function reducer(state, { type, payload }) {
   }
 }
 
+let isFetching = false;
 export function useGlobalData() {
   const [state, { update, updateAllPairsInSaucerswap, updateAllTokensInSaucerswap, updateHbarAndSaucePrice, updatePrices }] = useGlobalDataContext()
   const [tmpPrices, setTmpPrices] = useState([])
@@ -170,7 +171,6 @@ export function useGlobalData() {
     });
   }, [updatePrices]);
 
-  let isFetching = false;
   useEffect(() => {
     async function fetchData() {
 
@@ -250,10 +250,11 @@ export async function getAllTokensOnSaucerswap(_allPairs, tokenDailyVolume, pric
       if (tokenDailyVolume && tokenDailyVolume.length > 0) {
         token['oneDayVolumeUSD'] = Number(tokenDailyVolume[token['id']]) * (hbarPrice !== undefined ? hbarPrice.toFixed(4) : 0)
         token['priceChangeUSD'] = Number(priceChanges[token['id']])
-      } else {
-        // token['oneDayVolumeUSD'] = 0
-        // token['priceChangeUSD'] = 0
-        break;
+      } 
+      else {
+        token['oneDayVolumeUSD'] = 0
+        token['priceChangeUSD'] = 0
+        // break;
       }
 
       tmpTokens.push(token)
@@ -526,6 +527,7 @@ export function usePriceChanges() {
       }
     }
   }
+  return priceChange;
 }
 
 let isFetchingUseTokenDailyVolume = false
@@ -635,7 +637,7 @@ export function useAllTokensInSaucerswap() {
   const priceChanges = state?.priceChange;
   const hbarPrice = state?.hBarPrice;
 
-  let allTokens = state?.allTokens
+  let allTokens = state?.allTokens || []
   // useEffect(() => {
   //   async function fetchData() {
   //     let data = await getAllTokensOnSaucerswap(_allPairs, tokenDailyVolume, priceChanges, hbarPrice)
@@ -651,6 +653,7 @@ export function useAllTokensInSaucerswap() {
   if (allTokens === undefined || allTokens?.length === 0) {
     fetchData()
   }
+  return allTokens;
 }
 
 export function useGlobalChartData() {
@@ -691,7 +694,7 @@ export function useGlobalChartData() {
   useEffect(() => {
     async function fetchData() {
       // historical stuff for chart
-      let [newChartData, newWeeklyData] = await getChartData(oldestDateFetch, tmpPrices)
+      const [newChartData, newWeeklyData] = await getChartData(oldestDateFetch, tmpPrices)
       updateChart(newChartData, newWeeklyData)
     }
     if (oldestDateFetch && !(chartDataDaily && chartDataWeekly) && tmpPrices && tmpPrices.length > 0) {
@@ -840,7 +843,7 @@ const getEthPrice = async () => {
   return [ethPrice, ethPriceOneDay, priceChangeETH]
 }
 
-const getChartData = async (oldestDateToFetch, prices) => {
+export const getChartData = async (oldestDateToFetch, prices) => {
   try {
     let data = []
     let weekelyData = []

@@ -13,6 +13,7 @@ import GlobalChart from '../../Components/GlobalChart'
 import Trending from '../../Components/Trending'
 import { formattedNum, formattedPercent } from '../../utils'
 import GlobalStats from '../../Components/GlobalStats'
+import fetch from 'cross-fetch'
 
 import Provider, { getAllPairsOnSaucerswap, getAllTokensOnSaucerswap, getGlobalData, getHbarAndSaucePrice, useGlobalDataContext, useHbarAndSaucePrice, usePriceChanges, useTokenDailyVolume } from '../../contexts/GlobalData'
 
@@ -34,7 +35,9 @@ const GridRow = styled.div`
   align-items: start;
   justify-content: space-between;
 `
-
+let isFetchingUseTokenDailyVolume = false
+let isFetchingUsePriceChanges = false;
+let isGettingData = false;
 const Overview = () => {
   document.title = "Overview";
 
@@ -60,8 +63,6 @@ const Overview = () => {
   const data = state?.globalData
   const tokenDailyVolume = state?.tokenDailyVolume
 
-  let isFetchingUseTokenDailyVolume = false
-  let isFetchingUsePriceChanges = false;
   useEffect(() => {
 
     if (!hbarPrice) {
@@ -112,34 +113,6 @@ const Overview = () => {
         }
       }
     }
-  }, [])
-
-  let isGettingData = false;
-  useEffect(() => {
-
-    async function getAllData() {
-
-      let globalData = await getGlobalData(tmpPrices, hbarPrice)
-      globalData && update(globalData)
-
-      let allPairs = await getAllPairsOnSaucerswap()
-      updateAllPairsInSaucerswap(allPairs)
-
-      let allTokens = await getAllTokensOnSaucerswap(allPairs, tokenDailyVolume, priceChanges, hbarPrice)
-      updateAllTokensInSaucerswap(allTokens)
-
-      let [hbarP, sauceP] = await getHbarAndSaucePrice()
-      updateHbarAndSaucePrice(hbarP, sauceP)
-      isGettingData = false
-    }
-
-    if (data === undefined && hbarPrice && tmpPrices && tmpPrices.length > 0) {
-      if (!isGettingData) {
-        isGettingData = true
-        getAllData()
-      }
-    }
-
   }, [])
 
   useEffect(() => {

@@ -10,7 +10,7 @@ import { RowBetween } from '../../Components/Row'
 import Search from '../../Components/Search'
 import TokenPage from './TokenPage'
 import { TOKEN_TYPE, TOKEN_TYPE_NAME } from "../../constants";
-import { useAllTokensInSaucerswap } from "../../contexts/GlobalData";
+import { useAllTokensInSaucerswap, useGlobalDataContext } from "../../contexts/GlobalData";
 import classnames from "classnames";
 import tradingViewImg from '../../assets/images/tradingview.png'
 
@@ -45,7 +45,10 @@ export const FullWrapper = styled.div`
 const Tokens = () => {
     document.title = "Tokens";
     const { tokenAddress } = useParams()
+    // const allTokens = useAllTokensInSaucerswap()
+    const [state] = useGlobalDataContext();
     const allTokens = useAllTokensInSaucerswap()
+
     const [tokenType, setTokenType] = useState(TOKEN_TYPE.all)
     const [loadingGainer, setLoadingGainer] = useState(false)
     const [loadingLoser, setLoadingLoser] = useState(false)
@@ -289,8 +292,8 @@ const Tokens = () => {
                                         <TopTokenList tokens={loserTokens} />
                                     </Panel>
                                 }
-                                <div style={{textAlign: 'center'}}>
-                                    <a target="_blank" href="https://www.tradingview.com"><img src={tradingViewImg} width="200"/></a>
+                                <div style={{ textAlign: 'center' }}>
+                                    <a target="_blank" href="https://www.tradingview.com"><img src={tradingViewImg} width="200" /></a>
                                 </div>
                             </FullWrapper>
                         </PageWrapper>
