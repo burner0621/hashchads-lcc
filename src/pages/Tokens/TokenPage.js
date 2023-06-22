@@ -194,7 +194,7 @@ const TokenPage = ({ address }) => {
     const dailyWeek = useTokenPriceData(address, timeframeOptions.WEEK, 86400)
     const dailyMonth = useTokenPriceData(address, timeframeOptions.MONTH, 86400)
     const dailyAll = useTokenPriceData(address, timeframeOptions.ALL_TIME, 86400)
-    let tradeHistoryInterval;
+    let tradeHistoryTimeout;
     const [count, setCount] = useState(0);
 
     const priceData =
@@ -239,7 +239,12 @@ const TokenPage = ({ address }) => {
 
     useEffect(() => {
         setCurrentPage(1)
-        fetchData();
+        const timeout = setTimeout(async () => {
+            await fetchData()
+        }, 0);
+        return () => {
+            clearTimeout(timeout);
+        };
     }, [rowsPerPage])
 
     const calculateSwapImpactUsd = (amount) => {
@@ -345,20 +350,22 @@ const TokenPage = ({ address }) => {
             setHolderInfo(rlt)
         }
     }, [holders, pairs, tokenInfo, priceUSD])
-
+    let fetchDataTimeout;
+    let beforeAddress, beforeCurrentPage, beforeRowsPerPage;
     const fetchData = async () => {
-        fetch(`${env.BASE_URL}/api/transaction/get?tokenId=${address}&pageNum=${currentPage}&pageSize=${rowsPerPage}`)
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    setData(result.data);
-                    setTotalRows(result.count);
-                },
-                (error) => {
-                    setData([]);
-                    setError(error);
-                }
-            )
+        const res = await fetch(`${env.BASE_URL}/api/transaction/get?tokenId=${address}&pageNum=${currentPage}&pageSize=${rowsPerPage}`)
+        if (res.status === 200) {
+            const { data, count } = await res.json();
+            setData(data);
+            setTotalRows(count);
+        }
+        if (beforeAddress !== address || beforeCurrentPage !== currentPage || beforeRowsPerPage !== rowsPerPage) {
+            if (fetchDataTimeout) clearTimeout(fetchDataTimeout)
+            beforeAddress = address;
+            beforeCurrentPage = currentPage;
+            beforeRowsPerPage = rowsPerPage;
+        }
+        // fetchDataTimeout = setTimeout(async() => await fetchData(), 5000)
     }
 
     const fetchStatisticData = async (timeRange) => {
@@ -381,25 +388,23 @@ const TokenPage = ({ address }) => {
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        tradeHistoryInterval = setInterval(() => {
-            setCount (prev => {
-                if (prev === 5) {
-                    fetchData ()
-                    return 0
-                }
-                return prev + 1
-            })
-            fetchData()
-        }, 1000)
+        const tradeHistoryTimeout = setTimeout(async () => {
+            await fetchData()
+        }, 0);
         return () => {
-            clearInterval(tradeHistoryInterval);
+            clearTimeout(tradeHistoryTimeout);
         };
     }, [currentPage, rowsPerPage])
 
     const handlePageChange = (page, totalRows) => {
         setIsLoaded(true);
         setCurrentPage(page)
-        fetchData();
+        const timeout = setTimeout(async () => {
+            await fetchData()
+        }, 0);
+        return () => {
+            clearTimeout(timeout);
+        };
     }
 
     const handlePerRowsChange = async (newPerPage, page) => {
@@ -434,13 +439,16 @@ const TokenPage = ({ address }) => {
                 setTotalLiquidity(jsonData.liquidityUsd)
                 setPriceUSD(jsonData.closeUsd)
             }
-            setTimeout (await fetchTotalData(), 5000)
+            setTimeout(async() => await fetchTotalData(), 3000)
         }
         if (totalLiquidity === undefined || totalLiquidity === 0) fetchTotalData()
         if (priceUSD === undefined || priceUSD === 0) fetchTotalData()
         const timeout = setTimeout(async () => {
             await fetchTotalData()
-        }, 15000)
+        }, 0);
+        return () => {
+            clearTimeout(timeout);
+        };
     }, [address])
 
     useEffect(() => {
@@ -554,7 +562,7 @@ const TokenPage = ({ address }) => {
                         <span className="text-sell">{Math.abs(row.amount)}</span>
                 )
             },
-            width: 150
+            width: 180
         },
         {
             name: <span className='font-weight-bold fs-16'>Maker</span>,
@@ -565,19 +573,19 @@ const TokenPage = ({ address }) => {
                 )
             },
             sortable: true,
-            width: 100
+            width: 120
         },
-        {
-            name: <span className='font-weight-bold fs-16'>Pool</span>,
-            cell: (row) => {
-                return (
-                    row.state === 'buy' ? <span className="text-buy">{row.poolId}</span> :
-                        <span className="text-sell">{row.poolId}</span>
-                )
-            },
-            sortable: true,
-            width: 100
-        },
+        // {
+        //     name: <span className='font-weight-bold fs-16'>Pool</span>,
+        //     cell: (row) => {
+        //         return (
+        //             row.state === 'buy' ? <span className="text-buy">{row.poolId}</span> :
+        //                 <span className="text-sell">{row.poolId}</span>
+        //         )
+        //     },
+        //     sortable: true,
+        //     width: 100
+        // },
         {
             name: <span className='font-weight-bold fs-16'>TXID</span>,
             sortable: true,
@@ -595,7 +603,7 @@ const TokenPage = ({ address }) => {
                     </Link>
                 )
             },
-            width: 200
+            width: 300
         },
     ];
 

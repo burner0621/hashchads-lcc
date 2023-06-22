@@ -137,7 +137,7 @@ const TopTokenList = ({ tokens = [], itemMax = 10, useTracked = false }) => {
             }
             setMaxPage(Math.floor(tokens.length / itemMax) + extraPages)
         }
-    }, [])
+    }, [tokens, itemMax])
 
     const filteredList = useMemo(() => {
         return (

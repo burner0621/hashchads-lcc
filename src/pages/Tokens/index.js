@@ -74,8 +74,8 @@ const Tokens = () => {
         const blob = new Blob([data], { type: fileType })
 
         const a = document.createElement('a')
-        a.download = tokenType == TOKEN_TYPE.all ? 'hashchads-all-tokens.csv'
-            : tokenType == TOKEN_TYPE.gainer ? 'hashchads-gainer-tokens.csv'
+        a.download = tokenType === TOKEN_TYPE.all ? 'hashchads-all-tokens.csv'
+            : tokenType === TOKEN_TYPE.gainer ? 'hashchads-gainer-tokens.csv'
                 : 'hashchads-loser-tokens.csv'
         a.href = window.URL.createObjectURL(blob)
         const clickEvt = new MouseEvent('click', {

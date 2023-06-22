@@ -221,6 +221,7 @@ export async function getHbarAndSaucePrice() {
       return [0, 0]
     }
   }
+  return [0, 0]
 }
 
 export async function getAllPairsOnSaucerswap() {
@@ -245,9 +246,9 @@ export async function getAllTokensOnSaucerswap(_allPairs, tokenDailyVolume, pric
     if (response.status === 200) {
       const jsonData = await response.json();
       tokens = jsonData;
-    }
+    } 
     for (let token of tokens) {
-      if (tokenDailyVolume && tokenDailyVolume.length > 0) {
+      if (tokenDailyVolume && Object.keys(tokenDailyVolume).length > 0) {
         token['oneDayVolumeUSD'] = Number(tokenDailyVolume[token['id']]) * (hbarPrice !== undefined ? hbarPrice.toFixed(4) : 0)
         token['priceChangeUSD'] = Number(priceChanges[token['id']])
       } 
@@ -424,7 +425,7 @@ export default function Provider({ children }) {
 export function useHbarAndSaucePrice() {
   const [state, { updateHbarAndSaucePrice }] = useGlobalDataContext()
   const hBarPrice = state?.hBarPrice
-  // const saucePrice = state?.saucePrice;
+  const saucePrice = state?.saucePrice;
   // useEffect(() => {
   //   async function checkForHbarPrice() {
   //     if (!hBarPrice) {
@@ -437,10 +438,11 @@ export function useHbarAndSaucePrice() {
 
   // return [hBarPrice, saucePrice]
   if (!hBarPrice) {
-    getHbarAndSaucePrice().then((hbarP, sauceP) => {
-      updateHbarAndSaucePrice(hbarP, sauceP)
+    getHbarAndSaucePrice().then((value) => {
+      updateHbarAndSaucePrice(value[0], value[1])
     })
   }
+  return [hBarPrice, saucePrice]
 }
 
 export function usePrices() {
@@ -470,7 +472,7 @@ let isGettingPairs = false;
 export function useAllPairsInSaucerswap() {
   const [state, { updateAllPairsInSaucerswap }] = useGlobalDataContext()
   let allPairs = state?.allPairs
-  useEffect(() => {
+  // useEffect(() => {
     async function fetchData() {
       let allPairData = await getAllPairsOnSaucerswap()
       updateAllPairsInSaucerswap(allPairData)
@@ -482,7 +484,7 @@ export function useAllPairsInSaucerswap() {
         isGettingPairs = true
       }
     }
-  }, [allPairs])
+  // }, [allPairs])
   return allPairs || []
 }
 
@@ -628,16 +630,17 @@ export function usePairWeeklyVolume() {
 
 export function useAllTokensInSaucerswap() {
   const [state, { updateAllTokensInSaucerswap }] = useGlobalDataContext()
-  // const tokenDailyVolume = useTokenDailyVolume()
-  // const priceChanges = usePriceChanges()
-  // const [hbarPrice, saucePrice] = useHbarAndSaucePrice()
+  const tokenDailyVolume = useTokenDailyVolume()
+  const priceChanges = usePriceChanges()
+  const [hbarPrice, saucePrice] = useHbarAndSaucePrice()
   const _allPairs = useAllPairsInSaucerswap()
 
-  const tokenDailyVolume = state?.tokenDailyVolume;
-  const priceChanges = state?.priceChange;
-  const hbarPrice = state?.hBarPrice;
+  // let tokenDailyVolume = state?.tokenDailyVolume;
+  // let priceChanges = state?.priceChange;
+  // const hbarPrice = state?.hBarPrice;
 
   let allTokens = state?.allTokens || []
+  
   // useEffect(() => {
   //   async function fetchData() {
   //     let data = await getAllTokensOnSaucerswap(_allPairs, tokenDailyVolume, priceChanges, hbarPrice)
@@ -646,13 +649,15 @@ export function useAllTokensInSaucerswap() {
   //   if (allTokens === undefined || allTokens?.length === 0) fetchData()
   // }, [allTokens, _allPairs, priceChanges, tokenDailyVolume, hbarPrice])
   // return allTokens || []
-  async function fetchData() {
-    let data = await getAllTokensOnSaucerswap(_allPairs, tokenDailyVolume, priceChanges, hbarPrice)
-    updateAllTokensInSaucerswap(data)
-  }
-  if (allTokens === undefined || allTokens?.length === 0) {
-    fetchData()
-  }
+  useEffect(() => {
+    async function fetchData() {
+      let data = await getAllTokensOnSaucerswap(_allPairs, state?.tokenDailyVolume, priceChanges, hbarPrice)
+      updateAllTokensInSaucerswap(data)
+    }
+    if ((allTokens === undefined || allTokens?.length === 0) && state?.tokenDailyVolume && priceChanges && _allPairs && hbarPrice > 0) {
+      fetchData()
+    }
+  }, [priceChanges, tokenDailyVolume, allTokens, hbarPrice, _allPairs])
   return allTokens;
 }
 
@@ -778,10 +783,9 @@ export async function getGlobalData(prices, hbarPrice) {
           totalLiquidityUSD,
           oneDay_totalLiquidityUSD
         )
-        console.log('=======================>', totalLiquidityUSD, oneDay_totalLiquidityUSD, liquidityChangeUSD, "<======================");
       }
     } catch (e) {
-      console.log('=======================>', e);
+      console.log (e)
     }
 
     if (nowData_totalVolumeUSD && oneDayData_totalVolumeUSD) {
@@ -806,7 +810,6 @@ export async function getGlobalData(prices, hbarPrice) {
   } catch (e) {
     console.log(e)
   }
-  console.log('==================>', data)
   return data;
 }
 
