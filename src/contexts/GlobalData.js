@@ -576,6 +576,7 @@ export function useTokenDailyVolume() {
       }
     }
   }
+  return state?.tokenDailyVolume
 }
 
 // export function dispatchTokenDailyVolume (dailyVolData) {
