@@ -280,7 +280,7 @@ const Pairs = () => {
                     <PageWrapper>
                         <FullWrapper>
                             <RowBetween style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                {!below600 && <Search display={"all"} small={true} />}
+                                <Search display={"all"} small={true} />
                             </RowBetween>
                             <RowBetween>
                                 <Nav tabs className="nav nav-tabs nav-border-top nav-border-top-success">
@@ -301,33 +301,31 @@ const Pairs = () => {
                                     </NavItem>
                                 </Nav>
 
-                                {!below600 &&
-                                    <div className="d-flex items-center">
-                                        <FormGroup switch style={{ marginRight: '5px' }}>
-                                            <Input
-                                                type="switch"
-                                                style={{ height: "1.5rem", width: '3rem', marginRight: 5 }}
-                                                defaultChecked={showLiquidity}
-                                                onClick={() => {
-                                                    setShowLiquidity(!showLiquidity)
-                                                }}
-                                            />
-                                            <Label check style={{ fontSize: 18, fontWeight: 450 }}>$500+ Liquidity</Label>
-                                        </FormGroup>
-                                        <Nav pills className="badge-bg">
-                                            <NavItem className="d-flex items-center justify-center" style={{width:"4rem"}}>
-                                                <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.day ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.day) }} >
-                                                    <span className={timeRangeType == TIME_RANGE_TYPE.day ? "text-white badge" : "text-badge badge"}>24h</span>
-                                                </div>
-                                            </NavItem>
-                                            <NavItem className="d-flex items-center justify-center" style={{width:"4rem"}}>
-                                                <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.week ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.week) }} >
-                                                    <span className={timeRangeType == TIME_RANGE_TYPE.week ? "text-white badge" : "text-badge badge"}>1W</span>
-                                                </div>
-                                            </NavItem>
-                                        </Nav>
-                                    </div>
-                                }
+                                <div className="d-flex items-center">
+                                    <FormGroup switch style={{ marginRight: '5px' }}>
+                                        <Input
+                                            type="switch"
+                                            style={{ height: "1.5rem", width: '3rem', marginRight: 5 }}
+                                            defaultChecked={showLiquidity}
+                                            onClick={() => {
+                                                setShowLiquidity(!showLiquidity)
+                                            }}
+                                        />
+                                        <Label check style={{ fontSize: 18, fontWeight: 450 }}>$500+ Liquidity</Label>
+                                    </FormGroup>
+                                    <Nav pills className="badge-bg">
+                                        <NavItem className="d-flex items-center justify-center" style={{width:"4rem"}}>
+                                            <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.day ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.day) }} >
+                                                <span className={timeRangeType == TIME_RANGE_TYPE.day ? "text-white badge" : "text-badge badge"}>24h</span>
+                                            </div>
+                                        </NavItem>
+                                        <NavItem className="d-flex items-center justify-center" style={{width:"4rem"}}>
+                                            <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.week ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.week) }} >
+                                                <span className={timeRangeType == TIME_RANGE_TYPE.week ? "text-white badge" : "text-badge badge"}>1W</span>
+                                            </div>
+                                        </NavItem>
+                                    </Nav>
+                                </div>
                             </RowBetween>
                             {/* PAIRS DATA TABLE */}
                             <DataTable
