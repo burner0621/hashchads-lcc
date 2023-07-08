@@ -156,14 +156,6 @@ const GlobalChart = ({ display }) => {
 
   return chartDataFiltered ? (
     <div className='d-flex justify-center items-center'>
-      {below600 && (
-        <DropdownSelect options={CHART_VIEW} active={chartView} setActive={setChartView} color={'#ff007a'} />
-      )}
-      {/* {(!dailyData && chartView === CHART_VIEW.LIQUIDITY || chartView === CHART_VIEW.VOLUME) && loading &&
-        <span className="d-flex align-items-center">
-          <Spinner size="lg" className="flex-shrink-0"> Loading... </Spinner>
-        </span>
-      } */}
       {dailyData && chartView === CHART_VIEW.LIQUIDITY && (
         <ResponsiveContainer aspect={60 / 28} ref={ref}>
           <TradingViewChart
