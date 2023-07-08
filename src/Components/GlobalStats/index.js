@@ -53,7 +53,6 @@ export default function GlobalStats() {
         <Header id="globalStats">
             <RowBetween style={{ padding: below816 ? '0.5rem' : '.5rem' }}>
                 <RowFixed>
-                    {!below400 && (
                         <Text className='fs-6'>{"HBAR Price: "}
                             {
                                 formattedHbarPrice === undefined && <Spinner color="light" type="grow" style={{ verticalAlign: 'middle' }}></Spinner>
@@ -63,9 +62,7 @@ export default function GlobalStats() {
                             }
 
                         </Text>
-                    )}
 
-                    {!below816 && (
                         <Text className='fs-6'>{"SAUCE Price: "}
                             {
                                 formattedSaucePrice === undefined && <Spinner color="light" type="grow" style={{ verticalAlign: 'middle' }}></Spinner>
@@ -74,8 +71,6 @@ export default function GlobalStats() {
                                 formattedSaucePrice !== undefined && <span className='badge rounded-pill badge-outline-light' style={{ fontSize: 13 }}>{formattedSaucePrice}</span>
                             }
                         </Text>
-                    )}
-                    {!below1024 && (
                         <Text className='fs-6'>{`TVL: `}
                             {
                                 (formattedTvlUSD === undefined || formattedTvlHBAR === undefined) && <Spinner color="light" type="grow" style={{ verticalAlign: 'middle' }}></Spinner>
@@ -84,8 +79,7 @@ export default function GlobalStats() {
                                 formattedTvlUSD !== undefined && formattedTvlHBAR !== undefined && <span className='badge badge-outline-light' style={{ fontSize: 13 }}>{`${formattedTvlUSD} (${formattedTvlHBAR} HBAR)`}</span>
                             }
                         </Text>
-                    )}
-                    {!below1180 && (
+                    
                         <Text className='fs-6'>{`24hr Volume: `}
                             {
                                 (todayVolumeUSD === undefined || formattedTodayVolume === undefined) && <Spinner color="light" type="grow" style={{ verticalAlign: 'middle' }}></Spinner>
@@ -94,8 +88,7 @@ export default function GlobalStats() {
                                 todayVolumeUSD !== undefined && formattedTodayVolume !== undefined && <span className='badge badge-outline-light' style={{ fontSize: 13 }}>{`${formattedNum(todayVolumeUSD * hBarPrice, true)} (${formattedTodayVolume} HBAR)`}</span>
                             }
                         </Text>
-                    )}
-                    {!below1295 && (
+
                         <Text className='fs-6'>{'24hr Fees: '}
                             {
                                 (todayVolumeUSD === undefined || formattedTodayFees === undefined) && <Spinner color="light" type="grow" style={{ verticalAlign: 'middle' }}></Spinner>
@@ -104,7 +97,6 @@ export default function GlobalStats() {
                                 todayVolumeUSD !== undefined && formattedTodayFees !== undefined && <span className='badge badge-outline-light' style={{ fontSize: 13 }}>{'$' + formattedNum(todayVolumeUSD * hBarPrice / 400)}</span>
                             }
                         </Text>
-                    )}
                 </RowFixed>
             </RowBetween>
         </Header>
