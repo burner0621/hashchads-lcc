@@ -227,22 +227,6 @@ const Overview = () => {
                 />
                 <GlobalChart display="liquidity" id="liquidity" />
               </Panel>
-              <br></br>
-              <Panel style={{ height: '100%', minHeight: '300px', maxHeight: '500px' }} className="panel-shadow hsla-bg">
-                <div className="animate-x-slide"
-                  style={{ position: 'absolute', top: '0', left: '0.2rem', height: '0.25rem', borderRadius: '0.25rem', backgroundImage: 'linear-gradient(to right,hsla(0,0%,100%,.15),#ff007a)', filter: 'blur(1px)' }}
-                />
-                <div className="animate-y-slide"
-                  style={{ position: 'absolute', top: '0.1rem', left: '0', width: '0.25rem', borderRadius: '0.25rem', backgroundImage: 'linear-gradient(to right,hsla(0,0%,100%,.15),#ff007a)', filter: 'blur(1px)' }}
-                />
-                <div className="animate-y-slide"
-                  style={{ position: 'absolute', bottom: '0.125rem', right: '0', width: '0.25rem', borderRadius: '0.25rem', backgroundImage: 'linear-gradient(to right,hsla(0,0%,100%,.15),#00e9b1)', filter: 'blur(1px)' }}
-                />
-                <div className="animate-x-slide"
-                  style={{ position: 'absolute', bottom: '0', right: '0.125rem', height: '0.25rem', borderRadius: '0.25rem', backgroundImage: 'linear-gradient(to right,hsla(0,0%,100%,.15),#00e9b1)', filter: 'blur(1px)' }}
-                />
-                <GlobalChart display="volume" id="volume" />
-              </Panel>
             </GridRowMobile>
           )}
           {!below600 && (
