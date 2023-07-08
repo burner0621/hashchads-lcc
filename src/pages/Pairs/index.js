@@ -133,9 +133,6 @@ const Pairs = () => {
     }, [_allPairs, _priceChanges, _dailyPairVolume, _weeklyPairVolume, timeRangeType, showLiquidity])
 
     const below600 = useMedia('(max-width: 600px)')
-    const below700 = useMedia('(max-width: 700px)')
-    const below800 = useMedia('(max-width: 800px)')
-    const below900 = useMedia('(max-width: 900px)')
 
     useEffect(() => {
         if (pairsType === PAIRS_TYPE.pairs) setData(allPairs)

@@ -27,6 +27,15 @@ const Text = styled.div`
     margin: 14px;
 `
 
+const GridRowMobile = styled.div`
+  display: grid;
+  width: 100%;
+  grid-template-columns: 1fr;
+  column-gap: 6px;
+  align-items: start;
+  justify-content: space-between;
+`
+
 const GridRow = styled.div`
   display: grid;
   width: 100%;
@@ -151,7 +160,7 @@ const Overview = () => {
 
   }, [hbarPrice, tmpPrices])
 
-  const below800 = useMedia('(max-width: 800px)')
+  const below600 = useMedia('(max-width: 600px)')
 
   return (
     <React.Fragment>
@@ -165,45 +174,78 @@ const Overview = () => {
               </div>
             </Col>
           </Row>
-          {below800 && ( // mobile card
-            <Box mb={20}>
-              <Panel>
-                <Box>
-                  <AutoColumn gap="36px">
-                    <AutoColumn gap="20px">
-                      <RowBetween>
-                        <Text>Volume (24hrs)</Text>
-                        <div />
-                      </RowBetween>
-                      <RowBetween align="flex-end">
-                        <Text fontSize={'1.5rem'} lineHeight={1} fontWeight={600}>
-                          {oneDayVolumeUSD ? formattedNum(oneDayVolumeUSD, true) : '-'}
-                        </Text>
-                        <Text fontSize={12}>
-                          {volumeChangeUSD ? formattedPercent(volumeChangeUSD) : '-'}
-                        </Text>
-                      </RowBetween>
-                    </AutoColumn>
-                    <AutoColumn gap="20px">
-                      <RowBetween>
-                        <Text>Total Liquidity</Text>
-                        <div />
-                      </RowBetween>
-                      <RowBetween align="flex-end">
-                        <Text fontSize={'1.5rem'} lineHeight={1} fontWeight={600}>
-                          {totalLiquidityUSD ? formattedNum(totalLiquidityUSD, true) : '-'}
-                        </Text>
-                        <Text fontSize={12}>
-                          {liquidityChangeUSD ? formattedPercent(liquidityChangeUSD) : '-'}
-                        </Text>
-                      </RowBetween>
-                    </AutoColumn>
-                  </AutoColumn>
-                </Box>
+          {below600 && ( // mobile card
+            // <Box mb={20}>
+            //   <Panel>
+            //     <Box>
+            //       <AutoColumn gap="36px">
+            //         <AutoColumn gap="20px">
+            //           <RowBetween>
+            //             <Text>Volume (24hrs)</Text>
+            //             <div />
+            //           </RowBetween>
+            //           <RowBetween align="flex-end">
+            //             <Text fontSize={'1.5rem'} lineHeight={1} fontWeight={600}>
+            //               {oneDayVolumeUSD ? formattedNum(oneDayVolumeUSD, true) : '-'}
+            //             </Text>
+            //             <Text fontSize={12}>
+            //               {volumeChangeUSD ? formattedPercent(volumeChangeUSD) : '-'}
+            //             </Text>
+            //           </RowBetween>
+            //         </AutoColumn>
+            //         <AutoColumn gap="20px">
+            //           <RowBetween>
+            //             <Text>Total Liquidity</Text>
+            //             <div />
+            //           </RowBetween>
+            //           <RowBetween align="flex-end">
+            //             <Text fontSize={'1.5rem'} lineHeight={1} fontWeight={600}>
+            //               {totalLiquidityUSD ? formattedNum(totalLiquidityUSD, true) : '-'}
+            //             </Text>
+            //             <Text fontSize={12}>
+            //               {liquidityChangeUSD ? formattedPercent(liquidityChangeUSD) : '-'}
+            //             </Text>
+            //           </RowBetween>
+            //         </AutoColumn>
+            //       </AutoColumn>
+            //     </Box>
+            //   </Panel>
+            // </Box>
+            <GridRowMobile>
+              <Panel style={{ height: '100%', minHeight: '300px', maxHeight: '500px' }} className="panel-shadow hsla-bg" >
+                <div className="animate-x-slide"
+                  style={{ position: 'absolute', top: '0', left: '0.2rem', height: '0.25rem', borderRadius: '0.25rem', backgroundImage: 'linear-gradient(to right,hsla(0,0%,100%,.15),#ff007a)', filter: 'blur(1px)' }}
+                />
+                <div className="animate-y-slide"
+                  style={{ position: 'absolute', top: '0.1rem', left: '0', width: '0.25rem', borderRadius: '0.25rem', backgroundImage: 'linear-gradient(to right,hsla(0,0%,100%,.15),#ff007a)', filter: 'blur(1px)' }}
+                />
+                <div className="animate-y-slide"
+                  style={{ position: 'absolute', bottom: '0.125rem', right: '0', width: '0.25rem', borderRadius: '0.25rem', backgroundImage: 'linear-gradient(to right,hsla(0,0%,100%,.15),#00e9b1)', filter: 'blur(1px)' }}
+                />
+                <div className="animate-x-slide"
+                  style={{ position: 'absolute', bottom: '0', right: '0.125rem', height: '0.25rem', borderRadius: '0.25rem', backgroundImage: 'linear-gradient(to right,hsla(0,0%,100%,.15),#00e9b1)', filter: 'blur(1px)' }}
+                />
+                <GlobalChart display="liquidity" id="liquidity" />
               </Panel>
-            </Box>
+              <br></br>
+              <Panel style={{ height: '100%', minHeight: '300px', maxHeight: '500px' }} className="panel-shadow hsla-bg">
+                <div className="animate-x-slide"
+                  style={{ position: 'absolute', top: '0', left: '0.2rem', height: '0.25rem', borderRadius: '0.25rem', backgroundImage: 'linear-gradient(to right,hsla(0,0%,100%,.15),#ff007a)', filter: 'blur(1px)' }}
+                />
+                <div className="animate-y-slide"
+                  style={{ position: 'absolute', top: '0.1rem', left: '0', width: '0.25rem', borderRadius: '0.25rem', backgroundImage: 'linear-gradient(to right,hsla(0,0%,100%,.15),#ff007a)', filter: 'blur(1px)' }}
+                />
+                <div className="animate-y-slide"
+                  style={{ position: 'absolute', bottom: '0.125rem', right: '0', width: '0.25rem', borderRadius: '0.25rem', backgroundImage: 'linear-gradient(to right,hsla(0,0%,100%,.15),#00e9b1)', filter: 'blur(1px)' }}
+                />
+                <div className="animate-x-slide"
+                  style={{ position: 'absolute', bottom: '0', right: '0.125rem', height: '0.25rem', borderRadius: '0.25rem', backgroundImage: 'linear-gradient(to right,hsla(0,0%,100%,.15),#00e9b1)', filter: 'blur(1px)' }}
+                />
+                <GlobalChart display="volume" id="volume" />
+              </Panel>
+            </GridRowMobile>
           )}
-          {!below800 && (
+          {!below600 && (
             <GridRow>
               <Panel style={{ height: '100%', minHeight: '300px', maxHeight: '500px' }} className="panel-shadow hsla-bg" >
                 <div className="animate-x-slide"
@@ -237,7 +279,7 @@ const Overview = () => {
               </Panel>
             </GridRow>
           )}
-          {!below800 && (
+          {!below600 && (
             <div className="d-flex justify-center mt-30">
               <Trending />
             </div>

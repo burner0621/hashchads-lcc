@@ -136,7 +136,7 @@ const GlobalChart = ({ display }) => {
       setLoading(false)
   }, [dailyData, chartDataFiltered, loading]);
 
-  const below800 = useMedia('(max-width: 800px)')
+  const below600 = useMedia('(max-width: 600px)')
 
   // update the width on a window resize
   const ref = useRef()
@@ -156,7 +156,7 @@ const GlobalChart = ({ display }) => {
 
   return chartDataFiltered ? (
     <div className='d-flex justify-center items-center'>
-      {below800 && (
+      {below600 && (
         <DropdownSelect options={CHART_VIEW} active={chartView} setActive={setChartView} color={'#ff007a'} />
       )}
       {/* {(!dailyData && chartView === CHART_VIEW.LIQUIDITY || chartView === CHART_VIEW.VOLUME) && loading &&
