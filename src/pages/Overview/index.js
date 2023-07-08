@@ -175,42 +175,6 @@ const Overview = () => {
             </Col>
           </Row>
           {below600 && ( // mobile card
-            // <Box mb={20}>
-            //   <Panel>
-            //     <Box>
-            //       <AutoColumn gap="36px">
-            //         <AutoColumn gap="20px">
-            //           <RowBetween>
-            //             <Text>Volume (24hrs)</Text>
-            //             <div />
-            //           </RowBetween>
-            //           <RowBetween align="flex-end">
-            //             <Text fontSize={'1.5rem'} lineHeight={1} fontWeight={600}>
-            //               {oneDayVolumeUSD ? formattedNum(oneDayVolumeUSD, true) : '-'}
-            //             </Text>
-            //             <Text fontSize={12}>
-            //               {volumeChangeUSD ? formattedPercent(volumeChangeUSD) : '-'}
-            //             </Text>
-            //           </RowBetween>
-            //         </AutoColumn>
-            //         <AutoColumn gap="20px">
-            //           <RowBetween>
-            //             <Text>Total Liquidity</Text>
-            //             <div />
-            //           </RowBetween>
-            //           <RowBetween align="flex-end">
-            //             <Text fontSize={'1.5rem'} lineHeight={1} fontWeight={600}>
-            //               {totalLiquidityUSD ? formattedNum(totalLiquidityUSD, true) : '-'}
-            //             </Text>
-            //             <Text fontSize={12}>
-            //               {liquidityChangeUSD ? formattedPercent(liquidityChangeUSD) : '-'}
-            //             </Text>
-            //           </RowBetween>
-            //         </AutoColumn>
-            //       </AutoColumn>
-            //     </Box>
-            //   </Panel>
-            // </Box>
             <GridRowMobile>
               <Panel style={{ height: '100%', minHeight: '300px', maxHeight: '500px' }} className="panel-shadow hsla-bg" >
                 <div className="animate-x-slide"
@@ -263,12 +227,9 @@ const Overview = () => {
               </Panel>
             </GridRow>
           )}
-          {!below600 && (
-            <div className="d-flex justify-center mt-30">
-              <Trending />
-            </div>
-          )}
-
+          <div className="d-flex justify-center mt-30">
+            <Trending />
+          </div>
         </Container>
       </div>
     </React.Fragment>
