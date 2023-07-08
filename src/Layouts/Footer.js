@@ -7,11 +7,11 @@ const Footer = () => {
             <footer className="footer new-bg">
                 <Container fluid>
                     <Row>
-                        <Col sm={6}>
+                        <Col xs={6} sm={6}>
                             {new Date().getFullYear()} © Hashchads.
                         </Col>
-                        <Col sm={6}>
-                            <div className="text-sm-end d-none d-sm-block">
+                        <Col xs={6} sm={6}>
+                            <div className="text-end">
                                 Design & Develop by Themesbrand
                             </div>
                         </Col>
