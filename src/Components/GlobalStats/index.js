@@ -25,6 +25,7 @@ export default function GlobalStats() {
     const below1180 = useMedia('(max-width: 1180px)')
     const below1024 = useMedia('(max-width: 1024px)')
     const below400 = useMedia('(max-width: 400px)')
+    const below600 = useMedia('(max-width: 600px)')
     const below816 = useMedia('(max-width: 816px)')
 
     const [tvlUsd, setTvlUsd] = useState(0)
@@ -52,7 +53,9 @@ export default function GlobalStats() {
     return (
         <Header id="globalStats">
             <RowBetween style={{ padding: below816 ? '0.5rem' : '.5rem' }}>
-                <RowFixed>
+                {!below600 && (
+                    <RowFixed>
+                    
                         <Text className='fs-6'>{"HBAR Price: "}
                             {
                                 formattedHbarPrice === undefined && <Spinner color="light" type="grow" style={{ verticalAlign: 'middle' }}></Spinner>
@@ -60,9 +63,9 @@ export default function GlobalStats() {
                             {
                                 formattedHbarPrice !== undefined && <span className='badge rounded-pill badge-outline-light' style={{ fontSize: 13 }}>{formattedHbarPrice}</span>
                             }
-
                         </Text>
-
+                    
+                    
                         <Text className='fs-6'>{"SAUCE Price: "}
                             {
                                 formattedSaucePrice === undefined && <Spinner color="light" type="grow" style={{ verticalAlign: 'middle' }}></Spinner>
@@ -71,6 +74,7 @@ export default function GlobalStats() {
                                 formattedSaucePrice !== undefined && <span className='badge rounded-pill badge-outline-light' style={{ fontSize: 13 }}>{formattedSaucePrice}</span>
                             }
                         </Text>
+
                         <Text className='fs-6'>{`TVL: `}
                             {
                                 (formattedTvlUSD === undefined || formattedTvlHBAR === undefined) && <Spinner color="light" type="grow" style={{ verticalAlign: 'middle' }}></Spinner>
@@ -79,7 +83,7 @@ export default function GlobalStats() {
                                 formattedTvlUSD !== undefined && formattedTvlHBAR !== undefined && <span className='badge badge-outline-light' style={{ fontSize: 13 }}>{`${formattedTvlUSD} (${formattedTvlHBAR} HBAR)`}</span>
                             }
                         </Text>
-                    
+
                         <Text className='fs-6'>{`24hr Volume: `}
                             {
                                 (todayVolumeUSD === undefined || formattedTodayVolume === undefined) && <Spinner color="light" type="grow" style={{ verticalAlign: 'middle' }}></Spinner>
@@ -97,7 +101,60 @@ export default function GlobalStats() {
                                 todayVolumeUSD !== undefined && formattedTodayFees !== undefined && <span className='badge badge-outline-light' style={{ fontSize: 13 }}>{'$' + formattedNum(todayVolumeUSD * hBarPrice / 400)}</span>
                             }
                         </Text>
-                </RowFixed>
+                    </RowFixed>
+                )}
+                {below600 && (
+                <div>
+                    <RowFixed>
+                        <Text className='fs-6'>{"HBAR Price: "}
+                            {
+                                formattedHbarPrice === undefined && <Spinner color="light" type="grow" style={{ verticalAlign: 'middle' }}></Spinner>
+                            }
+                            {
+                                formattedHbarPrice !== undefined && <span className='badge rounded-pill badge-outline-light' style={{ fontSize: 13 }}>{formattedHbarPrice}</span>
+                            }
+                        </Text>
+                        <Text className='fs-6'>{"SAUCE Price: "}
+                            {
+                                formattedSaucePrice === undefined && <Spinner color="light" type="grow" style={{ verticalAlign: 'middle' }}></Spinner>
+                            }
+                            {
+                                formattedSaucePrice !== undefined && <span className='badge rounded-pill badge-outline-light' style={{ fontSize: 13 }}>{formattedSaucePrice}</span>
+                            }
+                        </Text>
+                    </RowFixed>
+                    <RowFixed>
+                        <Text className='fs-6'>{`TVL: `}
+                            {
+                                (formattedTvlUSD === undefined || formattedTvlHBAR === undefined) && <Spinner color="light" type="grow" style={{ verticalAlign: 'middle' }}></Spinner>
+                            }
+                            {
+                                formattedTvlUSD !== undefined && formattedTvlHBAR !== undefined && <span className='badge badge-outline-light' style={{ fontSize: 13 }}>{`${formattedTvlUSD} (${formattedTvlHBAR} HBAR)`}</span>
+                            }
+                        </Text>
+                    </RowFixed>
+                    <RowFixed>
+                        <Text className='fs-6'>{`24hr Volume: `}
+                            {
+                                (todayVolumeUSD === undefined || formattedTodayVolume === undefined) && <Spinner color="light" type="grow" style={{ verticalAlign: 'middle' }}></Spinner>
+                            }
+                            {
+                                todayVolumeUSD !== undefined && formattedTodayVolume !== undefined && <span className='badge badge-outline-light' style={{ fontSize: 13 }}>{`${formattedNum(todayVolumeUSD * hBarPrice, true)} (${formattedTodayVolume} HBAR)`}</span>
+                            }
+                        </Text>
+                    </RowFixed>
+                    <RowFixed>
+                        <Text className='fs-6'>{'24hr Fees: '}
+                            {
+                                (todayVolumeUSD === undefined || formattedTodayFees === undefined) && <Spinner color="light" type="grow" style={{ verticalAlign: 'middle' }}></Spinner>
+                            }
+                            {
+                                todayVolumeUSD !== undefined && formattedTodayFees !== undefined && <span className='badge badge-outline-light' style={{ fontSize: 13 }}>{'$' + formattedNum(todayVolumeUSD * hBarPrice / 400)}</span>
+                            }
+                        </Text>
+                    </RowFixed>
+                </div>
+                )}
             </RowBetween>
         </Header>
     )
