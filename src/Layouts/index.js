@@ -135,8 +135,9 @@ const Layout = (props) => {
         <Sidebar layoutType={layoutType} className="new-bg"/>
         <div className="main-content">
           {props.children}
-          <Footer/>
+          
         </div>
+        <Footer/>
       </div>
     </React.Fragment>
   );

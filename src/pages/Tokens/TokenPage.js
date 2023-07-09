@@ -733,7 +733,7 @@ const TokenPage = ({ address }) => {
         <React.Fragment>
             <div className="page-content">
                 <Container fluid>
-                    <ContentWrapper>
+                    <ContentWrapper style={{margin: "auto"}}>
                         <div className="d-flex flex-column new-bg br-10" style={{ padding: '15px' }}>
                             <RowBetween style={{ flexWrap: 'wrap', alingItems: 'start', marginBottom: '1rem' }}>
                                 <AutoRow align="flex-end" style={{ width: 'fit-content' }}>
