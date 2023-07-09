@@ -231,7 +231,7 @@ const Tokens = () => {
                                         </NavItem>
                                     </Nav>
                                         <div className="d-flex items-center">
-                                            <FormGroup switch style={{ marginRight: '5px' }}>
+                                            <FormGroup switch style={{ marginRight: '5px', display: "flex" }}>
                                                 <Input
                                                     type="switch"
                                                     style={{ height: "1.5rem", width: '3rem', marginRight: 5 }}
