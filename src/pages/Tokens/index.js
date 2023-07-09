@@ -203,12 +203,24 @@ const Tokens = () => {
                     <Container fluid>
                         <PageWrapper>
                             <FullWrapper>
+                                {(below600 && 
                                 <RowBetween>
+                                <div style={{ display: "flex", flexDirection:"column", width: '100%'}}>
                                     <div style={{ display: "flex", width: '100%', marginRight: '10px' }}>
                                         <div style={{ fontWeight: 500, color: 'white', fontSize: 24 }}>{TOKEN_TYPE_NAME[tokenType]}</div>
                                     </div>
                                     <Search display={"token"} small={true} />
+                                </div>
                                 </RowBetween>
+                                )}
+                                {(!below600 && 
+                                <RowBetween>
+                                <div style={{ display: "flex", width: '100%', marginRight: '10px' }}>
+                                    <div style={{ fontWeight: 500, color: 'white', fontSize: 24 }}>{TOKEN_TYPE_NAME[tokenType]}</div>
+                                </div>
+                                <Search display={"token"} small={true} />
+                                </RowBetween>
+                                )}
 
                                 <RowBetween>
                                     <Nav tabs className="nav nav-tabs nav-border-top nav-border-top-success">
