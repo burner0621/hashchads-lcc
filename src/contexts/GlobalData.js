@@ -249,7 +249,7 @@ export async function getAllTokensOnSaucerswap(_allPairs, tokenDailyVolume, pric
     } 
     for (let token of tokens) {
       if (tokenDailyVolume && Object.keys(tokenDailyVolume).length > 0) {
-        token['oneDayVolumeUSD'] = Number(tokenDailyVolume[token['id']]) * (hbarPrice !== undefined ? hbarPrice.toFixed(4) : 0)
+        token['oneDayVolumeUSD'] = Number(tokenDailyVolume[token['id']]) * (hbarPrice !== undefined ? Number(hbarPrice).toFixed(4) : 0)
         token['priceChangeUSD'] = Number(priceChanges[token['id']])
       } 
       else {

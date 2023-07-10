@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import SimpleBar from "simplebar-react";
 //import logo
@@ -12,7 +12,34 @@ import TwoColumnLayout from "./TwoColumnLayout";
 import { Container } from "reactstrap";
 import HorizontalLayout from "./HorizontalLayout";
 
+import socketIO from 'socket.io-client';
+import * as env from "../env";
+
+const socket = socketIO.connect(env.BASE_URL);
+
+socket.emit('visit', {
+  socketID: socket.id,
+});
+
+let visitors = {}
+
+const getDateString = (timestamp) => {
+  return (new Date(timestamp).toJSON().slice(0, 10)).toString();
+}
+
 const Sidebar = ({ layoutType }) => {
+  const [visitNum, setVisitNum] = useState (0)
+
+  useEffect(() => {
+    socket.on('visited', (p) => {
+      if (visitors[getDateString(p)] === undefined) visitors[getDateString(p)] = 0
+      visitors[getDateString(p)] ++;
+      let tmp = visitors[getDateString(p)]
+      visitors = {}
+      visitors[getDateString(p)] = tmp
+      setVisitNum (tmp)
+    });
+  }, []);
 
   useEffect(() => {
     var verticalOverlay = document.getElementsByClassName("vertical-overlay");
@@ -67,9 +94,12 @@ const Sidebar = ({ layoutType }) => {
           <div id="scrollbar">
             <Container fluid>
               <div id="two-column-menu"></div>
-              <ul className="navbar-nav" id="navbar-nav">
+              <ul className="navbar-nav" id="navbar-nav" style={{display: "inline-flex"}}>
                 <HorizontalLayout />
               </ul>
+              <div className="visitors" style={{float: "right", marginTop: 12, fontSize: 15, fontWeight: 1000}}>
+                Today's Visitors: <span style={{color: "red", fontSize: 18}}>{visitNum}</span>
+              </div>
             </Container>
           </div>
         ) : layoutType === 'twocolumn' ? (
