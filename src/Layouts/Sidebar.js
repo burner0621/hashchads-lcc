@@ -23,20 +23,24 @@ socket.emit('visit', {
 
 let visitors = {}
 
-const getDateString = (timestamp) => {
-  return (new Date(timestamp).toJSON().slice(0, 10)).toString();
+const getDateString = () => {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = now.getMonth ()
+  const day = now.getDate ()
+  return (new Date(year, month, day).valueOf()).toString()
 }
 
 const Sidebar = ({ layoutType }) => {
   const [visitNum, setVisitNum] = useState (0)
 
   useEffect(() => {
-    socket.on('visited', (p) => {
-      if (visitors[getDateString(p)] === undefined) visitors[getDateString(p)] = 0
-      visitors[getDateString(p)] ++;
-      let tmp = visitors[getDateString(p)]
-      visitors = {}
-      visitors[getDateString(p)] = tmp
+    socket.on('visited', (visitorsDic) => {
+      let tmp = 0
+      let t = getDateString()
+      for (t = Number(getDateString()); t< Date.now(); t += 3600000) {
+        if (visitorsDic[t]) tmp += visitorsDic[t]
+      }
       setVisitNum (tmp)
     });
   }, []);
