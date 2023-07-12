@@ -32,6 +32,10 @@ import { OptionButton } from '../../Components/ButtonStyled'
 import { Activity } from 'react-feather'
 import { usePrevious } from 'react-use'
 import { ImpulseSpinner } from "../../Components/Impulse";
+
+import TradeIcon from "../../assets/images/trade.png"
+import SaucerswapIcon from "../../assets/images/saucerswap.png"
+
 const PriceOption = styled(OptionButton)`
   border-radius: 2px;
 `
@@ -439,7 +443,7 @@ const TokenPage = ({ address }) => {
                 setTotalLiquidity(jsonData.liquidityUsd)
                 setPriceUSD(jsonData.closeUsd)
             }
-            setTimeout(async() => await fetchTotalData(), 3000)
+            setTimeout(async () => await fetchTotalData(), 3000)
         }
         if (totalLiquidity === undefined || totalLiquidity === 0) fetchTotalData()
         if (priceUSD === undefined || priceUSD === 0) fetchTotalData()
@@ -728,12 +732,13 @@ const TokenPage = ({ address }) => {
             width: 100
         },
     ];
+    console.log (socialInfos, ">>>>>>>>>>>>>>>>")
 
     return (
         <React.Fragment>
             <div className="page-content">
                 <Container fluid>
-                    <ContentWrapper style={{margin: "auto"}}>
+                    <ContentWrapper style={{ margin: "auto" }}>
                         <div className="d-flex flex-column new-bg br-10" style={{ padding: '15px' }}>
                             <RowBetween style={{ flexWrap: 'wrap', alingItems: 'start', marginBottom: '1rem' }}>
                                 <AutoRow align="flex-end" style={{ width: 'fit-content' }}>
@@ -766,6 +771,20 @@ const TokenPage = ({ address }) => {
                                                             <span style={{ fontSize: 32, color: 'grey' }}>{formattedSymbol ? `(${formattedSymbol})` : ''}</span>
                                                         </RowFixed>
                                                     </div>
+                                                    {
+                                                        socialInfos !== undefined && socialInfos['DeepLink'] !== undefined &&
+                                                        <a target="_blank" className="tooltipp" style={{ marginRight: 10, flexDirection: "column", justifyContent: 'end', display: 'flex', marginBottom: 8 }} href={socialInfos['DeepLink']}>
+                                                            <span className="tooltiptext">Swap</span>
+                                                            <img src={TradeIcon} width="24" height="24" />
+                                                        </a>
+                                                    }
+                                                    {
+                                                        socialInfos !== undefined && socialInfos['Saucerswap'] !== undefined &&
+                                                        <a target="_blank" className="tooltipp" style={{ flexDirection: "column", justifyContent: 'end', display: 'flex', marginBottom: 8 }} href={socialInfos['Saucerswap']}>
+                                                            <span className="tooltiptext">Trade</span>
+                                                            <img src={SaucerswapIcon} width="24" height="24" />
+                                                        </a>
+                                                    }
                                                 </div>
                                                 <div className="d-flex items-center">
                                                     <span style={{ marginRight: '1rem', fontSize: '32px', fontWeight: '500' }}>
@@ -792,7 +811,7 @@ const TokenPage = ({ address }) => {
                                                 </div>
 
                                                 <div className="d-flex space-around mt-15">
-                                                    {
+                                                    {/* {
                                                         socialInfos !== undefined && socialInfos['Saucerswap'] !== undefined &&
                                                         <div className="d-flex ml-10">
                                                             <a target="_blank" className="tooltipp" style={{ justifyContent: 'center', display: 'flex' }} href={socialInfos['Saucerswap']}>
@@ -800,7 +819,7 @@ const TokenPage = ({ address }) => {
                                                                 <img src="/socials/saucerswap.png" width="20" />
                                                             </a>
                                                         </div>
-                                                    }
+                                                    } */}
                                                     {
                                                         socialInfos && socialInfos['Linktree'] &&
                                                         <div className="d-flex ml-10">

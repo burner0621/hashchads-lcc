@@ -263,12 +263,11 @@ body {
 .tooltipp {
   position: relative;
   display: inline-block;
-  border-bottom: 1px dotted black;
 }
 
 .tooltipp .tooltiptext {
   visibility: hidden;
-  width: 120px;
+  width: 80px;
   background-color: #555;
   color: #fff;
   text-align: center;
@@ -278,7 +277,7 @@ body {
   z-index: 1;
   bottom: 125%;
   left: 50%;
-  margin-left: -60px;
+  margin-left: -40px;
   opacity: 0;
   transition: opacity 0.3s;
 }
