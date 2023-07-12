@@ -775,14 +775,14 @@ const TokenPage = ({ address }) => {
                                                         socialInfos !== undefined && socialInfos['DeepLink'] !== undefined &&
                                                         <a target="_blank" className="tooltipp" style={{ marginRight: 10, flexDirection: "column", justifyContent: 'end', display: 'flex', marginBottom: 8 }} href={socialInfos['DeepLink']}>
                                                             <span className="tooltiptext">Swap</span>
-                                                            <img src={TradeIcon} width="24" height="24" />
+                                                            <img src={TradeIcon} width="28" height="28" />
                                                         </a>
                                                     }
                                                     {
                                                         socialInfos !== undefined && socialInfos['Saucerswap'] !== undefined &&
                                                         <a target="_blank" className="tooltipp" style={{ flexDirection: "column", justifyContent: 'end', display: 'flex', marginBottom: 8 }} href={socialInfos['Saucerswap']}>
                                                             <span className="tooltiptext">Trade</span>
-                                                            <img src={SaucerswapIcon} width="24" height="24" />
+                                                            <img src={SaucerswapIcon} width="28" height="28" />
                                                         </a>
                                                     }
                                                 </div>
