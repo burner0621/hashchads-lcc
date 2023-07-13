@@ -1,6 +1,8 @@
 import React from 'react';
 import { Col, Container, Row } from 'reactstrap';
 
+import HashFrens_png from '../assets/images/hashfrens.png'
+
 const Footer = () => {
     return (
         <React.Fragment>
@@ -12,7 +14,10 @@ const Footer = () => {
                         </Col>
                         <Col xs={6} sm={6}>
                             <div className="text-end">
-                                Design & Develop by Themesbrand
+                                Brought to you by 
+                                <a href="https://hashchads.app/tokens/0.0.2126066"> Hashfrens
+                                <img src={HashFrens_png} height="20" style={{marginLeft: 5}}/>
+                                </a>
                             </div>
                         </Col>
                     </Row>
