@@ -297,3 +297,7 @@ body {
   visibility: visible;
   opacity: 1;
 }
+
+.link:hover {
+  color: #eee !important;
+}

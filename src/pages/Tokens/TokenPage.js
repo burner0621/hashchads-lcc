@@ -572,8 +572,8 @@ const TokenPage = ({ address }) => {
             name: <span className='font-weight-bold fs-16'>Maker</span>,
             cell: (row) => {
                 return (
-                    row.state === 'buy' ? <span className="text-buy">{row.accountId}</span> :
-                        <span className="text-sell">{row.accountId}</span>
+                    row.state === 'buy' ? <a href={"https://hashscan.io/mainnet/account/" + row.accountId}><span className="text-buy link">{row.accountId}</span></a> :
+                    <a href={"https://hashscan.io/mainnet/account/" + row.accountId}><span className="text-sell link">{row.accountId}</span></a>
                 )
             },
             sortable: true,
