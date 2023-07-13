@@ -230,7 +230,7 @@ const TokenChart = ({ address, color, base, priceData, chartFilter, timeWindow, 
                 ) : priceData && priceData.length ? (
                     <ResponsiveContainer aspect={aspect} ref={ref}>
                         {/* <CandleStickChart data={priceData} width={width} base={base} /> */}
-                        <Chart stock={"Stock"} interval="5" width="100%" tokenId={address} symbol={symbol.toUpperCase() + "/USD"} height="100%"/>
+                        <Chart stock={"Stock"} interval="60" width="100%" tokenId={address} symbol={symbol.toUpperCase() + "/USD"} height="100%"/>
                     </ResponsiveContainer>
                 ) : (
                     // <LocalLoader />

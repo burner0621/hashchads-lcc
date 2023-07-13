@@ -27,9 +27,9 @@ const Chart = (props) => {
           "mainSeriesProperties.candleStyle.borderUpColor": "#11CC9A", // Up Candle Border Color
           "mainSeriesProperties.candleStyle.borderDownColor": "#E20E7C", // Down Candle Border Color
           "mainSeriesProperties.candleStyle.drawBorder": false, // Disable candle borders
-          "mainSeriesProperties.candleStyle.minTick": "100000000,0.000000001,false",
+          "mainSeriesProperties.minTick": "100000000,1,false",
         },
-        disabled_features: ["header_symbol_search"],
+        disabled_features: ["header_symbol_search"], 
         time_frames: [],
         theme: "Dark",
         timezone: "America/New_York",
