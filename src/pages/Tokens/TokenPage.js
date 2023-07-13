@@ -562,8 +562,8 @@ const TokenPage = ({ address }) => {
             sortable: true,
             cell: (row) => {
                 return (
-                    row.state === 'buy' ? <span className="text-buy">{Math.abs(row.amount)}</span> :
-                        <span className="text-sell">{Math.abs(row.amount)}</span>
+                    row.state === 'buy' ? <span className="text-buy">{formattedNum(Math.abs(row.amount), false)}</span> :
+                        <span className="text-sell">{formattedNum(Math.abs(row.amount), false)}</span>
                 )
             },
             width: 180
@@ -732,7 +732,6 @@ const TokenPage = ({ address }) => {
             width: 100
         },
     ];
-    console.log (socialInfos, ">>>>>>>>>>>>>>>>")
 
     return (
         <React.Fragment>
