@@ -305,6 +305,7 @@ const Tokens = () => {
                                 <div style={{ textAlign: 'center' }}>
                                     <a target="_blank" href="https://www.tradingview.com"><img src={tradingViewImg} width="200" /></a>
                                 </div>
+                                <div style={{ textAlign: 'center', fontSize: 21, fontWeight: 1000, fontStyle: "oblique" }}>TradingView</div>
                             </FullWrapper>
                         </PageWrapper>
                     </Container>
