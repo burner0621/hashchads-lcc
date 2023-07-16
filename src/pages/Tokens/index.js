@@ -35,7 +35,6 @@ export const AdsBannerWrapper = styled.div`
   margin: 0 auto;
   box-sizing: border-box;
   padding: 0px 0px;
-
   @media screen and (max-width: 1180px) {
     padding: 0px 1rem;
   }
@@ -218,7 +217,7 @@ const Tokens = () => {
                 <div className="page-content">
                     <Container fluid>
                         <PageWrapper>
-                            <AdsBannerWrapper><img src={hashfrensGif} style={{borderRadius: 12, width: "100%", height: "80%"}}/></AdsBannerWrapper>
+                            <AdsBannerWrapper><img className="ads-banner" src={hashfrensGif}/></AdsBannerWrapper>
                             <FullWrapper>
                                 {(below600 &&
                                     <RowBetween>
@@ -259,7 +258,7 @@ const Tokens = () => {
                                             </NavLink>
                                         </NavItem>
                                     </Nav>
-                                    <div className="d-flex items-center">
+                                    <div className="items-center flex-block">
                                         <FormGroup switch style={{ marginRight: '5px', display: "flex" }}>
                                             <Input
                                                 type="switch"

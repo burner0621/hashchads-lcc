@@ -301,3 +301,25 @@ body {
 .link:hover {
   color: #eee !important;
 }
+
+.flex-block {
+  display: flex;
+}
+
+@media only screen and (max-width: 500px) {
+  .flex-block {
+    display: inline-block;
+  }
+}
+
+.ads-banner {
+  border-radius: 12px;
+  width: 100%;
+  max-height: 130px;
+}
+
+@media only screen and (max-width: 600px) {
+  .ads-banner {
+    max-height: 40px;
+  }
+}
