@@ -14,15 +14,17 @@ import { useAllTokensInSaucerswap, useGlobalDataContext } from "../../contexts/G
 import classnames from "classnames";
 import tradingViewImg from '../../assets/images/tradingview.png'
 
+import hashfrensGif from "../../assets/ads/Unbenannt.gif"
+
 export const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  padding-top: 36px;
+  padding-top: 0px;
   padding-bottom: 80px;
 
   @media screen and (max-width: 600px) {
     & > * {
-      padding: 0 12px;
+      padding: 0px 0px 0px 8px;
     }
   }
 `
@@ -36,10 +38,11 @@ export const FullWrapper = styled.div`
   width: 100%;
   margin: 0 auto;
   box-sizing: border-box;
+  padding: 16px 0px;
 
   @media screen and (max-width: 1180px) {
     grid-template-columns: 1fr;
-    padding: 0 1rem;
+    padding: 8px 1rem;
   }
 `
 const Tokens = () => {
@@ -202,10 +205,11 @@ const Tokens = () => {
                 <div className="page-content">
                     <Container fluid>
                         <PageWrapper>
+                            <img src={hashfrensGif} style={{borderRadius: 12}}/>
                             <FullWrapper>
                                 {(below600 &&
                                     <RowBetween>
-                                        <div style={{ display: "flex", flexDirection: "column", width: '100%' }}>
+                                        <div style={{ display: "flex", flexDirection: "column", width: '100%'}}>
                                             <div style={{ display: "flex", width: '100%', marginRight: '10px' }}>
                                                 <div style={{ fontWeight: 500, color: 'white', fontSize: 24 }}>{TOKEN_TYPE_NAME[tokenType]}</div>
                                             </div>

@@ -44,7 +44,7 @@ const DashGrid = styled.div`
   grid-gap: 1em;
   grid-template-columns: 100px 1fr 1fr;
   grid-template-areas: 'name liq vol';
-  padding: 0 1.125rem;
+  padding: 0 0rem;
 
   > * {
     justify-content: flex-end;
@@ -79,7 +79,9 @@ const DashGrid = styled.div`
   }
 `
 
-const ListWrapper = styled.div``
+const ListWrapper = styled.div`
+  padding: 0 16px;
+`
 
 const ClickableText = styled(Text)`
   text-align: end;
@@ -157,7 +159,7 @@ const TopTokenList = ({ tokens = [], itemMax = 10, useTracked = false }) => {
 
     const ListItem = ({ item, index }) => {
         return (
-            <DashGrid style={{ height: '48px', display: "flex", paddingRight: 20, color: "#ced4da"}} focus={true}>
+            <DashGrid style={{ height: '48px', display: "flex", paddingRight: 4, color: "#ced4da"}} focus={true}>
                 <DataText area="name" fontWeight="500" style={{minWidth: 100}}>
                     <Row>
                         {!below680 && 
@@ -183,7 +185,7 @@ const TopTokenList = ({ tokens = [], itemMax = 10, useTracked = false }) => {
                     </DataText>
                 {/* )} */}
                 {/* {!below1080 &&  */}
-                    <DataText area="change" color="text" fontWeight="500" style={{minWidth: 70, paddingRight: 20}}>{formattedPercent(item.priceChangeUSD)}</DataText>
+                    <DataText area="change" color="text" fontWeight="500" style={{minWidth: 70, paddingRight: 4}}>{formattedPercent(item.priceChangeUSD)}</DataText>
                 {/* } */}
             </DashGrid>
         )
@@ -192,7 +194,7 @@ const TopTokenList = ({ tokens = [], itemMax = 10, useTracked = false }) => {
     return (
         <ListWrapper>
             <div style={{overflowX: "auto"}}>
-            <DashGrid center={true} style={{ height: 'fit-content', padding: '0 1.125rem 1rem 1.125rem', display: "flex" }}>
+            <DashGrid center={true} style={{ height: 'fit-content', padding: '0 8px 1rem 8px', display: "flex" }}>
                 <Flex alignItems="center" justifyContent="flexStart" style={{minWidth: 100}}>
                     <ClickableText
                         color="text"
