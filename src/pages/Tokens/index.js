@@ -28,6 +28,19 @@ export const PageWrapper = styled.div`
     }
   }
 `
+
+export const AdsBannerWrapper = styled.div`
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 0px 0px;
+
+  @media screen and (max-width: 1180px) {
+    padding: 0px 1rem;
+  }
+`
+
 export const FullWrapper = styled.div`
   display: grid;
   justify-content: start;
@@ -205,7 +218,7 @@ const Tokens = () => {
                 <div className="page-content">
                     <Container fluid>
                         <PageWrapper>
-                            <img src={hashfrensGif} style={{borderRadius: 12}}/>
+                            <AdsBannerWrapper><img src={hashfrensGif} style={{borderRadius: 12, width: "100%", height: "80%"}}/></AdsBannerWrapper>
                             <FullWrapper>
                                 {(below600 &&
                                     <RowBetween>
@@ -228,7 +241,7 @@ const Tokens = () => {
 
                                 <RowBetween>
                                     <Nav tabs className="nav nav-tabs nav-border-top nav-border-top-success">
-                                        <NavItem className="new-bg" style={{ marginRight: '20px' }}>
+                                        <NavItem className="new-bg" style={{ margin: '5px' }}>
                                             <NavLink style={{ cursor: "pointer" }} className={classnames({ active: tokenType == TOKEN_TYPE.all || tokenType == TOKEN_TYPE.gainer, })} onClick={() => { handleTokenType(TOKEN_TYPE.gainer) }} >
                                                 <i className="mdi mdi-elevation-rise align-middle me-1"></i> Gainers
 
@@ -237,7 +250,7 @@ const Tokens = () => {
                                                     <span className="visually-hidden">Gainers</span></Badge>
                                             </NavLink>
                                         </NavItem>
-                                        <NavItem className="new-bg">
+                                        <NavItem className="new-bg" style={{ margin: '5px' }}>
                                             <NavLink style={{ cursor: "pointer" }} className={classnames({ active: tokenType == TOKEN_TYPE.loser || tokenType == TOKEN_TYPE.all })} onClick={() => { handleTokenType(TOKEN_TYPE.loser) }} >
                                                 <i className="mdi mdi-elevation-decline me-1 align-middle"></i> Losers
                                                 {/* <Badge color="warning" className="ms-1">{loserTokens.length}</Badge> */}
