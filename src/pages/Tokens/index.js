@@ -219,7 +219,7 @@ const Tokens = () => {
                     <Container fluid>
                         <PageWrapper>
                             <AdsBannerWrapper>
-                                <a href="https://www.sauceinu.com/">
+                                <a href="https://www.sauceinu.com/" target="_blank">
                                     <img className="ads-banner" src={SauceinuGif} />
                                 </a>
                             </AdsBannerWrapper>
