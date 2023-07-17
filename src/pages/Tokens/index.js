@@ -218,11 +218,15 @@ const Tokens = () => {
                 <div className="page-content">
                     <Container fluid>
                         <PageWrapper>
-                            <AdsBannerWrapper><img className="ads-banner" src={SauceinuGif}/></AdsBannerWrapper>
+                            <AdsBannerWrapper>
+                                <a href="https://www.sauceinu.com/">
+                                    <img className="ads-banner" src={SauceinuGif} />
+                                </a>
+                            </AdsBannerWrapper>
                             <FullWrapper>
                                 {(below600 &&
                                     <RowBetween>
-                                        <div style={{ display: "flex", flexDirection: "column", width: '100%'}}>
+                                        <div style={{ display: "flex", flexDirection: "column", width: '100%' }}>
                                             <div style={{ display: "flex", width: '100%', marginRight: '10px' }}>
                                                 <div style={{ fontWeight: 500, color: 'white', fontSize: 24 }}>{TOKEN_TYPE_NAME[tokenType]}</div>
                                             </div>
@@ -323,7 +327,7 @@ const Tokens = () => {
                                     <a target="_blank" href="https://www.tradingview.com"><img src={tradingViewImg} width="200" /></a>
                                 </div>
                                 <div style={{ textAlign: 'center', fontSize: 12, fontWeight: 1000, fontStyle: "oblique" }}>
-                                    The charts are provided by TradingView, a platform for traders and investors with versatile research tools and sophisticated data that helps you track coins like <a href="https://www.tradingview.com/symbols/BTCUSD/" style={{color: '#0a58ca'}}>BTC USD</a> and <a href="https://www.tradingview.com/symbols/HBARUSD/" style={{color: '#0a58ca'}}>HBAR USD</a> on charts to stay up-to-date on where crypto markets are moving.
+                                    The charts are provided by TradingView, a platform for traders and investors with versatile research tools and sophisticated data that helps you track coins like <a href="https://www.tradingview.com/symbols/BTCUSD/" style={{ color: '#0a58ca' }}>BTC USD</a> and <a href="https://www.tradingview.com/symbols/HBARUSD/" style={{ color: '#0a58ca' }}>HBAR USD</a> on charts to stay up-to-date on where crypto markets are moving.
                                 </div>
                             </FullWrapper>
                         </PageWrapper>
