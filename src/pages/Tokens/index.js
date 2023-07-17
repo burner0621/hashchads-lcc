@@ -15,6 +15,7 @@ import classnames from "classnames";
 import tradingViewImg from '../../assets/images/tradingview.png'
 
 import hashfrensGif from "../../assets/ads/Unbenannt.gif"
+import SauceinuGif from "../../assets/ads/Sauceinu.gif"
 
 export const PageWrapper = styled.div`
   display: flex;
@@ -217,7 +218,7 @@ const Tokens = () => {
                 <div className="page-content">
                     <Container fluid>
                         <PageWrapper>
-                            <AdsBannerWrapper><img className="ads-banner" src={hashfrensGif}/></AdsBannerWrapper>
+                            <AdsBannerWrapper><img className="ads-banner" src={SauceinuGif}/></AdsBannerWrapper>
                             <FullWrapper>
                                 {(below600 &&
                                     <RowBetween>
