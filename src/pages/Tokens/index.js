@@ -16,6 +16,7 @@ import tradingViewImg from '../../assets/images/tradingview.png'
 
 import hashfrensGif from "../../assets/ads/Unbenannt.gif"
 import SauceinuGif from "../../assets/ads/Sauceinu.gif"
+import Grelf_Hashchads from "../../assets/ads/Grelf-Hashchads.gif"
 
 export const PageWrapper = styled.div`
   display: flex;
@@ -219,9 +220,17 @@ const Tokens = () => {
                     <Container fluid>
                         <PageWrapper>
                             <AdsBannerWrapper>
-                                <a href="https://www.sauceinu.com/" target="_blank">
-                                    <img className="ads-banner" src={SauceinuGif} />
-                                </a>
+                                <marquee width="100%" direction="right" height="100px">
+                                    <a href="" target="_blank">
+                                        <img className="ads-banner" src={hashfrensGif} />
+                                    </a>
+                                    <a href="https://www.sauceinu.com/" target="_blank">
+                                        <img className="ads-banner" src={SauceinuGif} />
+                                    </a>
+                                    <a href="" target="_blank">
+                                        <img className="ads-banner" src={Grelf_Hashchads} />
+                                    </a>
+                                </marquee>
                             </AdsBannerWrapper>
                             <FullWrapper>
                                 {(below600 &&
