@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { Container, NavItem, Nav, NavLink, FormGroup, Input, Label } from "reactstrap";
+import styled from 'styled-components'
 import { Link } from 'react-router-dom';
 import { useMedia } from 'react-use'
 import { RowBetween } from '../../Components/Row'
@@ -11,6 +12,10 @@ import { useAllPairsInSaucerswap, usePriceChanges, usePairDailyVolume, usePairWe
 
 import TokenLogo from "../../Components/TokenLogo";
 import { FullWrapper, PageWrapper } from "../Tokens";
+
+import hashfrensGif from "../../assets/ads/Unbenannt.gif"
+import SauceinuGif from "../../assets/ads/Sauceinu.gif"
+import Grelf_Hashchads from "../../assets/ads/Grelf-Hashchads.gif"
 
 const PAIRS_TYPE = {
     pairs: 'pairs',
@@ -33,6 +38,17 @@ const TIME_RANGE_TYPE_NAME = {
     day: '24h',
     week: '1W',
 }
+
+export const AdsBannerWrapper = styled.div`
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 0px 0px;
+  @media screen and (max-width: 1180px) {
+    padding: 0px 1rem;
+  }
+`
 
 const Pairs = () => {
     document.title = "Pairs";
@@ -278,6 +294,16 @@ const Pairs = () => {
             <div className="page-content">
                 <Container fluid>
                     <PageWrapper>
+                            <AdsBannerWrapper>
+                                <marquee width="100%" direction="right" height="100px">
+                                    <a>
+                                        <img className="ads-banner" src={hashfrensGif} />
+                                    </a>
+                                    <a>
+                                        <img className="ads-banner" src={Grelf_Hashchads} />
+                                    </a>
+                                </marquee>
+                            </AdsBannerWrapper>
                         <FullWrapper>
                             <RowBetween style={{ display: 'flex', justifyContent: 'flex-end' }}>
                                 <Search display={"all"} small={true} />
