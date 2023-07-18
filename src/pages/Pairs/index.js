@@ -299,17 +299,9 @@ const Pairs = () => {
             <div className="page-content">
                 <Container fluid>
                     <PageWrapper>
-                        <AdsBannerWrapper>
-                            {/* <Marquee list={ADSBanner} time={20} /> */}
-                            <marquee width="100%" direction="right">
-                                <a>
-                                    <img className="ads-banner" src={hashfrensGif} />
-                                </a>
-                                <a href="https://www.saucerswap.finance/swap/HBAR/0.0.1159074" target="_blank">
-                                    <img className="ads-banner" src={Grelf_Hashchads} />
-                                </a>
-                            </marquee>
-                        </AdsBannerWrapper>
+                        {/* <AdsBannerWrapper>
+                            <Marquee list={ADSBanner} time={20} />
+                        </AdsBannerWrapper> */}
                         <FullWrapper>
                             <RowBetween style={{ display: 'flex', justifyContent: 'flex-end' }}>
                                 <Search display={"all"} small={true} />

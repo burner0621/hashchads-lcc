@@ -221,8 +221,14 @@ const Tokens = () => {
                         <PageWrapper>
                             <AdsBannerWrapper>
                                 <marquee width="100%" direction="right">
-                                    <a href="https://www.sauceinu.com/" target="_blank">
+                                    {/* <a href="https://www.sauceinu.com/" target="_blank">
                                         <img className="ads-banner" src={SauceinuGif} />
+                                    </a> */}
+                                    <a href="https://hashchads.app/tokens/0.0.2126066" target="_blank">
+                                        <img className="ads-banner" src={hashfrensGif} />
+                                    </a>
+                                    <a href="https://www.saucerswap.finance/swap/HBAR/0.0.1159074" target="_blank">
+                                        <img className="ads-banner" src={Grelf_Hashchads} />
                                     </a>
                                 </marquee>
                             </AdsBannerWrapper>
