@@ -295,7 +295,7 @@ const Pairs = () => {
                 <Container fluid>
                     <PageWrapper>
                             <AdsBannerWrapper>
-                                <marquee width="100%" direction="right" height="100px">
+                                <marquee width="100%" direction="right">
                                     <a>
                                         <img className="ads-banner" src={hashfrensGif} />
                                     </a>
