@@ -398,7 +398,7 @@ const TokenPage = ({ address }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
         timeInterval.current = setInterval(async () => {
             await fetchData()
-        }, 1000);
+        }, 5000);
     }, [currentPage, rowsPerPage])
 
     const handlePageChange = (page, totalRows) => {
@@ -407,7 +407,7 @@ const TokenPage = ({ address }) => {
         if (timeInterval.current) clearInterval(timeInterval.current);
         timeInterval.current = setInterval(async () => {
             await fetchData()
-        }, 1000);
+        }, 5000);
     }
 
     const handlePerRowsChange = async (newPerPage, page) => {
