@@ -327,7 +327,7 @@ const Pairs = () => {
                                     </NavItem>
                                 </Nav>
 
-                                <div className="d-flex items-center">
+                                <div className="flex-block items-center">
                                     <FormGroup switch style={{ marginRight: '5px', display:"flex" }}>
                                         <Input
                                             type="switch"
