@@ -299,7 +299,7 @@ const Pairs = () => {
                                     <a>
                                         <img className="ads-banner" src={hashfrensGif} />
                                     </a>
-                                    <a>
+                                    <a href="https://www.saucerswap.finance/swap/HBAR/0.0.1159074" target="_blank">
                                         <img className="ads-banner" src={Grelf_Hashchads} />
                                     </a>
                                 </marquee>
