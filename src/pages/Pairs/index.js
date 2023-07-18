@@ -12,6 +12,7 @@ import { useAllPairsInSaucerswap, usePriceChanges, usePairDailyVolume, usePairWe
 
 import TokenLogo from "../../Components/TokenLogo";
 import { FullWrapper, PageWrapper } from "../Tokens";
+import Marquee from "../../Components/Common/Marquee"
 
 import hashfrensGif from "../../assets/ads/Unbenannt.gif"
 import SauceinuGif from "../../assets/ads/Sauceinu.gif"
@@ -49,6 +50,10 @@ export const AdsBannerWrapper = styled.div`
     padding: 0px 1rem;
   }
 `
+const ADSBanner = [
+    { href: "", src: hashfrensGif },
+    { href: "https://www.saucerswap.finance/swap/HBAR/0.0.1159074", src: Grelf_Hashchads }
+]
 
 const Pairs = () => {
     document.title = "Pairs";
@@ -294,16 +299,17 @@ const Pairs = () => {
             <div className="page-content">
                 <Container fluid>
                     <PageWrapper>
-                            <AdsBannerWrapper>
-                                <marquee width="100%" direction="right">
-                                    <a>
-                                        <img className="ads-banner" src={hashfrensGif} />
-                                    </a>
-                                    <a href="https://www.saucerswap.finance/swap/HBAR/0.0.1159074" target="_blank">
-                                        <img className="ads-banner" src={Grelf_Hashchads} />
-                                    </a>
-                                </marquee>
-                            </AdsBannerWrapper>
+                        <AdsBannerWrapper>
+                            {/* <Marquee list={ADSBanner} time={20} /> */}
+                            <marquee width="100%" direction="right">
+                                <a>
+                                    <img className="ads-banner" src={hashfrensGif} />
+                                </a>
+                                <a href="https://www.saucerswap.finance/swap/HBAR/0.0.1159074" target="_blank">
+                                    <img className="ads-banner" src={Grelf_Hashchads} />
+                                </a>
+                            </marquee>
+                        </AdsBannerWrapper>
                         <FullWrapper>
                             <RowBetween style={{ display: 'flex', justifyContent: 'flex-end' }}>
                                 <Search display={"all"} small={true} />
@@ -328,7 +334,7 @@ const Pairs = () => {
                                 </Nav>
 
                                 <div className="flex-block items-center">
-                                    <FormGroup switch style={{ marginRight: '5px', display:"flex" }}>
+                                    <FormGroup switch style={{ marginRight: '5px', display: "flex" }}>
                                         <Input
                                             type="switch"
                                             style={{ height: "1.5rem", width: '3rem', marginRight: 5 }}
@@ -340,12 +346,12 @@ const Pairs = () => {
                                         <Label check style={{ fontSize: 18, fontWeight: 450 }}>$500+ Liquidity</Label>
                                     </FormGroup>
                                     <Nav pills className="badge-bg">
-                                        <NavItem className="d-flex items-center justify-center" style={{width:"4rem"}}>
+                                        <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
                                             <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.day ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.day) }} >
                                                 <span className={timeRangeType == TIME_RANGE_TYPE.day ? "text-white badge" : "text-badge badge"}>24h</span>
                                             </div>
                                         </NavItem>
-                                        <NavItem className="d-flex items-center justify-center" style={{width:"4rem"}}>
+                                        <NavItem className="d-flex items-center justify-center" style={{ width: "4rem" }}>
                                             <div style={{ cursor: "pointer" }} className={timeRangeType == TIME_RANGE_TYPE.week ? "active badge-active-bg" : ""} onClick={() => { handleTimeRangeType(TIME_RANGE_TYPE.week) }} >
                                                 <span className={timeRangeType == TIME_RANGE_TYPE.week ? "text-white badge" : "text-badge badge"}>1W</span>
                                             </div>

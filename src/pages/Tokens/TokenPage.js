@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from 'styled-components'
 import { Col, Container, Row, Nav, NavItem, Card, CardBody } from "reactstrap";
 import { useMedia } from 'react-use'
@@ -189,6 +189,8 @@ const TokenPage = ({ address }) => {
 
     const [statisticData, setStatisticData] = useState({})
 
+    const timeInterval = useRef(undefined);
+
     const prevWindow = usePrevious(timeWindow)
 
     // hourly and daily price data based on the current time window
@@ -354,8 +356,10 @@ const TokenPage = ({ address }) => {
             setHolderInfo(rlt)
         }
     }, [holders, pairs, tokenInfo, priceUSD])
+
     let fetchDataTimeout;
     let beforeAddress, beforeCurrentPage, beforeRowsPerPage;
+
     const fetchData = async () => {
         const res = await fetch(`${env.BASE_URL}/api/transaction/get?tokenId=${address}&pageNum=${currentPage}&pageSize=${rowsPerPage}`)
         if (res.status === 200) {
@@ -369,7 +373,6 @@ const TokenPage = ({ address }) => {
             beforeCurrentPage = currentPage;
             beforeRowsPerPage = rowsPerPage;
         }
-        // fetchDataTimeout = setTimeout(async() => await fetchData(), 5000)
     }
 
     const fetchStatisticData = async (timeRange) => {
@@ -391,24 +394,20 @@ const TokenPage = ({ address }) => {
     }, [timeRangeType])
 
     useEffect(() => {
+        if (timeInterval.current) clearInterval(timeInterval.current);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        const tradeHistoryTimeout = setTimeout(async () => {
+        timeInterval.current = setInterval(async () => {
             await fetchData()
-        }, 0);
-        return () => {
-            clearTimeout(tradeHistoryTimeout);
-        };
+        }, 1000);
     }, [currentPage, rowsPerPage])
 
     const handlePageChange = (page, totalRows) => {
         setIsLoaded(true);
         setCurrentPage(page)
-        const timeout = setTimeout(async () => {
+        if (timeInterval.current) clearInterval(timeInterval.current);
+        timeInterval.current = setInterval(async () => {
             await fetchData()
-        }, 0);
-        return () => {
-            clearTimeout(timeout);
-        };
+        }, 1000);
     }
 
     const handlePerRowsChange = async (newPerPage, page) => {
