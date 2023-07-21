@@ -219,11 +219,11 @@ const Tokens = () => {
                 <div className="page-content">
                     <Container fluid>
                         <PageWrapper>
-                            <AdsBannerWrapper>
+                            {/* <AdsBannerWrapper>
                                 <marquee width="100%" direction="right">
-                                    {/* <a href="https://www.sauceinu.com/" target="_blank">
+                                    <a href="https://www.sauceinu.com/" target="_blank">
                                         <img className="ads-banner" src={SauceinuGif} />
-                                    </a> */}
+                                    </a>
                                     <a href="https://hashchads.app/tokens/0.0.2126066" target="_blank">
                                         <img className="ads-banner" src={hashfrensGif} />
                                     </a>
@@ -231,7 +231,7 @@ const Tokens = () => {
                                         <img className="ads-banner" src={Grelf_Hashchads} />
                                     </a>
                                 </marquee>
-                            </AdsBannerWrapper>
+                            </AdsBannerWrapper> */}
                             <FullWrapper>
                                 {(below600 &&
                                     <RowBetween>
