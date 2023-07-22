@@ -263,16 +263,16 @@ const TokenPage = ({ address }) => {
 
             if (address === pair.tokenA.id) {
                 // deltaYUsd = reserveB * (1 - reserveA / (reserveA + amount)) * pair.tokenB.priceUsd
-                swapImpact = 1 - Math.pow(reserveA / (reserveA + 0.997 * amount), 2)
+                swapImpact = 1 - Math.pow(reserveA / (reserveA + 0.997 * amount), 1)
             }
             if (address === pair.tokenB.id) {
                 // deltaYUsd = reserveA * (1 - reserveB / (reserveB + amount)) * pair.tokenA.priceUsd
-                swapImpact = 1 - Math.pow(reserveB / (reserveB + 0.997 * amount), 2)
+                swapImpact = 1 - Math.pow(reserveB / (reserveB + 0.997 * amount), 1)
             }
             if (maxSwapImpact > swapImpact) maxSwapImpact = swapImpact
         }
 
-        return maxSwapImpact
+        return 1 - maxSwapImpact
     }
 
     useEffect(() => {
